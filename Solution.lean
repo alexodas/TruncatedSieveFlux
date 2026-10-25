@@ -41,19 +41,19 @@ noncomputable def omittedDivisors
 /-- Signed mass from the admitted divisors. -/
 noncomputable def admittedMass
     (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (μ : ℕ → ℝ) : ℝ :=
-  ∑ n in Finset.range (Nat.ceil x),
-    ∑ d in admittedDivisors K A k n, μ d
+  ∑ n ∈ Finset.range (Nat.ceil x),
+    ∑ d ∈ admittedDivisors K A k n, μ d
 
 /-- Signed mass from the omitted divisors. -/
 noncomputable def omittedMass
     (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (μ : ℕ → ℝ) : ℝ :=
-  ∑ n in Finset.range (Nat.ceil x),
-    ∑ d in omittedDivisors K A k n, μ d
+  ∑ n ∈ Finset.range (Nat.ceil x),
+    ∑ d ∈ omittedDivisors K A k n, μ d
 
 /-- Number of omitted divisor incidences, counted with multiplicity in `n`. -/
 noncomputable def omittedCount
     (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) : ℝ :=
-  ∑ n in Finset.range (Nat.ceil x),
+  ∑ n ∈ Finset.range (Nat.ceil x),
     ((omittedDivisors K A k n).card : ℝ)
 
 /-- Absolute value of the admitted signed mass. -/
@@ -64,28 +64,28 @@ noncomputable def density
 /-! ## Finite Möbius cancellation and the residual decomposition -/
 
 private theorem moebius_divisor_sum (n : ℕ) :
-    (∑ d in Nat.divisors n, moebiusReal d) =
+    (∑ d ∈ Nat.divisors n, moebiusReal d) =
       if n = 1 then 1 else 0 := by
   have h := congrArg
     (fun f : ArithmeticFunction ℤ => f n)
     ArithmeticFunction.moebius_mul_coe_zeta
   rw [ArithmeticFunction.coe_mul_zeta_apply] at h
   simp only [ArithmeticFunction.one_apply] at h
-  change (∑ d in Nat.divisors n,
+  change (∑ d ∈ Nat.divisors n,
     ((ArithmeticFunction.moebius d : ℤ) : ℝ)) =
       if n = 1 then 1 else 0
   exact_mod_cast h
 
 private theorem complete_moebius_mass (x : ℝ) (hx : 2 ≤ x) :
-    (∑ n in Finset.range (Nat.ceil x),
-      ∑ d in Nat.divisors n, moebiusReal d) = 1 := by
+    (∑ n ∈ Finset.range (Nat.ceil x),
+      ∑ d ∈ Nat.divisors n, moebiusReal d) = 1 := by
   have h1 : (1 : ℕ) ∈ Finset.range (Nat.ceil x) := by
     apply Finset.mem_range.mpr
     exact Nat.lt_ceil.mpr (by linarith)
   calc
-    (∑ n in Finset.range (Nat.ceil x),
-      ∑ d in Nat.divisors n, moebiusReal d) =
-        ∑ n in Finset.range (Nat.ceil x),
+    (∑ n ∈ Finset.range (Nat.ceil x),
+      ∑ d ∈ Nat.divisors n, moebiusReal d) =
+        ∑ n ∈ Finset.range (Nat.ceil x),
           if n = 1 then (1 : ℝ) else 0 := by
             apply Finset.sum_congr rfl
             intro n hn
@@ -95,8 +95,8 @@ private theorem complete_moebius_mass (x : ℝ) (hx : 2 ≤ x) :
 private theorem admitted_add_omitted
     (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (μ : ℕ → ℝ) :
     admittedMass K A k x μ + omittedMass K A k x μ =
-      ∑ n in Finset.range (Nat.ceil x),
-        ∑ d in Nat.divisors n, μ d := by
+      ∑ n ∈ Finset.range (Nat.ceil x),
+        ∑ d ∈ Nat.divisors n, μ d := by
   classical
   unfold admittedMass omittedMass
   rw [← Finset.sum_add_distrib]
@@ -130,24 +130,24 @@ private theorem abs_omittedMass_le_count
     |omittedMass K A k x moebiusReal| ≤ omittedCount K A k x := by
   unfold omittedMass omittedCount
   calc
-    |∑ n in Finset.range (Nat.ceil x),
-      ∑ d in omittedDivisors K A k n, moebiusReal d| ≤
-        ∑ n in Finset.range (Nat.ceil x),
-          |∑ d in omittedDivisors K A k n, moebiusReal d| :=
+    |∑ n ∈ Finset.range (Nat.ceil x),
+      ∑ d ∈ omittedDivisors K A k n, moebiusReal d| ≤
+        ∑ n ∈ Finset.range (Nat.ceil x),
+          |∑ d ∈ omittedDivisors K A k n, moebiusReal d| :=
             Finset.abs_sum_le_sum_abs _ _
-    _ ≤ ∑ n in Finset.range (Nat.ceil x),
-          ∑ d in omittedDivisors K A k n, |moebiusReal d| := by
+    _ ≤ ∑ n ∈ Finset.range (Nat.ceil x),
+          ∑ d ∈ omittedDivisors K A k n, |moebiusReal d| := by
         apply Finset.sum_le_sum
         intro n hn
         exact Finset.abs_sum_le_sum_abs _ _
-    _ ≤ ∑ n in Finset.range (Nat.ceil x),
-          ∑ d in omittedDivisors K A k n, (1 : ℝ) := by
+    _ ≤ ∑ n ∈ Finset.range (Nat.ceil x),
+          ∑ d ∈ omittedDivisors K A k n, (1 : ℝ) := by
         apply Finset.sum_le_sum
         intro n hn
         apply Finset.sum_le_sum
         intro d hd
         exact abs_moebiusReal_le_one d
-    _ = ∑ n in Finset.range (Nat.ceil x),
+    _ = ∑ n ∈ Finset.range (Nat.ceil x),
           ((omittedDivisors K A k n).card : ℝ) := by simp
 
 /-- Quantitative upper bound by omitted divisor incidences. -/
@@ -164,6 +164,6 @@ theorem moebius_density_le_omitted_count
           (-omittedMass K A k x moebiusReal)
         simpa only [sub_eq_add_neg, abs_one, abs_neg] using h
     _ ≤ 1 + omittedCount K A k x := by
-        exact add_le_add_left (abs_omittedMass_le_count K A k x) 1
+        exact add_le_add_right (abs_omittedMass_le_count K A k x) 1
 
 end TruncatedSieveFlux
