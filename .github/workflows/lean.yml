@@ -13,5 +13,5 @@ jobs:
       - uses: leanprover/lean-action@v1
         with:
           build: "true"
-          build-args: "Solution"
+          build-args: "Challenge Solution"
           use-mathlib-cache: "true"
