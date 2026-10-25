@@ -81,7 +81,8 @@ private theorem complete_moebius_mass (x : ℝ) (hx : 2 ≤ x) :
       ∑ d ∈ Nat.divisors n, moebiusReal d) = 1 := by
   have h1 : (1 : ℕ) ∈ Finset.range (Nat.ceil x) := by
     apply Finset.mem_range.mpr
-    exact Nat.lt_ceil.mpr (lt_of_lt_of_le (by norm_num : (1 : ℝ) < 2) hx)
+    have h12 : ((1 : ℕ) : ℝ) < (2 : ℝ) := by norm_num
+    exact Nat.lt_ceil.mpr (lt_of_lt_of_le h12 hx)
   calc
     (∑ n ∈ Finset.range (Nat.ceil x),
       ∑ d ∈ Nat.divisors n, moebiusReal d) =
