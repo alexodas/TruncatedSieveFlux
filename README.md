@@ -11,9 +11,10 @@ The mathematical statement is **not** an asymptotic cancellation estimate.
 There are no claims about the general growth of arbitrary sieve thresholds.
 The `Challenge.lean` file deliberately has the two `sorry` markers that a
 Comparator challenge is expected to contain. `Solution.lean` contains no
-`sorry` and imports only Mathlib; its proofs have **not** yet been compiled
-or checked by Comparator. Do not describe this project as verified until
-those checks complete successfully.
+`sorry` and imports only Mathlib. **Both Lean modules compile successfully**
+under GitHub Actions (Lean v4.35.0-rc2; run 40246677026).
+The separate Comparator verification and independent mathematical review
+have **not yet** been completed.
 
 ## Project files
 
@@ -46,7 +47,7 @@ The check requires `bwrap` in addition to Lean and the checked-in dependencies.
 
 1. Replace the generic author and maintainer identifiers in `formalization.yaml`
    with correct, authorized contributor names.
-2. Compile, fix any Lean errors, run `./scripts/check.sh` and archive the results.
+2. Run `./scripts/check.sh` to complete Comparator verification and archive the results.
 3. Review the theorem statements and provenance independently of the model.
 4. Commit the final `lake-manifest.json` if Lake regenerates it; keep every
    dependency pinned.
