@@ -41,19 +41,19 @@ noncomputable def omittedDivisors
 /-- Signed mass from the admitted divisors. -/
 noncomputable def admittedMass
     (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (μ : ℕ → ℝ) : ℝ :=
-  ∑ n in Finset.range (Nat.ceil x),
-    ∑ d in admittedDivisors K A k n, μ d
+  ∑ n ∈ Finset.range (Nat.ceil x),
+    ∑ d ∈ admittedDivisors K A k n, μ d
 
 /-- Signed mass from the omitted divisors. -/
 noncomputable def omittedMass
     (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (μ : ℕ → ℝ) : ℝ :=
-  ∑ n in Finset.range (Nat.ceil x),
-    ∑ d in omittedDivisors K A k n, μ d
+  ∑ n ∈ Finset.range (Nat.ceil x),
+    ∑ d ∈ omittedDivisors K A k n, μ d
 
 /-- Number of omitted divisor incidences, counted with multiplicity in `n`. -/
 noncomputable def omittedCount
     (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) : ℝ :=
-  ∑ n in Finset.range (Nat.ceil x),
+  ∑ n ∈ Finset.range (Nat.ceil x),
     ((omittedDivisors K A k n).card : ℝ)
 
 /-- Absolute value of the admitted signed mass. -/
