@@ -34,7 +34,7 @@ status:
   scope: >-
     Formalizes the finite residual identity and its combinatorial omitted-count
     upper bound. No asymptotic analytic estimate, uniform cancellation bound,
-    or novelty claim. Full compilation and Comparator checks are outstanding.
+    or novelty claim. GitHub Actions compilation succeeded for both Lean modules; Comparator is pending.
     The Challenge intentionally contains two theorem holes.
   sorry_count: 0
   sorry_in_definitions: 0
@@ -50,8 +50,8 @@ automation:
   framework: "ChatGPT"
   tool_setup: >-
     Human-specified mathematical target and ChatGPT-assisted Lean proof drafts,
-    repository scaffolding, and documentary checks. No successful Lean build
-    or Comparator execution in the generation environment.
+    repository scaffolding, and documentary checks. Lean compiled both modules successfully on GitHub Actions run 40246677026;
+    no Comparator verification has been performed.
   cost:
     spend_usd: "not tracked"
     hardware: "remote model and limited sandbox; local Lean unavailable"
@@ -69,11 +69,11 @@ fidelity:
     estimate; it proves only the elementary finite residual identity and bound.
 
 review:
-  status: "unreviewed; compilation pending"
+  status: "unreviewed; Lean compilation passed; Comparator pending"
   reviewers: []
   notes: >-
-    Mathematical outline inspected during drafting. No independent human
-    review and no kernel or Comparator verification yet.
+    Mathematical outline inspected during drafting. Both Lean modules compiled successfully in GitHub Actions run 40246677026.
+    No independent human review or Comparator verification has been performed.
 
 alignment:
   namespace: "TruncatedSieveFlux"
@@ -81,12 +81,12 @@ alignment:
     - source: "Classical Möbius inversion and divisor-sum cancellation"
       lean: "TruncatedSieveFlux.moebius_residual_identity"
       module: "Challenge"
-      status: "proof supplied; unverified by compiler"
+      status: "proof compiled successfully; Comparator pending"
       note: "Exact identity for arbitrary cutoff with x >= 2."
     - source: "Elementary triangle inequality for finite divisor sums"
       lean: "TruncatedSieveFlux.moebius_density_le_omitted_count"
       module: "Challenge"
-      status: "proof supplied; unverified by compiler"
+      status: "proof compiled successfully; Comparator pending"
       note: "Coarse omitted-incidence count; not an analytic estimate."
 
 acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 proof assistance."
