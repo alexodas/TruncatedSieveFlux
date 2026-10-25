@@ -1,0 +1,92 @@
+version: "v0.4"
+
+project:
+  name: "Truncated Möbius divisor-sieve residual identity"
+  description: >-
+    Elementary Lean formalization of a finite divisor sieve with an indexed
+    cutoff. The main result expresses its Möbius-weighted admitted mass as
+    the residual of the omitted mass; a second result bounds its absolute
+    value by one plus the number of omitted divisor incidences. Neither
+    result proves a new asymptotic estimate for arbitrary sieve thresholds.
+  authors:
+    - "Contributor (replace with the submitting author's name)"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Maintainer (replace with the responsible maintainer's name)"
+
+classification:
+  arxiv: ["math.NT", "math.LO"]
+  msc2020: ["11A25", "03B35"]
+
+sources:
+  - title: "An Introduction to the Theory of Numbers"
+    authors: ["G. H. Hardy", "E. M. Wright"]
+    type: "book"
+    relationship: "adapts"
+    note: >-
+      Uses the standard classical Möbius divisor-sum identity. The truncation
+      and residual bookkeeping are elementary derived results, not claimed
+      as new analytic number theory.
+
+related_formalizations: []
+
+status:
+  scope: >-
+    Formalizes the finite residual identity and its combinatorial omitted-count
+    upper bound. No asymptotic analytic estimate, uniform cancellation bound,
+    or novelty claim. Full compilation and Comparator checks are outstanding.
+    The Challenge intentionally contains two theorem holes.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+  main_results:
+    - "TruncatedSieveFlux.moebius_residual_identity"
+    - "TruncatedSieveFlux.moebius_density_le_omitted_count"
+
+automation:
+  methods:
+    - method: "copilot"
+  models: ["GPT-6"]
+  framework: "ChatGPT"
+  tool_setup: >-
+    Human-specified mathematical target and ChatGPT-assisted Lean proof drafts,
+    repository scaffolding, and documentary checks. No successful Lean build
+    or Comparator execution in the generation environment.
+  cost:
+    spend_usd: "not tracked"
+    hardware: "remote model and limited sandbox; local Lean unavailable"
+    wall_time: "not tracked"
+  prompting_notes: >-
+    Interactive requests to formalize the finite Möbius sieve and package the
+    corresponding challenge and solution into a reproducible Lean repository.
+  notes: >-
+    AI-generated formalization draft. The submitting author must inspect the
+    statement independently, verify Lean and Comparator, and complete authorship.
+
+fidelity:
+  divergences: >-
+    This development deliberately contains no conjectured general asymptotic
+    estimate; it proves only the elementary finite residual identity and bound.
+
+review:
+  status: "unreviewed; compilation pending"
+  reviewers: []
+  notes: >-
+    Mathematical outline inspected during drafting. No independent human
+    review and no kernel or Comparator verification yet.
+
+alignment:
+  namespace: "TruncatedSieveFlux"
+  statements:
+    - source: "Classical Möbius inversion and divisor-sum cancellation"
+      lean: "TruncatedSieveFlux.moebius_residual_identity"
+      module: "Challenge"
+      status: "proof supplied; unverified by compiler"
+      note: "Exact identity for arbitrary cutoff with x >= 2."
+    - source: "Elementary triangle inequality for finite divisor sums"
+      lean: "TruncatedSieveFlux.moebius_density_le_omitted_count"
+      module: "Challenge"
+      status: "proof supplied; unverified by compiler"
+      note: "Coarse omitted-incidence count; not an analytic estimate."
+
+acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 proof assistance."
