@@ -1,0 +1,23 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "TruncatedSieveFlux.moebius_residual_identity",
+    "TruncatedSieveFlux.moebius_density_le_omitted_count"
+  ],
+  "definition_names": [
+    "TruncatedSieveFlux.sieveIndex",
+    "TruncatedSieveFlux.moebiusReal",
+    "TruncatedSieveFlux.admittedDivisors",
+    "TruncatedSieveFlux.omittedDivisors",
+    "TruncatedSieveFlux.admittedMass",
+    "TruncatedSieveFlux.omittedMass",
+    "TruncatedSieveFlux.omittedCount",
+    "TruncatedSieveFlux.density"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}
