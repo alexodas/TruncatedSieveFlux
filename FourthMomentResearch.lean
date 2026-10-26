@@ -1642,7 +1642,8 @@ residue coordinates into the product of their separate complete sums.
 This is a finite, exact factorization, not yet the gcd covariance
 formula for arbitrary non-coprime moduli. -/
 theorem coprime_zmod_product_sum_factorization
-    (a b : ℕ) (hcop : a.Coprime b)
+    (a b : ℕ) [NeZero a] [NeZero b] [NeZero (a * b)]
+    (hcop : a.Coprime b)
     (f : ZMod a → ℝ) (g : ZMod b → ℝ) :
     (∑ m : ZMod (a * b),
       f ((ZMod.chineseRemainder hcop m).1) *
@@ -1661,7 +1662,8 @@ theorem coprime_zmod_product_sum_factorization
 to every function of the second coordinate, for coprime moduli.
 This is the essential CRT cancellation mechanism. -/
 theorem coprime_zmod_centered_orthogonality
-    (a b : ℕ) (hcop : a.Coprime b)
+    (a b : ℕ) [NeZero a] [NeZero b] [NeZero (a * b)]
+    (hcop : a.Coprime b)
     (f : ZMod a → ℝ) (g : ZMod b → ℝ)
     (hcenter : (∑ r : ZMod a, f r) = 0) :
     (∑ m : ZMod (a * b),
@@ -1673,7 +1675,7 @@ theorem coprime_zmod_centered_orthogonality
 /-- Summing a real function of the standard residue representative
 over ZMod n equals summing it over the natural range 0,…,n−1. -/
 private theorem sum_zmod_val_eq_sum_range
-    (n : ℕ) (hn : 0 < n) (f : ℕ → ℝ) :
+    (n : ℕ) [NeZero n] (hn : 0 < n) (f : ℕ → ℝ) :
     (∑ x : ZMod n, f x.val) =
       ∑ m ∈ Finset.range n, f m := by
   cases n with
@@ -1686,7 +1688,7 @@ private theorem sum_zmod_val_eq_sum_range
 /-- The centered real representative of any positive residue ring has
 zero complete-period sum. This provides the CRT input for covariance. -/
 theorem centered_zmod_residue_sum_zero
-    (a : ℕ) (ha : 0 < a) :
+    (a : ℕ) [NeZero a] (ha : 0 < a) :
     (∑ r : ZMod a,
       (r.val : ℝ) / (a : ℝ) -
         (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) = 0 := by
@@ -1710,7 +1712,8 @@ correlation vanishes exactly, without fixing either modulus.
 The connection to empiricalModularCovariance still needs to be
 expressed in the natural-number indexing of that definition. -/
 theorem coprime_zmod_centered_residue_product_zero
-    (a b : ℕ) (ha : 0 < a) (hcop : a.Coprime b) :
+    (a b : ℕ) [NeZero a] [NeZero b] [NeZero (a * b)]
+    (ha : 0 < a) (hcop : a.Coprime b) :
     (∑ x : ZMod (a * b),
       (((((ZMod.chineseRemainder hcop x).1.val : ℕ) : ℝ) /
           (a : ℝ)) -
