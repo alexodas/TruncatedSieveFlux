@@ -1267,6 +1267,41 @@ theorem empiricalModularCovariance_gcd_of_dvd
   field_simp [haR, hbR]
   <;> ring
 
+/-- The exact gcd covariance formula also holds when b divides a,
+by symmetry of the covariance. -/
+theorem empiricalModularCovariance_gcd_of_dvd_left
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (hba : b ∣ a) (haT : a ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  calc
+    empiricalModularCovariance a b T =
+        empiricalModularCovariance b a T :=
+          empiricalModularCovariance_comm a b T
+    _ = (((Nat.gcd b a : ℝ) ^ 2 - 1) /
+        (12 * (b : ℝ) * (a : ℝ))) :=
+          empiricalModularCovariance_gcd_of_dvd b a T hb ha hTpos hba haT
+    _ = (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+          rw [Nat.gcd_comm b a]
+          congr 1
+          ring
+
+/-- The full gcd identity for all pairs of positive comparable moduli:
+either a divides b, or b divides a. -/
+theorem empiricalModularCovariance_gcd_of_comparable
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (hcmp : a ∣ b ∨ b ∣ a) (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  rcases hcmp with hab | hba
+  · exact empiricalModularCovariance_gcd_of_dvd
+      a b T ha hb hTpos hab hbT
+  · exact empiricalModularCovariance_gcd_of_dvd_left
+      a b T ha hb hTpos hba haT
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
