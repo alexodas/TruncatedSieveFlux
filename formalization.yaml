@@ -37,8 +37,9 @@ status:
   scope: >-
     The mathematical focus is on exact periodic Möbius rounding-error
     moments. FourthMomentResearch.lean proves a common-period formula
-    for the mean and centering, pairwise second-moment correlations,
-    covariance symmetry and a diagonal covariance value, as well as
+    for the mean and centering, the exact weighted quadratic-form
+    expression for the second moment, covariance symmetry and a
+    diagonal covariance value, as well as
     the fourfold expansion and elementary 16 B^4 fourth-moment bound.
     The desired uniform O(B^2) fourth-moment inequality and the
     associated positive-density or Gaussian consequences are OPEN.
