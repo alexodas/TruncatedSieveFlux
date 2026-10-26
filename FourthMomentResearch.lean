@@ -731,9 +731,6 @@ theorem two_mul_empiricalModularCovariance_le_diagonal
       empiricalModularCovariance a a H +
         empiricalModularCovariance b b H := by
   have hHreal : (0 : ℝ) < (H : ℝ) := by exact_mod_cast hH
-  unfold empiricalModularCovariance
-  rw [← add_div]
-  apply (div_le_div_iff₀ hHreal hHreal).2
   have hpoint (m : ℕ) :
       2 * (centeredModularFraction m a H *
         centeredModularFraction m b H) ≤
@@ -744,8 +741,31 @@ theorem two_mul_empiricalModularCovariance_le_diagonal
     nlinarith [sq_nonneg
       (centeredModularFraction m a H -
         centeredModularFraction m b H)]
-  rw [← Finset.sum_add_distrib, ← Finset.mul_sum]
-  exact Finset.sum_le_sum (fun m hm => hpoint m)
+  unfold empiricalModularCovariance
+  calc
+    2 * ((∑ m ∈ Finset.range H,
+        centeredModularFraction m a H *
+          centeredModularFraction m b H) / (H : ℝ)) =
+      (∑ m ∈ Finset.range H,
+        2 * (centeredModularFraction m a H *
+          centeredModularFraction m b H)) / (H : ℝ) := by
+        rw [← Finset.mul_sum]
+        ring
+    _ ≤ (∑ m ∈ Finset.range H,
+        (centeredModularFraction m a H *
+          centeredModularFraction m a H +
+        centeredModularFraction m b H *
+          centeredModularFraction m b H)) / (H : ℝ) := by
+          apply div_le_div_of_nonneg_right
+          · exact Finset.sum_le_sum (fun m hm => hpoint m)
+          · exact le_of_lt hHreal
+    _ = (∑ m ∈ Finset.range H,
+          centeredModularFraction m a H *
+            centeredModularFraction m a H) / (H : ℝ) +
+        (∑ m ∈ Finset.range H,
+          centeredModularFraction m b H *
+            centeredModularFraction m b H) / (H : ℝ) := by
+          rw [Finset.sum_add_distrib, add_div]
 
 /-! ## Boundary cases for the full gcd covariance identity -/
 
