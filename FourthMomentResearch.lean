@@ -36,6 +36,31 @@ theorem roundingError_eq_mod_sum (M B : ℕ) :
   unfold roundingError
   exact harmonic_floor_discrepancy_eq_mod_sum M B
 
+
+/-! ## Exact arithmetic periodicity of the rounding error -/
+
+/-- A common multiple of all positive d ≤ B is a period of the
+Möbius-weighted rounding discrepancy. -/
+theorem roundingError_add_common_period
+    (M B T : ℕ)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    roundingError (M + T) B = roundingError M B := by
+  rw [roundingError_eq_mod_sum, roundingError_eq_mod_sum]
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hmod : T % d = 0 := Nat.mod_eq_zero_of_dvd (hT d hd)
+  have hadd : (M + T) % d = M % d := by
+    simp [Nat.add_mod, hmod]
+  rw [hadd]
+
+/-- In particular, B! is a valid period for every integer cutoff B. -/
+theorem roundingError_add_factorial (M B : ℕ) :
+    roundingError (M + B.factorial) B = roundingError M B := by
+  apply roundingError_add_common_period
+  intro d hd
+  exact Nat.dvd_factorial (Finset.mem_Icc.mp hd).1
+    (Finset.mem_Icc.mp hd).2
+
 /-- The normalized mean over a finite interval starting at zero. -/
 noncomputable def empiricalErrorMean (B H : ℕ) : ℝ :=
   (∑ m ∈ Finset.range H, roundingError m B) / (H : ℝ)
@@ -44,6 +69,83 @@ noncomputable def empiricalErrorMean (B H : ℕ) : ℝ :=
 noncomputable def empiricalFourthMoment (B H : ℕ) : ℝ :=
   (∑ m ∈ Finset.range H,
     (roundingError m B - empiricalErrorMean B H) ^ 4) / (H : ℝ)
+
+
+/-! ## Centering as a sum of centered modular fractions -/
+
+/-- The empirical mean of a single rational fractional-part summand. -/
+noncomputable def modularFractionMean (d H : ℕ) : ℝ :=
+  (∑ n ∈ Finset.range H, (((n % d : ℕ) : ℝ) / (d : ℝ))) / (H : ℝ)
+
+/-- Exact regrouping: averaging the Möbius sum amounts to summing the
+averages of its individual rational fractional-part terms. -/
+theorem empiricalErrorMean_eq_weighted_modular_means (B H : ℕ) :
+    empiricalErrorMean B H =
+      ∑ d ∈ Finset.Icc 1 B, moebiusReal d * modularFractionMean d H := by
+  classical
+  unfold empiricalErrorMean modularFractionMean
+  simp_rw [roundingError_eq_mod_sum]
+  rw [Finset.sum_comm]
+  simp_rw [← Finset.mul_sum]
+  simp only [div_eq_mul_inv]
+  rw [Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro d hd
+  ring
+
+/-- Each centered error is a weighted sum of centered modular fractions.
+This is the direct starting point for a fourth-order correlation expansion. -/
+theorem centered_roundingError_eq_modular_sum (M B H : ℕ) :
+    roundingError M B - empiricalErrorMean B H =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d *
+          ((((M % d : ℕ) : ℝ) / (d : ℝ)) - modularFractionMean d H) := by
+  rw [roundingError_eq_mod_sum, empiricalErrorMean_eq_weighted_modular_means]
+  rw [← Finset.sum_sub_distrib]
+  apply Finset.sum_congr rfl
+  intro d hd
+  ring
+
+
+/-! ## Fourth-order expansion of a finite weighted sum -/
+
+/-- A purely algebraic expansion of a fourth power as an ordered
+four-fold sum. It does not impose any cancellation. -/
+private theorem fourth_power_finset_sum (s : Finset ℕ) (f : ℕ → ℝ) :
+    (∑ d ∈ s, f d) ^ 4 =
+      ∑ a ∈ s, ∑ b ∈ s, ∑ c ∈ s, ∑ d ∈ s,
+        f a * f b * f c * f d := by
+  simp only [pow_succ, pow_zero, mul_one,
+    Finset.sum_mul, Finset.mul_sum, mul_assoc, mul_comm, mul_left_comm]
+
+
+/-- The local centered rational fractional part at a fixed divisor. -/
+noncomputable def centeredModularFraction (M d H : ℕ) : ℝ :=
+  (((M % d : ℕ) : ℝ) / (d : ℝ)) - modularFractionMean d H
+
+/-- The exact fourth-moment tensor prior to any analytic cancellation:
+this identity isolates the four-divisor correlations that would need
+to be bounded to obtain O(B²) instead of the trivial O(B⁴). -/
+theorem empiricalFourthMoment_eq_fourfold_sum (B H : ℕ) :
+    empiricalFourthMoment B H =
+      (∑ m ∈ Finset.range H,
+        ∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+        ∑ c ∈ Finset.Icc 1 B,
+        ∑ d ∈ Finset.Icc 1 B,
+          (moebiusReal a * centeredModularFraction m a H) *
+          (moebiusReal b * centeredModularFraction m b H) *
+          (moebiusReal c * centeredModularFraction m c H) *
+          (moebiusReal d * centeredModularFraction m d H)) / (H : ℝ) := by
+  unfold empiricalFourthMoment
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [centered_roundingError_eq_modular_sum]
+  change (∑ d ∈ Finset.Icc 1 B,
+      moebiusReal d * centeredModularFraction m d H) ^ 4 = _
+  exact fourth_power_finset_sum (Finset.Icc 1 B)
+    (fun d => moebiusReal d * centeredModularFraction m d H)
 
 /-- Reuse of the already verified quantitative rounding bound. -/
 theorem abs_roundingError_le (M B : ℕ) :
