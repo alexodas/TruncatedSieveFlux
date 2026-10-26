@@ -801,7 +801,7 @@ theorem neg_diagonal_le_two_mul_empiricalModularCovariance
           -(centeredModularFraction m a H * centeredModularFraction m a H +
             centeredModularFraction m b H * centeredModularFraction m b H)) /
           (H : ℝ) := by
-            rw [neg_div, ← Finset.sum_add_distrib, ← Finset.sum_neg_distrib]
+            rw [← Finset.sum_add_distrib, Finset.sum_neg_distrib, neg_div]
       _ ≤ (∑ m ∈ Finset.range H,
           2 * (centeredModularFraction m a H *
             centeredModularFraction m b H)) / (H : ℝ) := by
