@@ -106,6 +106,18 @@ theorem centered_roundingError_eq_modular_sum (M B H : ℕ) :
   intro d hd
   ring
 
+
+/-! ## Fourth-order expansion of a finite weighted sum -/
+
+/-- A purely algebraic expansion of a fourth power as an ordered
+four-fold sum. It does not impose any cancellation. -/
+private theorem fourth_power_finset_sum (s : Finset ℕ) (f : ℕ → ℝ) :
+    (∑ d ∈ s, f d) ^ 4 =
+      ∑ a ∈ s, ∑ b ∈ s, ∑ c ∈ s, ∑ d ∈ s,
+        f a * f b * f c * f d := by
+  simp only [pow_succ, pow_zero, mul_one,
+    Finset.sum_mul, Finset.mul_sum, mul_assoc]
+
 /-- Reuse of the already verified quantitative rounding bound. -/
 theorem abs_roundingError_le (M B : ℕ) :
     |roundingError M B| ≤ (B : ℝ) := by
