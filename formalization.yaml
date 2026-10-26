@@ -110,6 +110,10 @@ fidelity:
     New proof scripts assert that the full variance and fourth
     moment agree on any two positive common periods; these do not
     settle the asymptotic fourth-moment research target.
+    A new divisor-family gcd-covariance proof is proposed and pending
+    CI validation: if a divides b, covariance equals
+    (gcd(a,b)^2-1)/(12*a*b) over any positive multiple of b.
+    This does not resolve pairs of moduli with no divisibility.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
 
