@@ -1690,15 +1690,15 @@ zero complete-period sum. This provides the CRT input for covariance. -/
 theorem centered_zmod_residue_sum_zero
     (a : ℕ) [NeZero a] (ha : 0 < a) :
     (∑ r : ZMod a,
-      (r.val : ℝ) / (a : ℝ) -
-        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) = 0 := by
+      ((r.val : ℝ) / (a : ℝ) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))) = 0 := by
   rw [sum_zmod_val_eq_sum_range a ha
     (fun m => (m : ℝ) / (a : ℝ) -
       (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))]
   calc
     (∑ m ∈ Finset.range a,
-      (m : ℝ) / (a : ℝ) -
-        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) =
+      ((m : ℝ) / (a : ℝ) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))) =
         ∑ m ∈ Finset.range a, centeredModularFraction m a a := by
           apply Finset.sum_congr rfl
           intro m hm
