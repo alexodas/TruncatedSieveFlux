@@ -128,6 +128,22 @@ No claim of originality is made.
 
 **Divisibility family (new Lean proof submitted, CI pending).** The auxiliary `centeredModularFraction_sum_self_zero` and `sum_range_mul_index_of_period_zero_mean` formalize zero centering and index-weighted periodic averaging. The proposed `empiricalModularCovariance_dvd_right_base` identifies `C_(a,b;b) = (a/b) C_(a,a;a)` when `a ∣ b`; `empiricalModularCovariance_gcd_of_dvd` would then yield `(gcd(a,b)^2-1)/(12ab)` on every positive period divisible by `b`. This is a proper off-diagonal infinite family when `a < b`, but **its Lean proof is still being checked in CI**. The corollaries `empiricalModularCovariance_gcd_of_dvd_left` and `empiricalModularCovariance_gcd_of_comparable` extend the pending proof by symmetry to all positive moduli comparable under divisibility. A further proposed Lean theorem, `empiricalModularCovariance_gcd_two_odd`, covers the non-comparable pairs `(2,b)` for odd `b`, showing zero covariance by exact cancellation of the two b-blocks in `2*b`. The new source contains explicit lemmas for the sign reversal of the centered fraction mod 2 and the periodicity mod b. The first odd-modulus proof has passed Lean `verify`. The new `empiricalModularCovariance_gcd_two_any` combines even b via divisibility and odd b via cancellation, giving the gcd formula for **every b>0** with first modulus two; `empiricalModularCovariance_gcd_any_two` handles the symmetric family. Both corollaries have passed the GitHub Actions Lean `verify` job. The independent-kernel Comparator job applies to the separate Challenge/Solution theorem. The next candidate `empiricalModularCovariance_gcd_three_coprime` treats all pairs `(3,b)` with `b % 3 ≠ 0`, via the exact three-block cancellation identity `centeredModularFraction_three_block_sum_zero` and `empiricalModularCovariance_three_coprime_product_zero`. Its Lean compilation has **succeeded** (GitHub Actions commit `b6a0810`). Additional corollaries `empiricalModularCovariance_gcd_three_any` and `empiricalModularCovariance_gcd_any_three` combine the coprime cancellation with the divisibility case to target all positive pairs with a modulus equal to three. The complete workflow, including the separate Challenge/Solution Comparator job, succeeded on the corrected proof commit. This expands the range of test cases but does not prove the general gcd covariance formula.
 
+**General CRT mechanism (new, CI pending).** Rather than treating
+additional moduli individually, `coprime_zmod_product_sum_factorization`
+applies Mathlib's Chinese remainder equivalence to factor a full product
+correlation into the product of two independent residue sums, for
+**any coprime moduli**. The lemma
+`coprime_zmod_centered_orthogonality` makes zero mean imply zero
+correlation. The accompanying `centered_zmod_residue_sum_zero` and
+`coprime_zmod_centered_residue_product_zero` apply this algebra to
+centered rational fractional parts, still indexed by `ZMod`.
+
+**Status:** these new proofs await GitHub Actions validation. The
+finite-range identification linking the CRT-indexed sum to the existing
+natural-indexed `empiricalModularCovariance` definition is an
+explicitly outstanding step, as is the non-coprime general case.
+No improvement to the unconditional fourth-moment bound is asserted.
+
 ## What must be proved next
 
 The current file has **not** evaluated the off-diagonal modular
