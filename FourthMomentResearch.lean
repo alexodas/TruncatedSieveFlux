@@ -26,6 +26,41 @@ The three verified results in Solution.lean remain unmodified.
 noncomputable def roundingError (M B : ℕ) : ℝ :=
   (M : ℝ) * harmonicMoebiusMass B - floorWeightedMoebiusMass M B
 
+/-- Exact expression as a Möbius-weighted sum of rational fractional parts.
+For positive d, (M % d) / d is exactly the fractional part of M / d. -/
+theorem roundingError_eq_mod_sum (M B : ℕ) :
+    roundingError M B =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d * (((M % d : ℕ) : ℝ) / (d : ℝ)) := by
+  classical
+  have hterm (d : ℕ) (hd : d ∈ Finset.Icc 1 B) :
+      (M : ℝ) * (moebiusReal d / (d : ℝ)) -
+          moebiusReal d * ((M / d : ℕ) : ℝ) =
+        moebiusReal d * (((M % d : ℕ) : ℝ) / (d : ℝ)) := by
+    have hdpos : 0 < d := (Finset.mem_Icc.mp hd).1
+    have hne : (d : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hdpos)
+    have hmod : (M : ℝ) =
+        ((M % d : ℕ) : ℝ) + (d : ℝ) * ((M / d : ℕ) : ℝ) := by
+      exact_mod_cast (Nat.mod_add_div M d).symm
+    have hfrac :
+        (M : ℝ) / (d : ℝ) - ((M / d : ℕ) : ℝ) =
+          ((M % d : ℕ) : ℝ) / (d : ℝ) := by
+      apply (eq_div_iff hne).2
+      field_simp [hne]
+      nlinarith [hmod]
+    calc
+      (M : ℝ) * (moebiusReal d / (d : ℝ)) -
+          moebiusReal d * ((M / d : ℕ) : ℝ) =
+          moebiusReal d *
+            ((M : ℝ) / (d : ℝ) - ((M / d : ℕ) : ℝ)) := by ring
+      _ = moebiusReal d *
+          (((M % d : ℕ) : ℝ) / (d : ℝ)) := by rw [hfrac]
+  unfold roundingError harmonicMoebiusMass floorWeightedMoebiusMass
+  rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
+  apply Finset.sum_congr rfl
+  intro d hd
+  exact hterm d hd
+
 /-- The normalized mean over a finite interval starting at zero. -/
 noncomputable def empiricalErrorMean (B H : ℕ) : ℝ :=
   (∑ m ∈ Finset.range H, roundingError m B) / (H : ℝ)
