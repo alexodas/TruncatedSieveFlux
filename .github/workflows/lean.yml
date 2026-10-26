@@ -2,7 +2,7 @@ name: Verify Lean proofs
 
 on:
   push:
-    branches: [main, "research/pair-correlations"]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
