@@ -1055,6 +1055,72 @@ theorem empiricalFourthMoment_eq_of_common_periods
           (empiricalFourthMoment_eq_of_common_period_dvd
             B U L hUpos hLpos hU hUL).symm
 
+/-! ## Arithmetic preparation for divisible-modulus covariance -/
+
+/-- A centered modular fraction sums to zero on its complete modulus. -/
+private theorem centeredModularFraction_sum_self_zero
+    (a : ℕ) (ha : 0 < a) :
+    (∑ m ∈ Finset.range a, centeredModularFraction m a a) = 0 := by
+  have haR : (a : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt ha)
+  simp only [centeredModularFraction, Finset.sum_sub_distrib,
+    Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+  unfold modularFractionMean
+  field_simp
+
+/-- If a periodic sequence has zero mean over a full period, then the
+index-weighted sum over q periods is q times the basic weighted sum. -/
+private theorem sum_range_mul_index_of_period_zero_mean
+    (f : ℕ → ℝ) (L q : ℕ)
+    (hperiod : ∀ m, f (m + L) = f m)
+    (hzero : (∑ m ∈ Finset.range L, f m) = 0) :
+    (∑ m ∈ Finset.range (q * L), f m * (m : ℝ)) =
+      (q : ℝ) * ∑ m ∈ Finset.range L, f m * (m : ℝ) := by
+  have hshift (k m : ℕ) : f (k * L + m) = f m := by
+    induction k with
+    | zero => simp
+    | succ k ih =>
+        calc
+          f (k.succ * L + m) = f ((k * L + m) + L) := by
+            congr 1
+            simp only [Nat.succ_mul]
+            omega
+          _ = f (k * L + m) := hperiod _
+          _ = f m := ih
+  have hblock (k : ℕ) :
+      (∑ m ∈ Finset.range L, f (k * L + m) * ((k * L + m : ℕ) : ℝ)) =
+        ∑ m ∈ Finset.range L, f m * (m : ℝ) := by
+    calc
+      (∑ m ∈ Finset.range L, f (k * L + m) * ((k * L + m : ℕ) : ℝ)) =
+          ∑ m ∈ Finset.range L,
+            (f m * (m : ℝ) + ((k * L : ℕ) : ℝ) * f m) := by
+              apply Finset.sum_congr rfl
+              intro m hm
+              rw [hshift, Nat.cast_add]
+              ring
+      _ = (∑ m ∈ Finset.range L, f m * (m : ℝ)) +
+          ((k * L : ℕ) : ℝ) * (∑ m ∈ Finset.range L, f m) := by
+            rw [Finset.sum_add_distrib, Finset.mul_sum]
+      _ = ∑ m ∈ Finset.range L, f m * (m : ℝ) := by
+            rw [hzero]
+            ring
+  induction q with
+  | zero => simp
+  | succ q ih =>
+      calc
+        (∑ m ∈ Finset.range (q.succ * L), f m * (m : ℝ)) =
+            (∑ m ∈ Finset.range (q * L), f m * (m : ℝ)) +
+            (∑ m ∈ Finset.range L,
+              f (q * L + m) * ((q * L + m : ℕ) : ℝ)) := by
+                simpa only [Nat.succ_mul] using
+                  (Finset.sum_range_add
+                    (fun m => f m * (m : ℝ)) (q * L) L)
+        _ = (∑ m ∈ Finset.range (q * L), f m * (m : ℝ)) +
+            (∑ m ∈ Finset.range L, f m * (m : ℝ)) := by rw [hblock]
+        _ = (q.succ : ℝ) * ∑ m ∈ Finset.range L, f m * (m : ℝ) := by
+              rw [ih]
+              push_cast
+              ring
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
