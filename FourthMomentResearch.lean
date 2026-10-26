@@ -2114,6 +2114,44 @@ theorem empiricalModularCovariance_mul_coprime
           field_simp [hgR, hrR, hsR]
           ring
 
+/-- General exact covariance of centered rational modular fractions.
+There are no comparability or coprimality hypotheses on the original
+positive moduli: their gcd is factored out and the reduced moduli
+are treated by CRT over every fiber. -/
+theorem empiricalModularCovariance_gcd_general
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  let g : ℕ := Nat.gcd a b
+  let r : ℕ := a / g
+  let s : ℕ := b / g
+  have hg : 0 < g := Nat.gcd_pos_of_pos_left b ha
+  have hga : g ∣ a := Nat.gcd_dvd_left a b
+  have hgb : g ∣ b := Nat.gcd_dvd_right a b
+  have hagr : g * r = a := Nat.mul_div_cancel' hga
+  have hbgs : g * s = b := Nat.mul_div_cancel' hgb
+  have hr : 0 < r := by
+    by_contra hn
+    have hrzero : r = 0 := by omega
+    rw [hrzero] at hagr
+    simp at hagr
+    omega
+  have hs : 0 < s := by
+    by_contra hn
+    have hszero : s = 0 := by omega
+    rw [hszero] at hbgs
+    simp at hbgs
+    omega
+  have hcop : r.Coprime s :=
+    gcd_reduced_moduli_coprime a b ha
+  have hrT : g * r ∣ T := by rw [hagr]; exact haT
+  have hsT : g * s ∣ T := by rw [hbgs]; exact hbT
+  have h := empiricalModularCovariance_mul_coprime
+    g r s T hg hr hs hcop hTpos hrT hsT
+  simpa only [hagr, hbgs, g] using h
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
