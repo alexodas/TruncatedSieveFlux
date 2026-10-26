@@ -2020,7 +2020,6 @@ theorem empiricalModularCovariance_mul_coprime
     rw [centered_residue_on_gcd_fiber g r k t hg hr ht]
     dsimp [h]
     field_simp [hgR, hrR]
-    ring
   have hcenterS (k t : ℕ) (ht : t < g) :
       centeredModularFraction (k * g + t) (g * s) P =
         centeredModularFraction k s s + h t / (s : ℝ) := by
@@ -2030,7 +2029,6 @@ theorem empiricalModularCovariance_mul_coprime
     rw [centered_residue_on_gcd_fiber g s k t hg hs ht]
     dsimp [h]
     field_simp [hgR, hsR]
-    ring
   have hfiber (t : ℕ) (ht : t < g) :
       (∑ k ∈ Finset.range (r * s),
         centeredModularFraction (k * g + t) (g * r) P *
@@ -2053,7 +2051,6 @@ theorem empiricalModularCovariance_mul_coprime
       _ = (h t) ^ 2 := by
             rw [Nat.cast_mul]
             field_simp [hrR, hsR]
-            ring
   have hsum :
       (∑ m ∈ Finset.range P,
         centeredModularFraction m (g * r) P *
@@ -2073,7 +2070,6 @@ theorem empiricalModularCovariance_mul_coprime
       Nat.mod_eq_of_lt ht]
     dsimp [h]
     field_simp [hgR]
-    ring
   have hdiag :
       (∑ t ∈ Finset.range g, (h t) ^ 2) =
       (g : ℝ) * empiricalModularCovariance g g g := by
@@ -2112,7 +2108,6 @@ theorem empiricalModularCovariance_mul_coprime
           dsimp [P]
           push_cast
           field_simp [hgR, hrR, hsR]
-          ring
 
 /-- General exact covariance of centered rational modular fractions.
 There are no comparability or coprimality hypotheses on the original
