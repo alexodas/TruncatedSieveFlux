@@ -70,6 +70,41 @@ noncomputable def empiricalFourthMoment (B H : ℕ) : ℝ :=
   (∑ m ∈ Finset.range H,
     (roundingError m B - empiricalErrorMean B H) ^ 4) / (H : ℝ)
 
+
+/-! ## Centering as a sum of centered modular fractions -/
+
+/-- The empirical mean of a single rational fractional-part summand. -/
+noncomputable def modularFractionMean (d H : ℕ) : ℝ :=
+  (∑ n ∈ Finset.range H, (((n % d : ℕ) : ℝ) / (d : ℝ))) / (H : ℝ)
+
+/-- Exact regrouping: averaging the Möbius sum amounts to summing the
+averages of its individual rational fractional-part terms. -/
+theorem empiricalErrorMean_eq_weighted_modular_means (B H : ℕ) :
+    empiricalErrorMean B H =
+      ∑ d ∈ Finset.Icc 1 B, moebiusReal d * modularFractionMean d H := by
+  classical
+  unfold empiricalErrorMean modularFractionMean
+  simp_rw [roundingError_eq_mod_sum]
+  rw [Finset.sum_comm]
+  simp_rw [← Finset.mul_sum]
+  simp only [div_eq_mul_inv, Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro d hd
+  ring
+
+/-- Each centered error is a weighted sum of centered modular fractions.
+This is the direct starting point for a fourth-order correlation expansion. -/
+theorem centered_roundingError_eq_modular_sum (M B H : ℕ) :
+    roundingError M B - empiricalErrorMean B H =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d *
+          ((((M % d : ℕ) : ℝ) / (d : ℝ)) - modularFractionMean d H) := by
+  rw [roundingError_eq_mod_sum, empiricalErrorMean_eq_weighted_modular_means]
+  rw [← Finset.sum_sub_distrib]
+  apply Finset.sum_congr rfl
+  intro d hd
+  ring
+
 /-- Reuse of the already verified quantitative rounding bound. -/
 theorem abs_roundingError_le (M B : ℕ) :
     |roundingError M B| ≤ (B : ℝ) := by
