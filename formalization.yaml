@@ -34,7 +34,7 @@ status:
   scope: >-
     Formalizes the finite residual identity and its combinatorial omitted-count
     upper bound. No asymptotic analytic estimate, uniform cancellation bound,
-    or novelty claim. GitHub Actions compilation succeeded for both Lean modules; Comparator is pending.
+    or novelty claim. GitHub Actions compilation succeeded for both Lean modules; Comparator passed in run 40247244629.
     The Challenge intentionally contains two theorem holes.
   sorry_count: 0
   sorry_in_definitions: 0
@@ -51,7 +51,7 @@ automation:
   tool_setup: >-
     Human-specified mathematical target and ChatGPT-assisted Lean proof drafts,
     repository scaffolding, and documentary checks. Lean compiled both modules successfully on GitHub Actions run 40246677026;
-    no Comparator verification has been performed.
+    Comparator verified the proofs with Lean, NanoDa and con-ron in run 40247244629.
   cost:
     spend_usd: "not tracked"
     hardware: "remote model and limited sandbox; local Lean unavailable"
@@ -61,7 +61,7 @@ automation:
     corresponding challenge and solution into a reproducible Lean repository.
   notes: >-
     AI-generated formalization draft. The submitting author must inspect the
-    statement independently, verify Lean and Comparator, and complete authorship.
+    statement independently, review the verification reports, and complete authorship.
 
 fidelity:
   divergences: >-
@@ -69,11 +69,11 @@ fidelity:
     estimate; it proves only the elementary finite residual identity and bound.
 
 review:
-  status: "unreviewed; Lean compilation passed; Comparator pending"
+  status: "unreviewed; Lean and Comparator checks passed"
   reviewers: []
   notes: >-
     Mathematical outline inspected during drafting. Both Lean modules compiled successfully in GitHub Actions run 40246677026.
-    No independent human review or Comparator verification has been performed.
+    No independent human mathematical review has been performed; Comparator passed in run 40247244629.
 
 alignment:
   namespace: "TruncatedSieveFlux"
@@ -81,12 +81,12 @@ alignment:
     - source: "Classical Möbius inversion and divisor-sum cancellation"
       lean: "TruncatedSieveFlux.moebius_residual_identity"
       module: "Challenge"
-      status: "proof compiled successfully; Comparator pending"
+      status: "proof checked by Lean, NanoDa and con-ron; independent review pending"
       note: "Exact identity for arbitrary cutoff with x >= 2."
     - source: "Elementary triangle inequality for finite divisor sums"
       lean: "TruncatedSieveFlux.moebius_density_le_omitted_count"
       module: "Challenge"
-      status: "proof compiled successfully; Comparator pending"
+      status: "proof checked by Lean, NanoDa and con-ron; independent review pending"
       note: "Coarse omitted-incidence count; not an analytic estimate."
 
 acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 proof assistance."

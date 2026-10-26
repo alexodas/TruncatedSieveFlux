@@ -13,8 +13,9 @@ The `Challenge.lean` file deliberately has the two `sorry` markers that a
 Comparator challenge is expected to contain. `Solution.lean` contains no
 `sorry` and imports only Mathlib. **Both Lean modules compile successfully**
 under GitHub Actions (Lean v4.35.0-rc2; run 40246677026).
-The separate Comparator verification and independent mathematical review
-have **not yet** been completed.
+Comparator accepted both theorem declarations using Lean, NanoDa and con-ron
+(GitHub Actions run 40247244629). An independent mathematical review has
+**not yet** been completed.
 
 ## Project files
 
@@ -47,7 +48,7 @@ The check requires `bwrap` in addition to Lean and the checked-in dependencies.
 
 1. Replace the generic author and maintainer identifiers in `formalization.yaml`
    with correct, authorized contributor names.
-2. Run `./scripts/check.sh` to complete Comparator verification and archive the results.
+2. Re-run `./scripts/check.sh` to reproduce the passing Comparator check and archive its results.
 3. Review the theorem statements and provenance independently of the model.
 4. Commit the final `lake-manifest.json` if Lake regenerates it; keep every
    dependency pinned.
