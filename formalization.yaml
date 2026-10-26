@@ -115,10 +115,11 @@ fidelity:
     (gcd(a,b)^2-1)/(12*a*b) over any positive multiple of b.
     Symmetric corollaries target all positive pairs comparable
     under divisibility (a divides b or b divides a).
-    A new, not-yet-CI-verified proof script treats (2,b) for all
-    odd positive b using cancellation on the common period 2*b.
-    This addresses a genuine non-comparable family, not the full
-    general case.
+    The new proof for (2,b) with b odd uses cancellation on the
+    common period 2*b and has passed Lean verify. The follow-up
+    even/odd case split and symmetry target all positive pairs with
+    either modulus equal to two; those corollaries await CI.
+    The general off-diagonal identity remains unproved.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
 
