@@ -243,12 +243,14 @@ bash scripts/check.sh comparator-covariance.json
 
 ## Checking the proofs
 
-`Challenge.lean` contains **one deliberate `sorry`**, as required
-for the statement to be proved by the Comparator. The completed
-proof modules `Solution.lean` and `FourthMomentResearch.lean`
-contain **zero `sorry`**. This is why `formalization.yaml`
-reports `status.sorry_count: 0`: following the Palomar template,
-the count excludes the intentional Challenge placeholder.
+`Challenge.lean` contains **one intentional `sorry`**,
+and `CovarianceChallenge.lean` contains **two intentional
+`sorry` statements**: each one is a statement placeholder
+for a Comparator challenge. The completed proof modules
+`Solution.lean`, `FourthMomentResearch.lean`, and
+`CovarianceSolution.lean` have **no `sorry`**. Accordingly,
+`formalization.yaml` reports `status.sorry_count: 0`,
+excluding the deliberate placeholders in both Challenge modules.
 
 **Important submission scope:** `comparator.json` selects **only**
 `TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`
@@ -262,7 +264,8 @@ comparison of those research theorems.
 ```sh
 lake exe cache get
 lake build Challenge Solution FourthMomentResearch
-bash scripts/check.sh
+bash scripts/check.sh comparator.json
+bash scripts/check.sh comparator-covariance.json
 ```
 
 For a Palomar submission, use the public repository
