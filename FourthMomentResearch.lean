@@ -1672,6 +1672,17 @@ theorem coprime_zmod_centered_orthogonality
   rw [coprime_zmod_product_sum_factorization a b hcop f g,
     hcenter, zero_mul]
 
+/-- CRT projections agree with the original natural-number residues.
+This bridges Mathlib's ring-equivalence formulation of CRT with the
+modular fractions used in this project. -/
+theorem coprime_zmod_chineseRemainder_nat_coordinates
+    (a b m : ℕ) (hcop : a.Coprime b) :
+    (ZMod.chineseRemainder hcop (m : ZMod (a * b))).1 =
+        (m : ZMod a) ∧
+      (ZMod.chineseRemainder hcop (m : ZMod (a * b))).2 =
+        (m : ZMod b) := by
+  constructor <;> simp
+
 /-- Summing a real function of the standard residue representative
 over ZMod n equals summing it over the natural range 0,…,n−1. -/
 private theorem sum_zmod_val_eq_sum_range
