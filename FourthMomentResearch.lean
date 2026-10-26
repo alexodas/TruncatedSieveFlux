@@ -485,7 +485,7 @@ theorem abs_empiricalErrorMean_le (B H : ℕ) (hH : 0 < H) :
 Unlike an empirical centering, the midpoint of a full modulus is explicit. -/
 private theorem abs_centered_modular_fraction_le_half
     (M d : ℕ) (hd : 0 < d) :
-    |(((M % d : ℕ) : ℝ) / (d : ℝ) -
+    |((M % d : ℕ) : ℝ) / (d : ℝ) -
        (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ)))| ≤ (1 / 2 : ℝ) := by
   have hdR : (0 : ℝ) < (d : ℝ) := by exact_mod_cast hd
   have hle : M % d ≤ d - 1 := by
@@ -514,14 +514,6 @@ private theorem abs_centered_modular_fraction_le_half
   apply abs_le.mpr
   constructor <;> linarith
 
-/-- A self-contained Möbius coefficient bound for the research module. -/
-private theorem abs_moebiusReal_le_one_research (d : ℕ) :
-    |moebiusReal d| ≤ 1 := by
-  rcases ArithmeticFunction.moebius_eq_or d with h | h | h
-  · simp [moebiusReal, h]
-  · simp [moebiusReal, h]
-  · simp [moebiusReal, h]
-
 /-- Sharp uniform half-size upper bound for the centered rounding error
 on every positive common period. -/
 theorem abs_centered_roundingError_common_period_le_half
@@ -545,10 +537,10 @@ theorem abs_centered_roundingError_common_period_le_half
       rw [abs_mul]
       calc
         |moebiusReal d| *
-          |(((M % d : ℕ) : ℝ) / (d : ℝ) -
+          |((M % d : ℕ) : ℝ) / (d : ℝ) -
             (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ)))| ≤
           1 * (1 / 2 : ℝ) := by
-            apply mul_le_mul (abs_moebiusReal_le_one_research d)
+            apply mul_le_mul (moebiusReal_abs_le_one d)
               (abs_centered_modular_fraction_le_half M d
                 (Finset.mem_Icc.mp hd).1)
               (abs_nonneg _) (by norm_num)
