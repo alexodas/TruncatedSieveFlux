@@ -17,12 +17,23 @@ Comparator accepted both theorem declarations using Lean, NanoDa and con-ron
 (GitHub Actions run 40247244629). An independent mathematical review has
 **not yet** been completed.
 
+## Authorship and AI assistance
+
+**Author and responsible maintainer:** Alessandro Odasso.
+
+**AI-use disclosure:** ChatGPT **GPT-6 with High thinking effort** (as reported
+by the contributor) was used to assist with Lean proof drafting, debugging,
+repository setup, and GitHub Actions troubleshooting. This was an AI-assisted,
+human-directed formalization. The proofs passed Lean, NanoDa, and con-ron in
+GitHub Actions; independent mathematical peer review has not been performed.
+The structured disclosure is also recorded in `formalization.yaml`.
+
 ## Project files
 
 - `Challenge.lean`: standalone mathematical interface (definitions, declarations
   to audit, and deliberate theorem holes).
 - `Solution.lean`: duplicates the independent definitions and supplies proofs.
-- `comparator.json`: checks the two named theorems and all eight definitions.
+- `comparator.json`: compares the two named theorem statements and proofs.
 - `lakefile.toml`, `lake-manifest.json`, `lean-toolchain`: pinned Lake project,
   copied consistently from the public Palomar starter dependencies.
 - `formalization.yaml`: project scope, attribution, AI use, and review status.
@@ -46,8 +57,8 @@ The check requires `bwrap` in addition to Lean and the checked-in dependencies.
 
 ## Before public submission
 
-1. Replace the generic author and maintainer identifiers in `formalization.yaml`
-   with correct, authorized contributor names.
+1. Confirm the author, maintainer, and AI-assistance declarations in
+   `formalization.yaml`.
 2. Re-run `./scripts/check.sh` to reproduce the passing Comparator check and archive its results.
 3. Review the theorem statements and provenance independently of the model.
 4. Commit the final `lake-manifest.json` if Lake regenerates it; keep every

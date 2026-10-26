@@ -9,10 +9,10 @@ project:
     value by one plus the number of omitted divisor incidences. Neither
     result proves a new asymptotic estimate for arbitrary sieve thresholds.
   authors:
-    - "Contributor (replace with the submitting author's name)"
+    - "Alessandro Odasso"
   license: "Apache-2.0"
   responsible_maintainers:
-    - "Maintainer (replace with the responsible maintainer's name)"
+    - "Alessandro Odasso"
 
 classification:
   arxiv: ["math.NT", "math.LO"]
@@ -57,11 +57,15 @@ automation:
     hardware: "remote model and limited sandbox; local Lean unavailable"
     wall_time: "not tracked"
   prompting_notes: >-
-    Interactive requests to formalize the finite Möbius sieve and package the
-    corresponding challenge and solution into a reproducible Lean repository.
+    Interactive requests by Alessandro Odasso to formalize the finite Möbius
+    sieve and package the challenge and solution in a reproducible Lean repository.
+    ChatGPT GPT-6 was used with High thinking effort (as reported by the contributor).
   notes: >-
-    AI-generated formalization draft. The submitting author must inspect the
-    statement independently, review the verification reports, and complete authorship.
+    Transparency disclosure: ChatGPT GPT-6 (High thinking effort, as reported
+    by the contributor) assisted with Lean proof drafting, debugging, repository
+    configuration, and CI troubleshooting. Alessandro Odasso is named as the
+    human author and responsible maintainer. Lean, NanoDa, and con-ron accepted
+    the proofs in GitHub Actions; independent mathematical review is pending.
 
 fidelity:
   divergences: >-
@@ -89,4 +93,4 @@ alignment:
       status: "proof checked by Lean, NanoDa and con-ron; independent review pending"
       note: "Coarse omitted-incidence count; not an analytic estimate."
 
-acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 proof assistance."
+acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 (High thinking effort) proof and tooling assistance."
