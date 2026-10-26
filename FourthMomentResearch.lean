@@ -479,6 +479,170 @@ theorem abs_empiricalErrorMean_le (B H : ℕ) (hH : 0 < H) :
       exact abs_roundingError_le m B
     _ = (B : ℝ) * (H : ℝ) := by simp [mul_comm]
 
+/-! ## Quantitative fourth-moment reductions -/
+
+/-- The centered rational fractional part is bounded by one half.
+Unlike an empirical centering, the midpoint of a full modulus is explicit. -/
+private theorem abs_centered_modular_fraction_le_half
+    (M d : ℕ) (hd : 0 < d) :
+    |((M % d : ℕ) : ℝ) / (d : ℝ) -
+       (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ)))| ≤ (1 / 2 : ℝ) := by
+  have hdR : (0 : ℝ) < (d : ℝ) := by exact_mod_cast hd
+  have hle : M % d ≤ d - 1 := by
+    have hmod := Nat.mod_lt M hd
+    omega
+  have hleR : (((M % d : ℕ) : ℝ)) ≤ (((d - 1 : ℕ) : ℝ)) := by
+    exact_mod_cast hle
+  have htop : (((d - 1 : ℕ) : ℝ)) ≤ (d : ℝ) := by
+    exact_mod_cast Nat.sub_le d 1
+  have hfrac0 : (0 : ℝ) ≤ (((M % d : ℕ) : ℝ) / (d : ℝ)) := by
+    positivity
+  have hfrac_le :
+      (((M % d : ℕ) : ℝ) / (d : ℝ)) ≤
+        (((d - 1 : ℕ) : ℝ) / (d : ℝ)) := by
+    apply (div_le_div_iff₀ hdR hdR).2
+    nlinarith [hleR]
+  have hcenter :
+      (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) ≤ (1 / 2 : ℝ) := by
+    apply (div_le_iff₀ (by positivity : (0 : ℝ) < 2 * (d : ℝ))).2
+    nlinarith [htop]
+  have hdouble :
+      (((d - 1 : ℕ) : ℝ) / (d : ℝ)) =
+        2 * (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+    field_simp [ne_of_gt hdR] <;> ring
+  apply abs_le.mpr
+  constructor <;> linarith
+
+/-- Sharp uniform half-size upper bound for the centered rounding error
+on every positive common period. -/
+theorem abs_centered_roundingError_common_period_le_half
+    (M B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    |roundingError M B - empiricalErrorMean B T| ≤ (B : ℝ) / 2 := by
+  rw [centered_roundingError_common_period M B T hTpos hT]
+  calc
+    |∑ d ∈ Finset.Icc 1 B,
+      moebiusReal d *
+        (((M % d : ℕ) : ℝ) / (d : ℝ) -
+          (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))))| ≤
+        ∑ d ∈ Finset.Icc 1 B,
+          |moebiusReal d *
+            (((M % d : ℕ) : ℝ) / (d : ℝ) -
+              (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))))| :=
+                Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ d ∈ Finset.Icc 1 B, (1 / 2 : ℝ) := by
+      apply Finset.sum_le_sum
+      intro d hd
+      rw [abs_mul]
+      calc
+        |moebiusReal d| *
+          |((M % d : ℕ) : ℝ) / (d : ℝ) -
+            (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ)))| ≤
+          1 * (1 / 2 : ℝ) := by
+            apply mul_le_mul (moebiusReal_abs_le_one d)
+              (abs_centered_modular_fraction_le_half M d
+                (Finset.mem_Icc.mp hd).1)
+              (abs_nonneg _) (by norm_num)
+        _ = (1 / 2 : ℝ) := by ring
+    _ = (B : ℝ) / 2 := by
+      simp [Finset.sum_const, Nat.card_Icc, nsmul_eq_mul] <;> ring
+
+/-- A fourth moment on any complete common period is dominated by its
+variance times B²/4. This reduces the power-four problem to a
+second-moment estimate, but it is not by itself an O(B³) theorem. -/
+theorem empiricalFourthMoment_le_secondMoment_mul
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalFourthMoment B T ≤
+      ((B : ℝ) / 2) ^ 2 * empiricalSecondMoment B T := by
+  have hTreal : (0 : ℝ) < (T : ℝ) := by exact_mod_cast hTpos
+  have hpoint (m : ℕ) :
+      (roundingError m B - empiricalErrorMean B T)^4 ≤
+        ((B : ℝ) / 2)^2 *
+          (roundingError m B - empiricalErrorMean B T)^2 := by
+    let z := roundingError m B - empiricalErrorMean B T
+    have hz : |z| ≤ (B : ℝ) / 2 :=
+      abs_centered_roundingError_common_period_le_half m B T hTpos hT
+    have hsq : z^2 ≤ ((B : ℝ) / 2)^2 := by
+      have hsqabs : z^2 = |z|^2 := by
+        rcases le_total 0 z with hp | hp
+        · rw [abs_of_nonneg hp]
+        · rw [abs_of_nonpos hp]
+          ring
+      calc
+        z^2 = |z|^2 := hsqabs
+        _ ≤ ((B : ℝ) / 2)^2 := by gcongr
+    change z ^ 4 ≤ ((B : ℝ) / 2)^2 * z^2
+    calc
+      z^4 = z^2 * z^2 := by ring
+      _ ≤ ((B : ℝ) / 2)^2 * z^2 :=
+        mul_le_mul_of_nonneg_right hsq (sq_nonneg z)
+  unfold empiricalFourthMoment empiricalSecondMoment
+  calc
+    (∑ m ∈ Finset.range T,
+      (roundingError m B - empiricalErrorMean B T)^4) / (T : ℝ) ≤
+        (∑ m ∈ Finset.range T,
+          ((B : ℝ) / 2)^2 *
+            (roundingError m B - empiricalErrorMean B T)^2) / (T : ℝ) := by
+          apply div_le_div_of_nonneg_right
+            (Finset.sum_le_sum (fun m hm => hpoint m))
+            (le_of_lt hTreal)
+    _ = ((B : ℝ) / 2)^2 *
+          ((∑ m ∈ Finset.range T,
+            (roundingError m B - empiricalErrorMean B T)^2) / (T : ℝ)) := by
+          rw [← Finset.mul_sum]
+          ring
+
+/-- An unconditional improvement of the previous *constant* 16B⁴:
+over a complete common period the centered fourth moment is at most
+B⁴/16. Its exponent is still 4, not the conjectural exponent 2. -/
+theorem empiricalFourthMoment_le_half_quartic
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalFourthMoment B T ≤ ((B : ℝ) / 2)^4 := by
+  have hTreal : (0 : ℝ) < (T : ℝ) := by exact_mod_cast hTpos
+  have hpoint (m : ℕ) :
+      (roundingError m B - empiricalErrorMean B T)^4 ≤
+        ((B : ℝ) / 2)^4 := by
+    have habs := abs_centered_roundingError_common_period_le_half
+      m B T hTpos hT
+    calc
+      (roundingError m B - empiricalErrorMean B T)^4 =
+          |roundingError m B - empiricalErrorMean B T|^4 := by
+            rcases le_total 0 (roundingError m B - empiricalErrorMean B T)
+              with ht | ht
+            · rw [abs_of_nonneg ht]
+            · rw [abs_of_nonpos ht]
+              ring
+      _ ≤ ((B : ℝ) / 2)^4 := by gcongr
+  unfold empiricalFourthMoment
+  apply (div_le_iff₀ hTreal).2
+  calc
+    ∑ m ∈ Finset.range T,
+      (roundingError m B - empiricalErrorMean B T)^4 ≤
+        ∑ m ∈ Finset.range T, ((B : ℝ) / 2)^4 := by
+          apply Finset.sum_le_sum
+          intro m hm
+          exact hpoint m
+    _ = ((B : ℝ) / 2)^4 * (T : ℝ) := by simp [mul_comm]
+
+/-- Conditional exponent improvement: a linear variance bound on full
+periods would imply a cubic fourth-moment bound. The variance premise
+has NOT been established here. -/
+theorem empiricalFourthMoment_le_cubic_of_variance_le
+    (B T : ℕ) (C : ℝ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T)
+    (hVariance : empiricalSecondMoment B T ≤ C * (B : ℝ)) :
+    empiricalFourthMoment B T ≤ (C / 4) * (B : ℝ)^3 := by
+  calc
+    empiricalFourthMoment B T ≤
+      ((B : ℝ) / 2)^2 * empiricalSecondMoment B T :=
+        empiricalFourthMoment_le_secondMoment_mul B T hTpos hT
+    _ ≤ ((B : ℝ) / 2)^2 * (C * (B : ℝ)) := by
+          apply mul_le_mul_of_nonneg_left hVariance
+          positivity
+    _ = (C / 4) * (B : ℝ)^3 := by ring
+
 /-- Elementary fallback, valid for every nonempty averaging interval.
 It is O(B^4), not the conjectural O(B^2) bound. -/
 theorem empiricalFourthMoment_le_trivial (B H : ℕ) (hH : 0 < H) :

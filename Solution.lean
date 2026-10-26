@@ -103,6 +103,11 @@ private theorem abs_moebiusReal_le_one (d : ℕ) :
   · simp [moebiusReal, h]
   · simp [moebiusReal, h]
 
+/-- The real Möbius coefficients have absolute value at most one.
+This public auxiliary theorem is used by the periodic-moment research module. -/
+theorem moebiusReal_abs_le_one (d : ℕ) :
+    |moebiusReal d| ≤ 1 := abs_moebiusReal_le_one d
+
 /-! ## Quantitative approximation of the floor-weighted Möbius sum -/
 
 /-- The finite harmonic sum of Möbius coefficients up to an integer cutoff. -/
