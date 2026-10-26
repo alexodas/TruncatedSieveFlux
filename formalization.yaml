@@ -62,11 +62,16 @@ status:
     TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
     Challenge contains one intentionally admitted theorem
     statement, while Solution and FourthMomentResearch have no sorry.
+    The zero sorry count below applies to completed proof modules
+    Solution and FourthMomentResearch, excluding the intentionally
+    admitted Challenge statement.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
   main_results:
     - "TruncatedSieveFlux.moebius_log_cutoff_residual_approximation"
+    - "TruncatedSieveFlux.empiricalModularCovariance_gcd_general"
+    - "TruncatedSieveFlux.empiricalSecondMoment_eq_gcd_sum"
 
 automation:
   methods:
@@ -85,13 +90,18 @@ automation:
   prompting_notes: >-
     Interactive requests by Alessandro Odasso to formalize the finite Möbius
     sieve and package the challenge and solution in a reproducible Lean repository.
-    ChatGPT GPT-6 was used with High thinking effort (as reported by the contributor).
+    ChatGPT GPT-6 assisted with formal proof drafting and review, as
+    documented by the contributor.
   notes: >-
-    Transparency disclosure: ChatGPT GPT-6 (High thinking effort, as reported
-    by the contributor) assisted with Lean proof drafting, debugging, repository
-    configuration, and CI troubleshooting. Alessandro Odasso is named as the
-    human author and responsible maintainer. Lean, NanoDa, and con-ron accepted
-    the proofs in GitHub Actions; independent mathematical review is pending.
+    Transparency disclosure: ChatGPT GPT-6 assisted with Lean proof drafting,
+    debugging, repository configuration, and CI troubleshooting.
+    Alessandro Odasso is the human author and responsible maintainer.
+    The Challenge/Solution theorem passed the Comparator checks with
+    independent kernels (Lean, NanoDa, and con-ron). The results in
+    FourthMomentResearch.lean, including the general gcd covariance
+    and exact variance identity, passed the separate Lean build,
+    but were not separately submitted to those Comparator kernels.
+    Independent mathematical review remains pending.
 
 fidelity:
   divergences: >-
@@ -115,8 +125,10 @@ review:
   notes: >-
     No independent human mathematical review has been completed.
     Research conjectures are explicitly excluded from claims of proof.
-    Comparator checks the Challenge/Solution theorem only;
-    the research lemmas compile in a separate Lean target.
+    Comparator checks the one Challenge/Solution theorem only;
+    the research lemmas, including general gcd covariance and
+    the exact second-moment identity, pass the Lean target build
+    but are not separately Comparator-checked.
 
 alignment:
   namespace: "TruncatedSieveFlux"
