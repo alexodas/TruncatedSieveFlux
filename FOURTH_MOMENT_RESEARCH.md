@@ -140,6 +140,40 @@ centered rational fractional parts, still indexed by `ZMod`.
 
 **Status:** the initial CRT factorization and centered ZMod correlation have passed Lean CI. The new Lean-verified `coprime_zmod_chineseRemainder_nat_coordinates` and `coprime_centered_modular_sum_zero` connect those algebraic identities to natural-number range sums, and `empiricalModularCovariance_gcd_coprime` proves the exact gcd formula for **all coprime positive moduli** on any positive common period. The CRT bridge and complete coprime covariance theorem passed the GitHub Actions Lean `verify` compilation on commit `417d358`; Comparator separately checks Challenge/Solution. The general non-coprime off-diagonal case remains open. No improvement to the unconditional fourth-moment bound is asserted.
 
+### General gcd-fiber proof attempt — verification pending
+
+This proof now treats **arbitrary** `a,b>0`, with no case
+distinction by numerical values. Put `g=gcd(a,b)`,
+`r=a/g`, `s=b/g`; Mathlib establishes `g>0`,
+`r,s>0` and `gcd(r,s)=1`. Split the index
+`m=k*g+t`, where `0≤t<g` and `0≤k<r*s`.
+The new auxiliary lemmas
+`sum_range_mul_blocks`, `gcd_fiber_mod`, and
+`centered_residue_on_gcd_fiber` formalize reindexing
+and the exact decomposition
+
+```text
+centered_(g*r)(k*g+t) =
+  centered_r(k) + (t-(g-1)/2)/(g*r).
+```
+
+The analogous expression holds for `g*s`. Over a fixed
+`t`, CRT gives zero mixed correlation between the reduced
+moduli, and the two separate centered sums vanish.
+Thus each fiber contributes only a square in the
+`t`-dependent correction. Summing over `t` invokes
+the previously verified diagonal covariance at `g`,
+producing the classical exact gcd expression. This is
+implemented in the proposed `empiricalModularCovariance_mul_coprime`
+and `empiricalModularCovariance_gcd_general` theorems.
+
+**Verification:** the general fiber reindexing and centered-fraction
+decomposition have passed Lean compilation. The shifted-CRT
+factorization and the final general gcd theorem are **not yet
+confirmed by CI**. The target fourth-moment bound and the
+variance estimate based on this full gcd identity are still
+separate, open formalization tasks.
+
 ## What must be proved next
 
 The current file has **not** evaluated the off-diagonal modular
