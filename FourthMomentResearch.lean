@@ -1828,6 +1828,60 @@ theorem empiricalModularCovariance_gcd_coprime
   rw [hcov, hbase, hgcd]
   norm_num
 
+/-! ## General gcd-fiber decomposition -/
+
+/-- Splitting a range of length n*g into successive blocks of length g.
+This reindexing is the first step in decomposing an arbitrary pair of
+moduli by their gcd, without selecting particular numeric moduli. -/
+private theorem sum_range_mul_blocks
+    (n g : ℕ) (f : ℕ → ℝ) :
+    (∑ m ∈ Finset.range (n * g), f m) =
+      ∑ k ∈ Finset.range n, ∑ t ∈ Finset.range g, f (k * g + t) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      calc
+        (∑ m ∈ Finset.range (n.succ * g), f m) =
+            (∑ m ∈ Finset.range (n * g), f m) +
+            (∑ t ∈ Finset.range g, f (n * g + t)) := by
+              simpa only [Nat.succ_mul] using
+                (Finset.sum_range_add f (n * g) g)
+        _ = (∑ k ∈ Finset.range n,
+                ∑ t ∈ Finset.range g, f (k * g + t)) +
+            (∑ t ∈ Finset.range g, f (n * g + t)) := by rw [ih]
+        _ = ∑ k ∈ Finset.range n.succ,
+                ∑ t ∈ Finset.range g, f (k * g + t) := by
+                  rw [Finset.sum_range_succ]
+
+/-- On a fixed remainder t modulo g, reduction modulo g*r
+is equivalent to reduction of the quotient coordinate modulo r. -/
+private theorem gcd_fiber_mod
+    (g r k t : ℕ) (hg : 0 < g) (hr : 0 < r) (ht : t < g) :
+    (k * g + t) % (g * r) = g * (k % r) + t := by
+  have hk : k % r + 1 ≤ r := by
+    have := Nat.mod_lt k hr
+    omega
+  have hmul : g * (k % r) + g ≤ g * r := by
+    simpa [Nat.mul_add] using (Nat.mul_le_mul_left g hk)
+  have hlt : g * (k % r) + t < g * r := by omega
+  have hdecomp :
+      k * g + t = (k / r) * (g * r) + (g * (k % r) + t) := by
+    calc
+      k * g + t = (k % r + r * (k / r)) * g + t := by
+        rw [Nat.mod_add_div]
+      _ = (k / r) * (g * r) + (g * (k % r) + t) := by ring
+  rw [hdecomp]
+  simp [Nat.add_mod, Nat.mul_mod, Nat.mod_eq_of_lt hlt]
+
+/-- A positive pair of arbitrary moduli has coprime quotients after
+dividing by its positive gcd; this is the arithmetic input to the CRT
+on each gcd fiber. -/
+theorem gcd_reduced_moduli_coprime
+    (a b : ℕ) (ha : 0 < a) :
+    (a / Nat.gcd a b).Coprime (b / Nat.gcd a b) := by
+  exact Nat.coprime_div_gcd_div_gcd
+    (Nat.gcd_pos_of_pos_left b ha)
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
