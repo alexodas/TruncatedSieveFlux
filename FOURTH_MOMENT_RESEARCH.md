@@ -41,7 +41,30 @@ covariances. The supporting `empiricalSecondMoment_eq_pairwise_sum`
 identity expands it over ordered pairs; `empiricalSecondMoment_nonneg`
 proves positivity and `empiricalModularCovariance_comm` proves symmetry.
 
-The incremental gcd-covariance formalization also establishes the boundary case `a = 1`: `centeredModularFraction m 1 H = 0`, hence `empiricalModularCovariance 1 b H = 0` and (by symmetry) `empiricalModularCovariance a 1 H = 0` for every `H`. This agrees with the gcd formula because `gcd(1,b)=1`. The new `centeredModularFraction_common_period` lemma furthermore rewrites each centered summand on any positive multiple of its modulus as `(m mod d)/d - (d-1)/(2*d)`, independent of the chosen averaging period. The follow-up `empiricalModularCovariance_common_period_explicit` combines two instances of that normal form into an exact finite sum over any positive common period. The supporting `centeredModularFraction_mul_add_common_period` proves that the product of the two centered modular fractions is itself periodic under any positive common period (with that period used for centering). The new `empiricalModularCovariance_lcm_explicit` specializes the exact finite covariance sum to `lcm(a,b)` for positive `a,b`. The new `empiricalModularCovariance_eq_lcm` is the full **period-independence theorem**: for positive `a,b` and every positive common multiple `T`, `C_(a,b;T) = C_(a,b;lcm(a,b))`. Its proof formalizes the summation of any real-valued periodic sequence over `q` full cycles. The corollary `empiricalModularCovariance_diagonal_common_period` upgrades the exact diagonal formula to every positive multiple of `d`. The remaining arithmetic task is to evaluate the off-diagonal sum on the lcm via the gcd of the moduli. The additional `two_mul_empiricalModularCovariance_le_diagonal` inequality proves `2*C_(a,b;H) ≤ C_(a,a;H)+C_(b,b;H)` for every `H>0`, using a pointwise square inequality. The new complementary lemma `neg_diagonal_le_two_mul_empiricalModularCovariance` gives `-(C_(a,a;H)+C_(b,b;H)) ≤ 2*C_(a,b;H)` by the square of the *sum* of the centered fractions. Taken together these are two-sided bounds. They are general structural constraints, not the expected exact gcd evaluation, and does not settle the general off-diagonal case.
+**Full gcd covariance formalized.** After proving the boundary
+cases, diagonal identities, period invariance, and coprime CRT
+factorization, the new theorem
+`empiricalModularCovariance_gcd_general` proves for all positive
+`a,b,T` with `a ∣ T` and `b ∣ T`:
+
+```text
+C_(a,b;T) = (gcd(a,b)^2-1)/(12*a*b).
+```
+
+The proof is fully general, including cases in which
+`gcd(a,b)>1` and neither modulus divides the other.
+Its GitHub Actions Lean `verify` job passed on commit
+`0bfbf58`. The theorem
+`empiricalSecondMoment_eq_gcd_sum` then gives the exact
+finite identity
+
+```text
+V_(B,T) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*
+          (gcd(a,b)^2 - 1)/(12*a*b).
+```
+
+This establishes a complete **finite arithmetic expression**
+for the second moment, not a new unconditional bound on it.
 
 For the diagonal over a full modulus, the proved identity is
 
@@ -85,8 +108,8 @@ V_(B,T) ≤ C*B  ==>  fourth_(B,T) ≤ (C/4)*B³
 The cubic Lean theorem **assumes** the stated variance bound.
 That assumption is not yet proved in Lean.
 
-A **separate paper-level derivation**, not yet machine-checked,
-uses the classical finite-period covariance formula
+A **partially machine-checked derivation** uses the classical
+finite-period covariance formula (now proved in Lean)
 
 ```text
 Cov((M mod a)/a, (M mod b)/b)
@@ -119,77 +142,69 @@ V_B ≤ 3B/4
 fourth_(B,T) ≤ (B²/4)*V_B ≤ 3B³/16.
 ```
 
-**Verification status:** the gcd covariance identity and final
-unconditional cubic estimate have *not* yet been proved in Lean.
+**Verification status:** the full gcd covariance identity and
+the exact gcd-weighted second-moment formula are proved in Lean.
+The arithmetic upper bound `V_B ≤ 3B/4` and the resulting
+unconditional cubic fourth-moment estimate are **not yet
+proved in Lean**.
 The covariance identity is classical; see for example
 https://math.stackexchange.com/questions/140499/a-sum-of-fractional-parts .
 The paper-level estimate should be independently reviewed.
 No claim of originality is made.
 
-**Divisibility family (new Lean proof submitted, CI pending).** The auxiliary `centeredModularFraction_sum_self_zero` and `sum_range_mul_index_of_period_zero_mean` formalize zero centering and index-weighted periodic averaging. The proposed `empiricalModularCovariance_dvd_right_base` identifies `C_(a,b;b) = (a/b) C_(a,a;a)` when `a ∣ b`; `empiricalModularCovariance_gcd_of_dvd` would then yield `(gcd(a,b)^2-1)/(12ab)` on every positive period divisible by `b`. This is a proper off-diagonal infinite family when `a < b`, but **its Lean proof is still being checked in CI**. The corollaries `empiricalModularCovariance_gcd_of_dvd_left` and `empiricalModularCovariance_gcd_of_comparable` extend the pending proof by symmetry to all positive moduli comparable under divisibility. A further proposed Lean theorem, `empiricalModularCovariance_gcd_two_odd`, covers the non-comparable pairs `(2,b)` for odd `b`, showing zero covariance by exact cancellation of the two b-blocks in `2*b`. The new source contains explicit lemmas for the sign reversal of the centered fraction mod 2 and the periodicity mod b. The first odd-modulus proof has passed Lean `verify`. The new `empiricalModularCovariance_gcd_two_any` combines even b via divisibility and odd b via cancellation, giving the gcd formula for **every b>0** with first modulus two; `empiricalModularCovariance_gcd_any_two` handles the symmetric family. Both corollaries have passed the GitHub Actions Lean `verify` job. The independent-kernel Comparator job applies to the separate Challenge/Solution theorem. The next candidate `empiricalModularCovariance_gcd_three_coprime` treats all pairs `(3,b)` with `b % 3 ≠ 0`, via the exact three-block cancellation identity `centeredModularFraction_three_block_sum_zero` and `empiricalModularCovariance_three_coprime_product_zero`. Its Lean compilation has **succeeded** (GitHub Actions commit `b6a0810`). Additional corollaries `empiricalModularCovariance_gcd_three_any` and `empiricalModularCovariance_gcd_any_three` combine the coprime cancellation with the divisibility case to target all positive pairs with a modulus equal to three. The complete workflow, including the separate Challenge/Solution Comparator job, succeeded on the corrected proof commit. This expands the range of test cases but does not prove the general gcd covariance formula.
+### Complete gcd-fiber argument (Lean verified)
 
-**General CRT mechanism (Lean verified).** Rather than treating
-additional moduli individually, `coprime_zmod_product_sum_factorization`
-applies Mathlib's Chinese remainder equivalence to factor a full product
-correlation into the product of two independent residue sums, for
-**any coprime moduli**. The lemma
-`coprime_zmod_centered_orthogonality` makes zero mean imply zero
-correlation. The accompanying `centered_zmod_residue_sum_zero` and
-`coprime_zmod_centered_residue_product_zero` apply this algebra to
-centered rational fractional parts, still indexed by `ZMod`.
-
-**Status:** the initial CRT factorization and centered ZMod correlation have passed Lean CI. The new Lean-verified `coprime_zmod_chineseRemainder_nat_coordinates` and `coprime_centered_modular_sum_zero` connect those algebraic identities to natural-number range sums, and `empiricalModularCovariance_gcd_coprime` proves the exact gcd formula for **all coprime positive moduli** on any positive common period. The CRT bridge and complete coprime covariance theorem passed the GitHub Actions Lean `verify` compilation on commit `417d358`; Comparator separately checks Challenge/Solution. The general non-coprime off-diagonal case remains open. No improvement to the unconditional fourth-moment bound is asserted.
-
-### General gcd-fiber proof attempt — verification pending
-
-This proof now treats **arbitrary** `a,b>0`, with no case
-distinction by numerical values. Put `g=gcd(a,b)`,
-`r=a/g`, `s=b/g`; Mathlib establishes `g>0`,
-`r,s>0` and `gcd(r,s)=1`. Split the index
-`m=k*g+t`, where `0≤t<g` and `0≤k<r*s`.
-The new auxiliary lemmas
-`sum_range_mul_blocks`, `gcd_fiber_mod`, and
-`centered_residue_on_gcd_fiber` formalize reindexing
-and the exact decomposition
+For arbitrary `a,b>0`, put `g=gcd(a,b)`, `r=a/g`
+and `s=b/g`. The reduced moduli `r,s` are coprime.
+Decompose the common period into `m=k*g+t` with
+`0≤t<g`, `0≤k<r*s`. The new lemmas
+`sum_range_mul_blocks`, `gcd_fiber_mod` and
+`centered_residue_on_gcd_fiber` provide the exact
+identity
 
 ```text
 centered_(g*r)(k*g+t) =
   centered_r(k) + (t-(g-1)/2)/(g*r).
 ```
 
-The analogous expression holds for `g*s`. Over a fixed
-`t`, CRT gives zero mixed correlation between the reduced
-moduli, and the two separate centered sums vanish.
-Thus each fiber contributes only a square in the
-`t`-dependent correction. Summing over `t` invokes
-the previously verified diagonal covariance at `g`,
-producing the classical exact gcd expression. This is
-implemented in the proposed `empiricalModularCovariance_mul_coprime`
-and `empiricalModularCovariance_gcd_general` theorems.
+For the second modulus, replace `r` by `s`.
+The CRT product factorization annihilates the mixed
+terms, leaving the squared correction from the common
+remainder `t`. The lemma
+`coprime_centered_shifted_product_sum` formalizes this
+step for all positive coprime quotients simultaneously.
+Summing over `t` is exactly the previously verified
+diagonal covariance computation at modulus `g`.
+The assembly theorem `empiricalModularCovariance_mul_coprime`
+and the final `empiricalModularCovariance_gcd_general`
+have passed the Lean build. The latter has no extra
+coprimality, divisibility, or particular-modulus assumptions
+beyond a positive common averaging period.
 
-**Verification:** the general fiber reindexing and centered-fraction
-decomposition have passed Lean compilation. The shifted-CRT
-factorization and the final general gcd theorem are **not yet
-confirmed by CI**. The target fourth-moment bound and the
-variance estimate based on this full gcd identity are still
-separate, open formalization tasks.
+The exact variance corollary
+`empiricalSecondMoment_eq_gcd_sum` eliminates all
+unevaluated pairwise covariances. It remains to formalize
+a **quantitative bound** on this finite gcd sum, then
+study cancellation in the fourth-order correlations.
+Neither the desired `O(B²)` fourth-moment bound nor
+its proposed oscillation consequences follow automatically.
 
 ## What must be proved next
 
-The current file has **not** evaluated the off-diagonal modular
-covariance for arbitrary `a,b` over a full common period.
-The expected classical gcd-based formula is
+The pairwise covariance formula is now complete. The next
+arithmetical verification goal is the paper-derived bound
 
 ```text
-Cov((M mod a)/a, (M mod b)/b)
-   = (gcd(a,b)^2 - 1)/(12*a*b).
+sum_{1 ≤ a,b ≤ B} gcd(a,b)^2/(a*b) ≤ 9B,
+V_(B,T) ≤ 3B/4,
+fourth_(B,T) ≤ 3B³/16,
 ```
 
-That formula should be formalized and checked independently before
-it is used to derive a closed expression for the full variance.
-Even a verified second-moment identity would not by itself prove
-the `O(B^2)` fourth-moment target: the four-variable correlations
-remain the substantive analytic obstacle.
+for positive common periods, followed by a genuinely
+stronger analysis of the four-divisor correlations if one
+wants an `O(B²)` centered fourth moment. The last bound
+remains the principal open research question and cannot
+be inferred from a complete second-moment calculation.
 
 ## Literature and originality
 
