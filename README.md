@@ -128,7 +128,7 @@ and `coprime_zmod_centered_residue_product_zero` specialize the mechanism
 to centered real residues, obtaining exact zero correlation in
 CRT-indexed form for arbitrary coprime moduli.
 
-The core CRT factorization and centered sum have **passed Lean CI**. A new bridge theorem, `coprime_centered_modular_sum_zero`, translates CRT sums into the existing natural-number ranges. Using period invariance, the proposed `empiricalModularCovariance_gcd_coprime` now states the full exact identity `C_(a,b;T) = (gcd(a,b)^2-1)/(12ab) = 0` for *all positive coprime* `a,b` and every positive common period `T`. **These newest bridge and covariance proofs are awaiting their own Lean CI verification.** The general non-coprime off-diagonal identity and uniform fourth-moment target remain open.
+The core CRT factorization and centered sum have **passed Lean CI**. A new bridge theorem, `coprime_centered_modular_sum_zero`, translates CRT sums into the existing natural-number ranges. Using period invariance, the Lean-verified `empiricalModularCovariance_gcd_coprime` proves the full exact identity `C_(a,b;T) = (gcd(a,b)^2-1)/(12ab) = 0` for *all positive coprime* `a,b` and every positive common period `T`. **The CRT bridge and general coprime covariance have passed the GitHub Actions Lean `verify` job** (commit `417d358`). The separate Comparator job checks the Challenge/Solution theorem. The general non-coprime off-diagonal identity and uniform fourth-moment target remain open.
 
 ## Supporting lemmas and the finite-sieve theorem
 
