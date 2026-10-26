@@ -978,6 +978,83 @@ theorem empiricalSecondMoment_eq_of_common_periods
       empiricalModularCovariance_eq_lcm a b U haPos hbPos hUpos
         (hU a ha) (hU b hb)]
 
+/-- Averaging the centered fourth power over several complete periods
+has the same value as averaging over a single common period. -/
+theorem empiricalFourthMoment_mul_common_period
+    (B T q : ℕ) (hTpos : 0 < T) (hqpos : 0 < q)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalFourthMoment B (q * T) = empiricalFourthMoment B T := by
+  have hqTpos : 0 < q * T := Nat.mul_pos hqpos hTpos
+  have hqT : ∀ d ∈ Finset.Icc 1 B, d ∣ q * T := by
+    intro d hd
+    obtain ⟨k, hk⟩ := hT d hd
+    refine ⟨q * k, ?_⟩
+    rw [hk]
+    ring
+  have hmean :
+      empiricalErrorMean B (q * T) = empiricalErrorMean B T := by
+    rw [empiricalErrorMean_common_period B (q * T) hqTpos hqT,
+      empiricalErrorMean_common_period B T hTpos hT]
+  let f : ℕ → ℝ := fun m =>
+    (roundingError m B - empiricalErrorMean B T) ^ 4
+  have hperiod (m : ℕ) : f (m + T) = f m := by
+    dsimp [f]
+    rw [roundingError_add_common_period m B T hT]
+  have hsum :
+      (∑ m ∈ Finset.range (q * T), f m) =
+        (q : ℝ) * ∑ m ∈ Finset.range T, f m :=
+    sum_range_mul_of_period f T q hperiod
+  have hqRne : (q : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hqpos)
+  have hTRne : (T : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hTpos)
+  unfold empiricalFourthMoment
+  rw [hmean]
+  change (∑ m ∈ Finset.range (q * T), f m) / (q * T : ℕ) =
+    (∑ m ∈ Finset.range T, f m) / (T : ℝ)
+  rw [hsum, Nat.cast_mul]
+  apply (div_eq_div_iff (mul_ne_zero hqRne hTRne) hTRne).2
+  ring
+
+/-- The fourth moment is constant when the common averaging period is
+replaced by any larger positive multiple. -/
+theorem empiricalFourthMoment_eq_of_common_period_dvd
+    (B T U : ℕ) (hTpos : 0 < T) (hUpos : 0 < U)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) (hTU : T ∣ U) :
+    empiricalFourthMoment B T = empiricalFourthMoment B U := by
+  obtain ⟨q, hU⟩ := hTU
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    simp [hU, hqzero] at hUpos
+  calc
+    empiricalFourthMoment B T =
+        empiricalFourthMoment B (q * T) :=
+          (empiricalFourthMoment_mul_common_period B T q hTpos hqpos hT).symm
+    _ = empiricalFourthMoment B U := by
+          rw [hU, Nat.mul_comm T q]
+
+/-- The centered fourth moment of the truncated Möbius rounding error
+is independent of the chosen positive common period. No fourth-moment
+asymptotic bound is claimed here. -/
+theorem empiricalFourthMoment_eq_of_common_periods
+    (B T U : ℕ) (hTpos : 0 < T) (hUpos : 0 < U)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T)
+    (hU : ∀ d ∈ Finset.Icc 1 B, d ∣ U) :
+    empiricalFourthMoment B T = empiricalFourthMoment B U := by
+  let L := Nat.lcm T U
+  have hLpos : 0 < L := Nat.lcm_pos hTpos hUpos
+  have hTL : T ∣ L := Nat.dvd_lcm_left T U
+  have hUL : U ∣ L := Nat.dvd_lcm_right T U
+  calc
+    empiricalFourthMoment B T =
+        empiricalFourthMoment B L :=
+          empiricalFourthMoment_eq_of_common_period_dvd
+            B T L hTpos hLpos hT hTL
+    _ = empiricalFourthMoment B U :=
+          (empiricalFourthMoment_eq_of_common_period_dvd
+            B U L hUpos hLpos hU hUL).symm
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
