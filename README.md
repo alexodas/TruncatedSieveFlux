@@ -201,6 +201,46 @@ This is a supporting **finite** approximation, not an asymptotic
 cancellation theorem. It is not the claimed resolution of the open
 fourth-moment question.
 
+## Research theorem Comparator (experimental, CI under review)
+
+A second independent statement/solution pair is provided:
+`CovarianceChallenge.lean` defines fractional-part covariance and
+the centered Möbius second moment **directly from Mathlib**, without
+importing the project research proofs. `CovarianceSolution.lean`
+supplies proofs by bridging those identical definitions to
+`FourthMomentResearch.lean`.
+
+The separate `comparator-covariance.json` explicitly selects **two**
+principal declarations:
+
+- `TruncatedSieveFluxComparator.gcd_covariance` — exact covariance
+  `(gcd(a,b)^2-1)/(12ab)` for all positive a,b and common periods.
+- `TruncatedSieveFluxComparator.second_moment_gcd` — the complete
+  finite Möbius-weighted gcd quadratic form for the second moment.
+
+The original `comparator.json` continues to check **only** the
+finite cutoff-sieve theorem. The two configurations can be submitted
+**separately** to Palomar using the same full commit SHA; each
+configuration corresponds to a separate registry entry.
+
+**Coverage limit:** dependencies required by selected proof terms are
+also checked during export and independent-kernel replay, but other
+theorems in `FourthMomentResearch.lean` are **not automatically
+added as named Comparator claims**. There are multiple independent
+supporting lemmas and not every Lean declaration is currently a
+separate Challenge theorem. Adding all of them would require
+additional auditable Challenge/Solution statements or other dedicated
+configs; it would be misleading to claim 100% named-theorem coverage.
+
+For local use (Linux with bubblewrap and supported kernel binaries):
+
+```sh
+lake exe cache get
+lake build Challenge Solution FourthMomentResearch CovarianceChallenge CovarianceSolution
+bash scripts/check.sh comparator.json
+bash scripts/check.sh comparator-covariance.json
+```
+
 ## Checking the proofs
 
 `Challenge.lean` contains **one deliberate `sorry`**, as required
