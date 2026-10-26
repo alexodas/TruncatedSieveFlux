@@ -72,6 +72,8 @@ V_(B,H) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*C_(a,b;H).
 
 **Full-moment period invariance (new in PR #6).** The theorem `empiricalSecondMoment_eq_of_common_periods` lifts the covariance identity to the entire Möbius-weighted variance: if `T` and `U` are positive common multiples of all `1,…,B`, then `V_(B,T) = V_(B,U)`. A second, independent periodic-sum argument gives `empiricalFourthMoment_eq_of_common_periods`, proving `fourth_(B,T) = fourth_(B,U)` for the same periods. These theorems identify the exact moments across different choices of complete averaging period; they are **not** improved upper bounds and do not prove the general off-diagonal gcd formula. Both moment-invariance proof scripts have passed the GitHub Actions Lean `verify` compilation; the independent Comparator job pertains to the separate Challenge/Solution theorem.
 
+**Divisible-modulus gcd covariance (new proof under CI review).** Two new Lean scripts, `empiricalModularCovariance_dvd_right_base` and `empiricalModularCovariance_gcd_of_dvd`, target the first genuinely non-diagonal family. If `a > 0`, `b > 0`, `a ∣ b`, and `T > 0` is a multiple of `b`, the proposed identity is `C_(a,b;T) = (gcd(a,b)^2-1)/(12*a*b)`. The argument reduces this to `(a/b)*C_(a,a;a)` by periodic zero-mean weighted sums. **Do not treat this new family as verified until the latest GitHub Actions Lean build passes.** The general case without divisibility remains open.
+
 The diagonal covariance for a complete modulus is also formalized:
 
 ```text
