@@ -16,11 +16,8 @@ project:
     compares five research claims against independent, Mathlib-only
     Challenge definitions: general gcd covariance, exact second
     moment, unconditional quartic bound, fourth-to-second-moment
-    inequality and the conditional cubic estimate. The first
-    two passed Comparator with Lean, NanoDa and con-ron at
-    commit 207c7e3e48630de03aba65337097d78adbc3f7a0.
-    The three newly added fourth-moment comparisons await
-    their own independent-kernel CI result.
+    inequality and the conditional cubic estimate. All five passed Comparator with Lean, NanoDa and con-ron
+    on commit d7be10a49189aac8ee2b37233a8c70b5fb38f5c7.
     The unconditional linear variance bound, cubic fourth-moment
     bound and the proposed uniform O(B^2) fourth-moment bound
     remain unproved in Lean. No new asymptotic theorem or
@@ -74,9 +71,7 @@ status:
     The original comparator.json selects
     TruncatedSieveFlux.moebius_log_cutoff_residual_approximation;
     comparator-covariance.json now selects five independently
-    stated research theorem wrappers. The gcd covariance and
-    second-moment comparisons have succeeded; fourth-moment
-    wrapper validation remains pending.
+    stated research theorem wrappers. All five comparisons have succeeded with independent kernels.
     Challenge contains one deliberate sorry placeholder and
     CovarianceChallenge contains five deliberate sorry placeholders,
     as expected for Comparator statements. Solution,
@@ -104,9 +99,8 @@ automation:
     fourth-moment research module is compiled separately in Lean.
     A dedicated CovarianceChallenge / CovarianceSolution pair
     adds five separately stated research conclusions to a second
-    Comparator configuration. The covariance and variance wrappers
-    passed the independent-kernel check; the three new
-    fourth-moment comparisons await independent checking.
+    Comparator configuration. All five selected theorem wrappers passed independent-kernel
+    checking with Lean, NanoDa and con-ron.
   cost:
     spend_usd: "not tracked"
     hardware: "remote model and limited sandbox; local Lean unavailable"
@@ -126,10 +120,9 @@ automation:
     An independent Mathlib-only CovarianceChallenge and its
     matching CovarianceSolution now submit five headline
     research results for additional Comparator checks.
-    The new Comparator run has passed with Lean, NanoDa
-    and con-ron on commit 207c7e3; only the two named
-    research statements, not every independent helper lemma,
-    have been separately compared.
+    The five-theorem Comparator run passed with Lean, NanoDa
+    and con-ron on commit d7be10a. Five statements, not
+    every independent helper lemma, have been separately compared.
     Independent mathematical review remains pending.
 
 fidelity:
@@ -148,9 +141,7 @@ fidelity:
     the supporting logarithmic-cutoff error theorem.
     The second configuration additionally compares the general
     gcd covariance, exact second-moment identity and three
-    fourth-moment bounds already proved in Lean. The two
-    covariance/variance statements passed independent-kernel
-    checks; the three new comparison statements are pending.
+    fourth-moment bounds already proved in Lean. All five statements passed independent-kernel checks.
     It does not claim any unproved bound as a theorem.
     Other research lemmas are not individually selected
     as named Comparator theorems.
@@ -164,9 +155,8 @@ review:
     comparator.json selects the original finite logarithmic-cutoff
     Challenge/Solution theorem. comparator-covariance.json selects
     five corresponding research statements with a separate
-    Mathlib-only Challenge. The two original research wrappers
-    passed Comparator with NanoDa and con-ron; the three new
-    fourth-moment wrapper comparisons are pending.
+    Mathlib-only Challenge. All five research wrappers passed Comparator with
+    NanoDa and con-ron.
     There is no claim that every independent helper lemma
     is separately a named Comparator declaration.
     No independent human mathematical review has been recorded.
@@ -194,5 +184,20 @@ alignment:
       module: "CovarianceChallenge"
       status: "proved in CovarianceSolution; Comparator with Lean, NanoDa, con-ron passed"
       note: "Exact finite identity, not a linear-in-B variance bound."
+    - source: "Elementary fourth-moment quartic bound on common periods"
+      lean: "TruncatedSieveFluxComparator.fourth_moment_quartic"
+      module: "CovarianceChallenge"
+      status: "proved in CovarianceSolution; Comparator with NanoDa and con-ron passed"
+      note: "Unconditional B^4/16 bound, not the open B^2 target."
+    - source: "Fourth-to-second-moment inequality"
+      lean: "TruncatedSieveFluxComparator.fourth_moment_le_variance"
+      module: "CovarianceChallenge"
+      status: "proved in CovarianceSolution; Comparator with NanoDa and con-ron passed"
+      note: "Fourth moment bounded by B^2/4 times centered variance."
+    - source: "Conditional cubic fourth-moment bound"
+      lean: "TruncatedSieveFluxComparator.fourth_moment_cubic_conditional"
+      module: "CovarianceChallenge"
+      status: "proved in CovarianceSolution; Comparator with NanoDa and con-ron passed"
+      note: "Requires linear variance as a hypothesis; no unconditional cubic conclusion."
 
 acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 proof and tooling assistance."
