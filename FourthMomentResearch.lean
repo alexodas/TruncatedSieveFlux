@@ -685,4 +685,29 @@ theorem empiricalFourthMoment_le_trivial (B H : ℕ) (hH : 0 < H) :
         exact hpoint m
     _ = (2 * (B : ℝ))^4 * (H : ℝ) := by simp [mul_comm]
 
+/-! ## Boundary cases for the full gcd covariance identity -/
+
+/-- The centered fractional part for modulus one vanishes identically. -/
+theorem centeredModularFraction_one (m H : ℕ) :
+    centeredModularFraction m 1 H = 0 := by
+  simp [centeredModularFraction, modularFractionMean]
+
+/-- The covariance with the constant modulus-one residue is zero. -/
+theorem empiricalModularCovariance_one_left (b H : ℕ) :
+    empiricalModularCovariance 1 b H = 0 := by
+  simp [empiricalModularCovariance, centeredModularFraction_one]
+
+theorem empiricalModularCovariance_one_right (a H : ℕ) :
+    empiricalModularCovariance a 1 H = 0 := by
+  rw [empiricalModularCovariance_comm]
+  exact empiricalModularCovariance_one_left a H
+
+/-- The desired gcd formula holds whenever the first modulus is one.
+No common-period hypothesis is needed for this boundary case. -/
+theorem empiricalModularCovariance_gcd_one_left (b H : ℕ) :
+    empiricalModularCovariance 1 b H =
+      (((Nat.gcd 1 b : ℝ) ^ 2 - 1) /
+        (12 * (1 : ℝ) * (b : ℝ))) := by
+  simp [empiricalModularCovariance_one_left]
+
 end TruncatedSieveFlux
