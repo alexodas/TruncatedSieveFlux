@@ -167,4 +167,68 @@ theorem moebius_density_le_omitted_count
     _ ≤ 1 + omittedCount K A k x := by
         exact add_le_add_right (abs_omittedMass_le_count K A k x) 1
 
+
+/-! ## Quantitative approximation of the floor-weighted Möbius sum -/
+
+/-- The finite harmonic sum of Möbius coefficients up to an integer cutoff. -/
+noncomputable def harmonicMoebiusMass (B : ℕ) : ℝ :=
+  ∑ d ∈ Finset.Icc 1 B, moebiusReal d / (d : ℝ)
+
+/-- Möbius coefficients weighted by the count of positive multiples at most M. -/
+noncomputable def floorWeightedMoebiusMass (M B : ℕ) : ℝ :=
+  ∑ d ∈ Finset.Icc 1 B, moebiusReal d * ((M / d : ℕ) : ℝ)
+
+/-- A fully finite error bound for replacing integer quotients by real quotients. -/
+theorem moebius_floor_rounding_error_le (M B : ℕ) :
+    |floorWeightedMoebiusMass M B -
+      (M : ℝ) * harmonicMoebiusMass B| ≤ (B : ℝ) := by
+  classical
+  have hterm (d : ℕ) (hd : d ∈ Finset.Icc 1 B) :
+      |moebiusReal d * ((M / d : ℕ) : ℝ) -
+          (M : ℝ) * (moebiusReal d / (d : ℝ))| ≤ 1 := by
+    have hdpos : 0 < d := (Finset.mem_Icc.mp hd).1
+    have hdposR : (0 : ℝ) < (d : ℝ) := by exact_mod_cast hdpos
+    have hmod : (M : ℝ) =
+        ((M % d : ℕ) : ℝ) + ((M / d : ℕ) : ℝ) * (d : ℝ) := by
+      exact_mod_cast (Nat.mod_add_div M d).symm
+    have hmodLt : ((M % d : ℕ) : ℝ) < (d : ℝ) := by
+      exact_mod_cast Nat.mod_lt M hdpos
+    have hmodNonneg : (0 : ℝ) ≤ ((M % d : ℕ) : ℝ) := by positivity
+    have hlow : ((M / d : ℕ) : ℝ) ≤ (M : ℝ) / (d : ℝ) := by
+      apply (le_div_iff₀ hdposR).2
+      nlinarith
+    have hupp : (M : ℝ) / (d : ℝ) ≤ ((M / d : ℕ) : ℝ) + 1 := by
+      apply (div_le_iff₀ hdposR).2
+      nlinarith
+    have hround :
+        |((M / d : ℕ) : ℝ) - (M : ℝ) / (d : ℝ)| ≤ 1 := by
+      apply abs_le.mpr
+      constructor <;> linarith
+    have hrewrite :
+        moebiusReal d * ((M / d : ℕ) : ℝ) -
+            (M : ℝ) * (moebiusReal d / (d : ℝ)) =
+          moebiusReal d * (((M / d : ℕ) : ℝ) - (M : ℝ) / (d : ℝ)) := by
+      ring
+    rw [hrewrite, abs_mul]
+    calc
+      |moebiusReal d| * |((M / d : ℕ) : ℝ) - (M : ℝ) / (d : ℝ)| ≤
+        1 * 1 := mul_le_mul (abs_moebiusReal_le_one d) hround
+          (abs_nonneg _) (by norm_num)
+      _ = 1 := by ring
+  unfold floorWeightedMoebiusMass harmonicMoebiusMass
+  rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
+  calc
+    |∑ d ∈ Finset.Icc 1 B,
+      (moebiusReal d * ((M / d : ℕ) : ℝ) -
+          (M : ℝ) * (moebiusReal d / (d : ℝ)))| ≤
+        ∑ d ∈ Finset.Icc 1 B,
+          |moebiusReal d * ((M / d : ℕ) : ℝ) -
+            (M : ℝ) * (moebiusReal d / (d : ℝ))| :=
+              Finset.abs_sum_le_sum_abs _ _
+    _ ≤ ∑ d ∈ Finset.Icc 1 B, (1 : ℝ) := by
+      apply Finset.sum_le_sum
+      intro d hd
+      exact hterm d hd
+    _ = (B : ℝ) := by simp
+
 end TruncatedSieveFlux
