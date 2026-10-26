@@ -5,16 +5,7 @@
     "TruncatedSieveFlux.moebius_residual_identity",
     "TruncatedSieveFlux.moebius_density_le_omitted_count"
   ],
-  "definition_names": [
-    "TruncatedSieveFlux.sieveIndex",
-    "TruncatedSieveFlux.moebiusReal",
-    "TruncatedSieveFlux.admittedDivisors",
-    "TruncatedSieveFlux.omittedDivisors",
-    "TruncatedSieveFlux.admittedMass",
-    "TruncatedSieveFlux.omittedMass",
-    "TruncatedSieveFlux.omittedCount",
-    "TruncatedSieveFlux.density"
-  ],
+  "definition_names": [],
   "permitted_axioms": [
     "propext",
     "Quot.sound",
