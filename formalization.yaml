@@ -4,10 +4,11 @@ project:
   name: "Periodic Möbius rounding-error moments"
   description: >-
     Lean 4 formalization of exact arithmetic periodicity, full-period
-    centering, two-divisor covariance expansions, a diagonal modular
-    variance identity, and fourfold correlation identities for a
-    truncated Möbius rounding error. A full-period fourth-to-second
-    moment inequality is also verified. The substantive research target
+    centering, the exact general gcd covariance formula for any
+    positive pair of moduli over a common period, the corresponding
+    finite gcd-weighted second moment, and fourfold correlations
+    of a truncated Möbius rounding error. A full-period
+    fourth-to-second moment inequality is also verified. The substantive research target
     is a uniform O(B^2) centered fourth-moment bound, which is OPEN.
     A logarithmic-cutoff residual approximation, its finite-sum
     identities, and elementary O(B^4) bound are supporting results.
@@ -139,4 +140,4 @@ alignment:
       status: "proved in Solution; independent mathematical review pending"
       note: "Finite bound at a logarithmic cutoff, with no asymptotic cancellation claim."
 
-acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 (High thinking effort) proof and tooling assistance."
+acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 proof and tooling assistance."
