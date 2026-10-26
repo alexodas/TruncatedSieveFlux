@@ -90,9 +90,8 @@ The second `comparator-covariance.json` selects five
 Mathlib-only challenge statements: the general gcd covariance,
 exact second moment, unconditional quartic fourth-moment bound,
 fourth-to-second-moment inequality, and the conditional cubic
-estimate. The first two wrappers passed NanoDa and con-ron;
-the three further fourth-moment comparisons have been added
-and await their own Comparator CI result. Other helper
+estimate. All five statements passed independent Comparator
+verification with NanoDa and con-ron on commit `d7be10a`. Other helper
 theorems are not individually selected. Auxiliary
 lemmas prove the modular mean over any number of full periods,
 the rational remainder representation, and the unconditional
@@ -194,10 +193,8 @@ have passed the Lean build. The latter has now additionally
 been re-stated in a Mathlib-only `CovarianceChallenge` and
 compared against `CovarianceSolution` through
 `comparator-covariance.json`, alongside the exact finite
-second moment. The separate Comparator run for those two research statements
-passed both NanoDa and con-ron. Three additional fourth-moment
-statements have been added to the same comparison; their
-new independent-kernel outcome is still pending.
+second moment. The independent Comparator run for all five research statements
+passed both NanoDa and con-ron on commit `d7be10a`.
 Individual auxiliary lemmas are not separately named
 Comparator declarations.
 The theorem `empiricalModularCovariance_gcd_general` has
