@@ -56,6 +56,20 @@ V_(B,H) = (1/H) * sum_{0 ≤ M < H} sum_{1 ≤ a,b ≤ B}
   mu(a)*mu(b)*r_(a,H)(M)*r_(b,H)(M).
 ```
 
+Equivalently, with
+
+```text
+C_(a,b;H) = (1/H) * sum_{0 ≤ M < H} r_(a,H)(M) * r_(b,H)(M),
+```
+
+Lean proves the exact quadratic-form identity
+
+```text
+V_(B,H) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*C_(a,b;H).
+```
+
+**This does not yet evaluate off-diagonal terms** `a ≠ b`.
+
 The diagonal covariance for a complete modulus is also formalized:
 
 ```text
