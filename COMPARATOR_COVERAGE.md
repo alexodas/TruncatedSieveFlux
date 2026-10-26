@@ -17,8 +17,9 @@ It is not a claim of complete named-theorem Comparator coverage.
    and independent-kernel replay of
    `TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`.
 4. The `comparator-covariance.json` performs independent statement/proof
-   comparisons of the following **five** theorem statements, provided
-   the workflow succeeds for the corresponding commit:
+   comparisons of the following **five** theorem statements.
+   All five passed NanoDa and con-ron in GitHub Actions run
+   [40368689838](https://github.com/alexodas/TruncatedSieveFlux/actions/runs/40368689838):
    - `TruncatedSieveFluxComparator.gcd_covariance`
    - `TruncatedSieveFluxComparator.second_moment_gcd`
    - `TruncatedSieveFluxComparator.fourth_moment_quartic`
