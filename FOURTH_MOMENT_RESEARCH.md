@@ -41,7 +41,7 @@ covariances. The supporting `empiricalSecondMoment_eq_pairwise_sum`
 identity expands it over ordered pairs; `empiricalSecondMoment_nonneg`
 proves positivity and `empiricalModularCovariance_comm` proves symmetry.
 
-For the diagonal over a full modulus, the proved identity is
+The incremental gcd-covariance formalization also establishes the boundary case `a = 1`: `centeredModularFraction m 1 H = 0`, hence `empiricalModularCovariance 1 b H = 0` and (by symmetry) `empiricalModularCovariance a 1 H = 0` for every `H`. This agrees with the gcd formula because `gcd(1,b)=1`. It does not settle the general off-diagonal case.\n\nFor the diagonal over a full modulus, the proved identity is
 
 ```text
 (1/d) * sum_{0 ≤ M < d} ((M mod d)/d - (d-1)/(2*d))^2
