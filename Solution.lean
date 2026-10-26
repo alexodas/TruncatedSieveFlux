@@ -189,7 +189,7 @@ theorem moebius_floor_rounding_error_le (M B : ℕ) :
     have hdpos : 0 < d := (Finset.mem_Icc.mp hd).1
     have hdposR : (0 : ℝ) < (d : ℝ) := by exact_mod_cast hdpos
     have hmod : (M : ℝ) =
-        ((M % d : ℕ) : ℝ) + ((M / d : ℕ) : ℝ) * (d : ℝ) := by
+        ((M % d : ℕ) : ℝ) + (d : ℝ) * ((M / d : ℕ) : ℝ) := by
       exact_mod_cast (Nat.mod_add_div M d).symm
     have hmodLt : ((M % d : ℕ) : ℝ) < (d : ℝ) := by
       exact_mod_cast Nat.mod_lt M hdpos
