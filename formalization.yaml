@@ -49,7 +49,7 @@ status:
     across all positive common periods, and an exact diagonal
     covariance value valid on every positive multiple, and new
     period-invariance statements for the full second and fourth
-    centered moments (subject to CI verification), as well as the fourfold expansion,
+    centered moments (Lean compilation verified), as well as the fourfold expansion,
     an unconditional B^4/16 fourth-moment bound on full periods,
     and a conditional cubic bound from an assumed linear variance bound.
     A paper-level O(B^3) estimate using a classical gcd covariance
