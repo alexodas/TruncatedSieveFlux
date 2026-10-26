@@ -39,7 +39,7 @@ status:
     The mathematical focus is on exact periodic Möbius rounding-error
     moments. FourthMomentResearch.lean proves a common-period formula
     for the mean and centering, the exact weighted quadratic-form
-    expression for the second moment, covariance symmetry and a
+    expression for the second moment, covariance symmetry, the modulus-one\n    boundary case for gcd covariance, and a
     diagonal covariance value, as well as the fourfold expansion,
     an unconditional B^4/16 fourth-moment bound on full periods,
     and a conditional cubic bound from an assumed linear variance bound.
@@ -89,7 +89,7 @@ fidelity:
     for the fourth moment. FourthMomentResearch proves only
     O(B^4) unconditionally, not the conjectured O(B^2).
     The diagonal modular covariance is proved, but the general
-    off-diagonal gcd covariance formula is not yet formalized.
+    off-diagonal gcd covariance formula is not yet formalized; only\n    the modulus-one boundary case is newly included.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
 
