@@ -36,6 +36,31 @@ theorem roundingError_eq_mod_sum (M B : ℕ) :
   unfold roundingError
   exact harmonic_floor_discrepancy_eq_mod_sum M B
 
+
+/-! ## Exact arithmetic periodicity of the rounding error -/
+
+/-- A common multiple of all positive d ≤ B is a period of the
+Möbius-weighted rounding discrepancy. -/
+theorem roundingError_add_common_period
+    (M B T : ℕ)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    roundingError (M + T) B = roundingError M B := by
+  rw [roundingError_eq_mod_sum, roundingError_eq_mod_sum]
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hmod : T % d = 0 := Nat.mod_eq_zero_of_dvd (hT d hd)
+  have hadd : (M + T) % d = M % d := by
+    simp [Nat.add_mod, hmod]
+  rw [hadd]
+
+/-- In particular, B! is a valid period for every integer cutoff B. -/
+theorem roundingError_add_factorial (M B : ℕ) :
+    roundingError (M + B.factorial) B = roundingError M B := by
+  apply roundingError_add_common_period
+  intro d hd
+  exact Nat.dvd_factorial (Finset.mem_Icc.mp hd).1
+    (Finset.mem_Icc.mp hd).2
+
 /-- The normalized mean over a finite interval starting at zero. -/
 noncomputable def empiricalErrorMean (B H : ℕ) : ℝ :=
   (∑ m ∈ Finset.range H, roundingError m B) / (H : ℝ)
