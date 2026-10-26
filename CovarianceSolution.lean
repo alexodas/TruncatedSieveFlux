@@ -1,6 +1,7 @@
 module
 
 public import Mathlib
+import all Solution
 import all FourthMomentResearch
 
 public section
