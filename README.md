@@ -130,6 +130,38 @@ CRT-indexed form for arbitrary coprime moduli.
 
 The core CRT factorization and centered sum have **passed Lean CI**. A new bridge theorem, `coprime_centered_modular_sum_zero`, translates CRT sums into the existing natural-number ranges. Using period invariance, the Lean-verified `empiricalModularCovariance_gcd_coprime` proves the full exact identity `C_(a,b;T) = (gcd(a,b)^2-1)/(12ab) = 0` for *all positive coprime* `a,b` and every positive common period `T`. **The CRT bridge and general coprime covariance have passed the GitHub Actions Lean `verify` job** (commit `417d358`). The separate Comparator job checks the Challenge/Solution theorem. The general non-coprime off-diagonal identity and uniform fourth-moment target remain open.
 
+### General gcd-fiber covariance (submitted for Lean verification)
+
+The next proof **does not specialize to any particular moduli**.
+For arbitrary positive `a,b`, write `g=gcd(a,b)`,
+`a=g*r` and `b=g*s`; then `r` and `s` are coprime.
+Partition a common period into residue fibers `m=k*g+t`,
+with `0 ≤ t < g`. The formalized identities establish
+
+```text
+(k*g+t) mod (g*r) = g*(k mod r)+t,
+centered_(g*r)(k*g+t)
+  = centered_r(k) + (t-(g-1)/2)/(g*r).
+```
+
+Applying the proven CRT cancellation to the reduced moduli `r,s`,
+a proposed generic lemma `coprime_centered_shifted_product_sum`
+eliminates the mixed terms. Summing the remaining correction
+over `t` reduces the entire covariance to the **already proved
+diagonal covariance at g**. The newly submitted statements
+`empiricalModularCovariance_mul_coprime` and
+`empiricalModularCovariance_gcd_general` therefore target
+
+```text
+C_(a,b;T) = (gcd(a,b)^2-1)/(12*a*b)
+```
+
+for **all positive moduli and positive common periods**.
+**The final assembly is pending GitHub Actions Lean verification;
+the complete identity must not yet be treated as verified.**
+Even if confirmed, this does not itself establish the desired
+uniform `O(B²)` fourth-moment bound.
+
 ## Supporting lemmas and the finite-sieve theorem
 
 The file `FourthMomentResearch.lean` also proves the exact rational
