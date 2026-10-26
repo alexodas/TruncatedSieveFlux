@@ -704,6 +704,24 @@ theorem centeredModularFraction_common_period
   unfold centeredModularFraction
   rw [hq, Nat.mul_comm d q, modularFractionMean_multiple d q hd hqpos]
 
+/-- The general full-period covariance reduces exactly to a finite sum of
+explicitly centered modular residues. No gcd evaluation is asserted here. -/
+theorem empiricalModularCovariance_common_period_explicit
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hTpos : 0 < T) (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (∑ m ∈ Finset.range T,
+        ((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+          (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+        ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+          (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))) / (T : ℝ) := by
+  unfold empiricalModularCovariance
+  congr 1
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [centeredModularFraction_common_period m a T ha hTpos haT,
+    centeredModularFraction_common_period m b T hb hTpos hbT]
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
