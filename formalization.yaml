@@ -3,16 +3,20 @@ version: "v0.4"
 project:
   name: "Periodic Möbius rounding-error moments"
   description: >-
-    Lean 4 formalization of exact arithmetic periodicity, full-period
-    centering, the exact general gcd covariance formula for any
-    positive pair of moduli over a common period, the corresponding
-    finite gcd-weighted second moment, and fourfold correlations
-    of a truncated Möbius rounding error. A full-period
-    fourth-to-second moment inequality is also verified. The substantive research target
-    is a uniform O(B^2) centered fourth-moment bound, which is OPEN.
-    A logarithmic-cutoff residual approximation, its finite-sum
-    identities, and elementary O(B^4) bound are supporting results.
-    No new asymptotic theorem or claim of originality is made.
+    This Palomar submission compares the finite logarithmic-cutoff
+    Möbius residual approximation proved in Solution.lean against
+    its statement in Challenge.lean. The same repository also
+    contains a separate Lean-verified research development:
+    exact periodic centering, the general gcd covariance identity
+    for arbitrary positive moduli, the finite gcd-weighted
+    second-moment formula, fourfold correlation identities,
+    and a conditional fourth-to-second moment inequality.
+    Those research declarations are not selected in the
+    current comparator.json and are not separately Comparator-checked.
+    The unconditional linear variance bound, cubic fourth-moment
+    bound and the proposed uniform O(B^2) fourth-moment bound
+    remain unproved in Lean. No new asymptotic theorem or
+    originality claim is made.
   authors:
     - "Alessandro Odasso"
   license: "Apache-2.0"
