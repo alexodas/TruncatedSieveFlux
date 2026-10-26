@@ -336,10 +336,10 @@ theorem empiricalSecondMoment_eq_covariance_sum (B H : ℕ) :
         ∑ b ∈ Finset.Icc 1 B,
         (moebiusReal a * moebiusReal b) *
           empiricalModularCovariance a b H := by
-        rw [← Finset.sum_div]
+        rw [Finset.sum_div]
         apply Finset.sum_congr rfl
         intro a ha
-        rw [← Finset.sum_div]
+        rw [Finset.sum_div]
         apply Finset.sum_congr rfl
         intro b hb
         unfold empiricalModularCovariance
