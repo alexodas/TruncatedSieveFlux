@@ -3,25 +3,26 @@ version: "v0.4"
 project:
   name: "Periodic Möbius rounding-error moments"
   description: >-
-    This Palomar submission compares the finite logarithmic-cutoff
-    Möbius residual approximation proved in Solution.lean against
-    its statement in Challenge.lean. The same repository also
-    contains a separate Lean-verified research development:
-    exact periodic centering, the general gcd covariance identity
-    for arbitrary positive moduli, the finite gcd-weighted
-    second-moment formula, fourfold correlation identities,
-    and a conditional fourth-to-second moment inequality.
-    The original comparator.json selects only the finite-sieve
-    theorem; a second configuration comparator-covariance.json
-    compares five research claims against independent, Mathlib-only
-    Challenge definitions: general gcd covariance, exact second
-    moment, unconditional quartic bound, fourth-to-second-moment
-    inequality and the conditional cubic estimate. All five passed Comparator with Lean, NanoDa and con-ron
-    on commit d7be10a49189aac8ee2b37233a8c70b5fb38f5c7.
-    The unconditional linear variance bound, cubic fourth-moment
-    bound and the proposed uniform O(B^2) fourth-moment bound
-    remain unproved in Lean. No new asymptotic theorem or
-    originality claim is made.
+    This repository offers two separately configured Palomar
+    Comparator challenges. The original comparator.json compares
+    the finite logarithmic-cutoff Möbius residual approximation
+    in Challenge.lean and Solution.lean. The second configuration,
+    comparator-covariance.json, compares five research statements
+    defined independently using Mathlib in CovarianceChallenge.lean:
+    the general gcd covariance formula, exact Möbius second
+    moment, unconditional quartic fourth-moment bound,
+    fourth-to-second-moment inequality, and conditional cubic
+    estimate. All six selected declarations passed the Comparator
+    with Lean, NanoDa and con-ron, including the five research
+    statements in GitHub Actions run 40368689838.
+    The separate FourthMomentResearch.lean development provides
+    additional exact centering, periodicity, gcd-fiber and fourfold
+    correlation results, checked by Lean but not all separately
+    selected as Comparator declarations.
+    A linear bound for the variance, an unconditional cubic
+    fourth-moment bound, and the proposed uniform O(B^2)
+    fourth-moment bound remain unproved in Lean.
+    No new asymptotic theorem or originality claim is made.
   authors:
     - "Alessandro Odasso"
   license: "Apache-2.0"
@@ -159,13 +160,15 @@ review:
     NanoDa and con-ron.
     There is no claim that every independent helper lemma
     is separately a named Comparator declaration.
-    No independent human mathematical review has been recorded.
+    The Comparator configurations do not substitute for human review.
 
 # The project-level status.main_results includes Lean research theorems.
 # alignment.statements maps the compared finite sieve result to its
 # original statement; it is not the Comparator declaration list.
 # Comparator declarations are selected by their respective JSON files.
 # alignment below records both named surfaces, not all helper lemmas.
+# The primary alignment.namespace is the finite-sieve namespace;
+# research wrapper names use the explicit TruncatedSieveFluxComparator prefix.
 alignment:
   namespace: "TruncatedSieveFlux"
   statements:
