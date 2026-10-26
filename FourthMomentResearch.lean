@@ -1635,6 +1635,41 @@ theorem empiricalModularCovariance_gcd_any_three
           congr 1
           ring
 
+/-! ## Chinese remainder theorem: uniform coprime residue pairs -/
+
+/-- The CRT transforms every correlation of functions of two coprime
+residue coordinates into the product of their separate complete sums.
+This is a finite, exact factorization, not yet the gcd covariance
+formula for arbitrary non-coprime moduli. -/
+theorem coprime_zmod_product_sum_factorization
+    (a b : ℕ) (hcop : a.Coprime b)
+    (f : ZMod a → ℝ) (g : ZMod b → ℝ) :
+    (∑ m : ZMod (a * b),
+      f ((ZMod.chineseRemainder hcop m).1) *
+        g ((ZMod.chineseRemainder hcop m).2)) =
+      (∑ r : ZMod a, f r) * (∑ s : ZMod b, g s) := by
+  let e : ZMod (a * b) ≃ ZMod a × ZMod b :=
+    (ZMod.chineseRemainder hcop).toEquiv
+  change (∑ m : ZMod (a * b), f (e m).1 * g (e m).2) = _
+  rw [Equiv.sum_comp e
+    (fun p : ZMod a × ZMod b => f p.1 * g p.2)]
+  rw [Fintype.sum_prod_type]
+  simp_rw [← Finset.mul_sum]
+  rw [← Finset.sum_mul]
+
+/-- A centered function of the first residue coordinate is orthogonal
+to every function of the second coordinate, for coprime moduli.
+This is the essential CRT cancellation mechanism. -/
+theorem coprime_zmod_centered_orthogonality
+    (a b : ℕ) (hcop : a.Coprime b)
+    (f : ZMod a → ℝ) (g : ZMod b → ℝ)
+    (hcenter : (∑ r : ZMod a, f r) = 0) :
+    (∑ m : ZMod (a * b),
+      f ((ZMod.chineseRemainder hcop m).1) *
+        g ((ZMod.chineseRemainder hcop m).2)) = 0 := by
+  rw [coprime_zmod_product_sum_factorization a b hcop f g,
+    hcenter, zero_mul]
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
