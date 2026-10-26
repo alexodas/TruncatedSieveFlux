@@ -138,11 +138,7 @@ correlation. The accompanying `centered_zmod_residue_sum_zero` and
 `coprime_zmod_centered_residue_product_zero` apply this algebra to
 centered rational fractional parts, still indexed by `ZMod`.
 
-**Status:** these new proofs await GitHub Actions validation. The
-finite-range identification linking the CRT-indexed sum to the existing
-natural-indexed `empiricalModularCovariance` definition is an
-explicitly outstanding step, as is the non-coprime general case.
-No improvement to the unconditional fourth-moment bound is asserted.
+**Status:** the initial CRT factorization and centered ZMod correlation have passed Lean CI. The newly proposed `coprime_zmod_chineseRemainder_nat_coordinates` and `coprime_centered_modular_sum_zero` connect those algebraic identities to natural-number range sums, and `empiricalModularCovariance_gcd_coprime` asserts the exact gcd formula for **all coprime positive moduli** on any positive common period. These newest theorems still await CI validation. The general non-coprime off-diagonal case remains open. No improvement to the unconditional fourth-moment bound is asserted.
 
 ## What must be proved next
 
