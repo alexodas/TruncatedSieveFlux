@@ -1,115 +1,106 @@
-# Truncated Möbius divisor sieve — Lean 4
+# Möbius rounding error and logarithmically truncated sieve — Lean 4
 
-A self-contained Lean 4/Mathlib project for three **elementary finite** results:
+A Lean 4/Mathlib development centered on a **finite rounding-error theorem**
+and verified preliminary lemmas for a **fourth-moment research problem**.
+The sharper fourth-moment conjecture remains unproved.
 
-1. An exact residual identity for the admitted Möbius mass of an indexed,
-   truncated divisor sieve.
-2. An unconditional upper bound by one plus the number of omitted divisor
-   incidences.
-3. A finite logarithmic-cutoff approximation to the omitted Möbius mass,
-   with an explicit bound on the rounding error.
+## Retained verified theorem
 
-The mathematical statement is **not** an asymptotic cancellation estimate.
-There are no claims about the general growth of arbitrary sieve thresholds.
-The `Challenge.lean` file deliberately has three `sorry` markers that a
-Comparator challenge is expected to contain. `Solution.lean` contains no
-`sorry` and imports only Mathlib. **Both Lean modules compile successfully**
-under GitHub Actions (Lean v4.35.0-rc2; run 40246677026).
-Comparator accepted all three theorem declarations using Lean, NanoDa and
-con-ron (GitHub Actions run 40253160016). An independent mathematical review has
-**not yet** been completed.
+The public `Challenge.lean` / `Solution.lean` pair retains exactly one
+Comparator theorem:
+`TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`.
 
-## Why this formalization may be interesting
-
-The contribution is **not a new number-theoretic cancellation theorem**.
-Its potential value is to make the effect of truncating a classical Möbius
-divisor sum mathematically explicit and machine-checkable. For every lower
-threshold `A : ℝ`, every indexed upper cutoff `K : ℕ → ℝ`, every index
-`k : ℕ`, and `x ≥ 2`, the proved results give
+For `x ≥ 2`, put `B = 1 + ⌈(log x)^4⌉` and `M = ⌈x⌉ - 1`.
+With lower threshold `A = 0`, upper cutoff `K(k) = k`, and omitted
+signed Möbius mass `R(B,x)`, it proves the finite inequality
 
 ```text
-density K A k x moebiusReal
-  = |1 - omittedMass K A k x moebiusReal|
-  ≤ 1 + omittedCount K A k x
+|R(B,x) - 1 + M * sum_{1 ≤ d ≤ B} mu(d)/d| ≤ B.
 ```
 
-Here `density` is the absolute value of a **finite signed divisor sum**,
-not an asymptotic density of primes. The underlying finite sums range over
-`Nat.divisors n` for `n < Nat.ceil x`; `omittedCount` counts omitted
-**divisor incidences** across those values of `n`, not just distinct divisors.
+This is an elementary bound on a *rounding discrepancy*, not an
+asymptotic cancellation estimate for the Möbius function.
 
-For the concrete specialization `A = 0`, `K(k) = k`, and
-`k(x) = 1 + ⌈(log x)^4⌉`, let `B = k(x)` and `M = ⌈x⌉ - 1`.
-The third theorem gives an **explicit finite approximation**:
+## Additional machine-checked research lemmas
+
+The separate Lean module `FourthMomentResearch.lean` defines
 
 ```text
-|R(k(x), x) - 1 + M * sum_{1 ≤ d ≤ B} (mu(d) / d)| ≤ B
+E_B(M) = M * sum_{1 ≤ d ≤ B} mu(d)/d
+         - sum_{1 ≤ d ≤ B} mu(d) * floor(M/d)
+       = sum_{1 ≤ d ≤ B} mu(d) * ((M mod d)/d).
 ```
 
-The proof regroups the admitted divisor sum according to its divisors
-and bounds the combined error in replacing `floor(M / d)` by `M / d`.
-This controls the **rounding error**, not the harmonic Möbius sum itself.
-In particular, no new asymptotic cancellation estimate follows from this
-theorem without additional number-theoretic input.
+For `H ≥ 1`, let `mean_(B,H)` be the average of `E_B(M)` on
+`0 ≤ M < H`, and `fourth_(B,H)` the corresponding centered fourth
+moment. The following statements have been proved in Lean:
 
-Three aspects may make the development useful:
+```text
+|E_B(M)| ≤ B
+|mean_(B,H)| ≤ B
+fourth_(B,H) ≤ (2B)^4 = 16B^4.
+```
 
-1. **An exact truncation-error identity.** Classical Möbius divisor
-   cancellation says that the full finite sum is 1 (for `x ≥ 2`).
-   Partitioning each divisor set into admitted and omitted terms identifies
-   the entire difference from that full sum as the signed omitted mass.
-   This requires no monotonicity or growth assumption on `K`.
-2. **A clear boundary between bookkeeping and analytic estimates.** The
-   inequality using `omittedCount` is unconditional but generally coarse.
-   A genuinely sharper sieve estimate would require further hypotheses or
-   cancellation information about `omittedMass`; none is established here.
-   The separate `sieveIndex` definition supplies a possible index choice,
-   but the proved theorems do not assert an asymptotic bound for that choice.
-3. **A small reusable formal-verification case study.** The proof tests
-   finite-set partitioning, the classical Möbius identity, coercions to the
-   reals, and absolute-value bounds. Independent `Challenge.lean` and
-   `Solution.lean` modules, plus Comparator checks using Lean, NanoDa,
-   and con-ron, make the result reproducible and potentially useful as an
-   example for extending or auditing formal arithmetic arguments.
+The exact modulo representation is also proved in Lean. These finite
+facts set up the research question but are **not** a nontrivial
+fourth-moment improvement: the `B^4` growth follows from the
+pointwise error bound.
 
-These are reasons to consider the **formalization** useful, not claims of
-mathematical originality, a nontrivial asymptotic estimate, or acceptance
-by Palomar.
+## Open research problem (NOT proved)
 
-## Authorship and AI assistance
+Write `L_B = lcm(1,...,B)` and `mean_B` for the average of `E_B`
+over `0 ≤ M < L_B`. The proposed theorem asks whether an
+absolute constant `C4 > 0` exists such that
 
-**Author and responsible maintainer:** Alessandro Odasso.
+```text
+(1/L_B) * sum_{0 ≤ M < L_B} (E_B(M)-mean_B)^4 ≤ C4*B^2
+```
 
-**AI-use disclosure:** ChatGPT **GPT-6 with High thinking effort** (as reported
-by the contributor) was used to assist with Lean proof drafting, debugging,
-repository setup, and GitHub Actions troubleshooting. This was an AI-assisted,
-human-directed formalization. The proofs passed Lean, NanoDa, and con-ron in
-GitHub Actions; independent mathematical peer review has not been performed.
-The structured disclosure is also recorded in `formalization.yaml`.
+for every `B ≥ 2`.
 
-## Project files
+This **has not been proved**, and no mathematical novelty or
+positive-density consequence is claimed. See
+[FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md) for the
+precise research status and obstacles.
 
-- `Challenge.lean`: standalone mathematical interface (definitions, declarations
-  to audit, and deliberate theorem holes).
-- `Solution.lean`: duplicates the independent definitions and supplies proofs.
-- `comparator.json`: compares all three named theorem statements and proofs.
-- `lakefile.toml`, `lake-manifest.json`, `lean-toolchain`: pinned Lake project,
-  copied consistently from the public Palomar starter dependencies.
-- `formalization.yaml`: project scope, attribution, AI use, and review status.
-- `LICENSE`: Apache 2.0.
+## Relationship to previous snapshots
 
-## Build and check
+The first two elementary public declarations,
+`moebius_residual_identity` and
+`moebius_density_le_omitted_count`, are no longer part of the
+current challenge. Supporting private lemmas used by the retained
+result remain. The complete three-theorem verified snapshot is
+preserved in
+[commit 339c27e6](https://github.com/alexodas/TruncatedSieveFlux/commit/339c27e6be72270ddaa7d7af7da15ecda90b6cb7).
 
-Requires `elan` (Lean version manager), Git, internet access for dependencies,
-and sufficient disk space for Mathlib. In the project root:
+## Verification
+
+`Challenge.lean` has **one intentional** theorem `sorry`.
+`Solution.lean` and `FourthMomentResearch.lean` have no `sorry`.
+
+The CI builds all three modules. Comparator, with independent Lean,
+NanoDa and con-ron kernels, compares the single retained theorem
+between Challenge and Solution. The additional fourth-moment lemmas
+are checked by the normal Lean compiler, but are not registered as
+separate Comparator challenges.
 
 ```sh
 lake exe cache get
-lake build
-./scripts/check.sh
+lake build Challenge Solution FourthMomentResearch
+bash scripts/check.sh
 ```
 
-The last command checks the proof with `lake build Challenge Solution` and
-`lake comparator --config`, registering the bundled independent kernels in a
-temporary Comparator configuration, as in the Palomar starter project.
-The check requires `bwrap` in addition to Lean and the checked-in dependencies.
+Comparator also requires `bwrap` and the bundled independent kernels.
+
+## Authorship and AI-use transparency
+
+**Author and responsible maintainer:** Alessandro Odasso.
+
+**AI disclosure:** ChatGPT **GPT-6 with High thinking effort**
+(as reported by the contributor) was used in Lean proof drafting,
+debugging, research exploration, and repository configuration.
+Human-directed, AI-assisted work. Machine verification is not
+independent mathematical peer review and does not establish novelty.
+
+Metadata and source limitations are recorded in
+[formalization.yaml](formalization.yaml). License: Apache-2.0.

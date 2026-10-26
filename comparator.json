@@ -2,8 +2,6 @@
   "challenge_module": "Challenge",
   "solution_module": "Solution",
   "theorem_names": [
-    "TruncatedSieveFlux.moebius_residual_identity",
-    "TruncatedSieveFlux.moebius_density_le_omitted_count",
     "TruncatedSieveFlux.moebius_log_cutoff_residual_approximation"
   ],
   "definition_names": [],
