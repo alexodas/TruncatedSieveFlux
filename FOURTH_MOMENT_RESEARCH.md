@@ -25,8 +25,8 @@ oscillations, require new work. No claim of mathematical originality is made.
 
 `FourthMomentResearch.lean`, built on `Solution.lean`, proves:
 
-1. `abs_roundingError_le`: `|E_B(M)| ≤ B` using the existing third theorem's
-   preliminary rounding-error bound.
+1. `abs_roundingError_le`: `|E_B(M)| ≤ B` using the retained
+   logarithmic-cutoff theorem's preliminary rounding-error lemma.
 2. `roundingError_eq_mod_sum`: the exact representation of `E_B(M)` as a
    finite weighted sum of rational fractional parts.
 3. `abs_empiricalErrorMean_le`: the absolute empirical mean is at most B
@@ -49,11 +49,11 @@ evidence; they cannot substitute for this estimate.
 
 ## Relationship to previously verified theorems
 
-The first two Palomar theorems are not required to state or bound this fourth
-moment. The third theorem and its auxiliary definitions connect the periodic
-rounding error to the truncated Möbius residual, and are reused. The existing
-main branch and its fully verified commit
-`339c27e6be72270ddaa7d7af7da15ecda90b6cb7` are preserved.
+The two earlier elementary Palomar theorem declarations have been retired
+from the current challenge. The previous third theorem and its auxiliary
+results connect the periodic rounding error to the Möbius residual and
+are retained. The archived three-theorem verified snapshot is preserved
+at commit `339c27e6be72270ddaa7d7af7da15ecda90b6cb7`.
 
 ## Literature to compare
 

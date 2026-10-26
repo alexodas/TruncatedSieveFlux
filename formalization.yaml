@@ -1,21 +1,14 @@
 version: "v0.4"
 
 project:
-  name: "Truncated Möbius divisor-sieve residual identity"
+  name: "Finite Möbius rounding error and fourth-moment research"
   description: >-
-    Lean 4 formalization of three elementary finite Möbius divisor-sieve results.
-    For arbitrary lower thresholds and indexed upper cutoffs, the admitted
-    signed divisor mass is exactly the full Möbius mass (one, when x >= 2)
-    minus the signed omitted mass; its absolute value is also bounded by one
-    plus the number of omitted divisor incidences. The interest is an explicit,
-    reusable account of truncation error that separates finite combinatorial
-    bookkeeping from the further cancellation estimates needed in analytic
-    number theory. The independently checked Challenge/Solution pair also
-    provides a compact case study in formalizing finite arithmetic sums.
-    A third theorem takes A=0, K(k)=k and k(x)=1+ceil((log x)^4),
-    proving a fully finite harmonic approximation to the omitted Möbius mass
-    with an error bounded by k(x). Neither a new number-theoretic theorem
-    nor an asymptotic cancellation estimate is claimed.
+    Lean 4 formalization of a finite logarithmic-cutoff Möbius residual
+    approximation. A separate research module proves an exact rational
+    fractional-part representation and elementary empirical-mean and
+    centered fourth-moment estimates, including an unconditional 16 B^4
+    bound. A stronger uniform O(B^2) fourth-moment estimate is an open
+    research conjecture and is NOT proved or claimed as novel.
   authors:
     - "Alessandro Odasso"
   license: "Apache-2.0"
@@ -40,21 +33,22 @@ related_formalizations: []
 
 status:
   scope: >-
-    Formalizes the finite residual identity and its combinatorial omitted-count
-    upper bound. No asymptotic analytic estimate, uniform cancellation bound,
-    or novelty claim. The omitted-count bound is a coarse incidence count, not
-    an estimate showing nontrivial cancellation. The third theorem specializes
-    to the logarithmic cutoff and bounds only the finite rounding error;
-    it does not bound cancellation in the harmonic Möbius sum.
-    GitHub Actions compilation succeeded for both Lean modules; Comparator
-    passed for all three theorems in run 40253160016. Challenge intentionally
-    contains three theorem holes.
+    One retained Comparator theorem:
+    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
+    For A=0, K(k)=k, k(x)=1+ceil((log x)^4), the finite rounding error
+    is bounded by k(x). FourthMomentResearch.lean contains Lean-checked
+    exact modulo representations and an unconditional elementary
+    centered fourth-moment upper bound 16 B^4 over finite intervals.
+    The potentially stronger O(B^2) fourth-moment bound remains
+    OPEN, as do proposed positive-density and Gaussian conclusions.
+    There is one intentional theorem sorry in Challenge and zero
+    sorry in Solution or FourthMomentResearch. The two earlier
+    public challenge theorems were retired but remain archived
+    in commit 339c27e6be72270ddaa7d7af7da15ecda90b6cb7.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
   main_results:
-    - "TruncatedSieveFlux.moebius_residual_identity"
-    - "TruncatedSieveFlux.moebius_density_le_omitted_count"
     - "TruncatedSieveFlux.moebius_log_cutoff_residual_approximation"
 
 automation:
@@ -63,9 +57,10 @@ automation:
   models: ["GPT-6"]
   framework: "ChatGPT"
   tool_setup: >-
-    Human-specified mathematical target and ChatGPT-assisted Lean proof drafts,
-    repository scaffolding, and documentary checks. Lean compiled both modules successfully on GitHub Actions run 40246677026;
-    Comparator verified all three theorems with Lean, NanoDa and con-ron in run 40253160016.
+    Human-directed target and ChatGPT-assisted Lean proof drafts, debugging,
+    and repository checks. The archived three-theorem version passed independent
+    kernels in GitHub Actions run 40253691471; the research module is built
+    with Lean and the retained challenge remains subject to Comparator.
   cost:
     spend_usd: "not tracked"
     hardware: "remote model and limited sandbox; local Lean unavailable"
@@ -83,34 +78,27 @@ automation:
 
 fidelity:
   divergences: >-
-    This development deliberately contains no conjectured general asymptotic
-    estimate; it proves the elementary finite residual identity, the
-    combinatorial bound, and a finite logarithmic-cutoff rounding-error estimate.
+    Only an elementary finite rounding-error theorem is submitted to
+    Comparator. FourthMomentResearch proves an O(B^4), not O(B^2),
+    estimate. The stronger fourth-moment research objective and
+    subsequent distributional predictions remain unproved.
 
 review:
-  status: "unreviewed; Lean and Comparator checks passed"
+  status: "unreviewed; Lean compilation and Comparator checks apply to proved results"
   reviewers: []
   notes: >-
-    Mathematical outline inspected during drafting. Both Lean modules compiled successfully in GitHub Actions run 40246677026.
-    No independent human mathematical review has been performed; Comparator passed all three results in run 40253160016.
+    No independent human mathematical review has been completed.
+    Research conjectures are explicitly excluded from claims of proof.
+    Comparator checks the retained Challenge/Solution theorem only;
+    the research lemmas compile in a separate Lean target.
 
 alignment:
   namespace: "TruncatedSieveFlux"
   statements:
-    - source: "Classical Möbius inversion and divisor-sum cancellation"
-      lean: "TruncatedSieveFlux.moebius_residual_identity"
-      module: "Challenge"
-      status: "proof checked by Lean, NanoDa and con-ron; independent review pending"
-      note: "Exact identity for arbitrary cutoff with x >= 2."
-    - source: "Elementary triangle inequality for finite divisor sums"
-      lean: "TruncatedSieveFlux.moebius_density_le_omitted_count"
-      module: "Challenge"
-      status: "proof checked by Lean, NanoDa and con-ron; independent review pending"
-      note: "Coarse omitted-incidence count; not an analytic estimate."
-    - source: "Finite divisor regrouping and quotient-remainder estimate"
+    - source: "Classical Möbius divisor identity and quotient-remainder bound"
       lean: "TruncatedSieveFlux.moebius_log_cutoff_residual_approximation"
       module: "Challenge"
-      status: "proof checked by Lean, NanoDa and con-ron; independent review pending"
-      note: "For A=0 and the logarithmic cutoff, a finite rounding-error bound; no asymptotic cancellation rate is asserted."
+      status: "proved in Solution; independent mathematical review pending"
+      note: "Finite bound at a logarithmic cutoff, with no asymptotic cancellation claim."
 
 acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 (High thinking effort) proof and tooling assistance."
