@@ -72,12 +72,13 @@ status:
     gcd covariance / finite second-moment wrapper declarations
     for Comparator checking. Their CI status must be checked
     before declaring multi-kernel verification.
-    Challenge contains one deliberate sorry placeholder in its
-    statement, as expected in the Comparator challenge module.
-    Solution and FourthMomentResearch contain no sorry.
+    Challenge contains one deliberate sorry placeholder and
+    CovarianceChallenge contains two deliberate sorry placeholders,
+    as expected for Comparator statements. Solution,
+    FourthMomentResearch, and CovarianceSolution have no sorry.
   # Per PalomarTemplate: these counts exclude the deliberately
-  # admitted statement in Challenge.lean; they describe the
-  # actual proof development (Solution + FourthMomentResearch).
+  # admitted statements in Challenge.lean and CovarianceChallenge.lean;
+  # they describe the completed proof modules instead.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
