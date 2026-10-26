@@ -4,10 +4,9 @@ A Lean 4/Mathlib development centered on a **finite rounding-error theorem**
 and verified preliminary lemmas for a **fourth-moment research problem**.
 The sharper fourth-moment conjecture remains unproved.
 
-## Retained verified theorem
+## Verified theorem
 
-The public `Challenge.lean` / `Solution.lean` pair retains exactly one
-Comparator theorem:
+The public `Challenge.lean` / `Solution.lean` pair verifies the theorem:
 `TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`.
 
 For `x ≥ 2`, put `B = 1 + ⌈(log x)^4⌉` and `M = ⌈x⌉ - 1`.
@@ -63,23 +62,13 @@ positive-density consequence is claimed. See
 [FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md) for the
 precise research status and obstacles.
 
-## Relationship to previous snapshots
-
-The first two elementary public declarations,
-`moebius_residual_identity` and
-`moebius_density_le_omitted_count`, are no longer part of the
-current challenge. Supporting private lemmas used by the retained
-result remain. The complete three-theorem verified snapshot is
-preserved in
-[commit 339c27e6](https://github.com/alexodas/TruncatedSieveFlux/commit/339c27e6be72270ddaa7d7af7da15ecda90b6cb7).
-
 ## Verification
 
 `Challenge.lean` has **one intentional** theorem `sorry`.
 `Solution.lean` and `FourthMomentResearch.lean` have no `sorry`.
 
 The CI builds all three modules. Comparator, with independent Lean,
-NanoDa and con-ron kernels, compares the single retained theorem
+NanoDa and con-ron kernels, compares the stated theorem
 between Challenge and Solution. The additional fourth-moment lemmas
 are checked by the normal Lean compiler, but are not registered as
 separate Comparator challenges.

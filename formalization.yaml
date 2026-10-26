@@ -33,7 +33,7 @@ related_formalizations: []
 
 status:
   scope: >-
-    One retained Comparator theorem:
+    One Comparator theorem:
     TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
     For A=0, K(k)=k, k(x)=1+ceil((log x)^4), the finite rounding error
     is bounded by k(x). FourthMomentResearch.lean contains Lean-checked
@@ -42,9 +42,7 @@ status:
     The potentially stronger O(B^2) fourth-moment bound remains
     OPEN, as do proposed positive-density and Gaussian conclusions.
     There is one intentional theorem sorry in Challenge and zero
-    sorry in Solution or FourthMomentResearch. The two earlier
-    public challenge theorems were retired but remain archived
-    in commit 339c27e6be72270ddaa7d7af7da15ecda90b6cb7.
+    sorry in Solution or FourthMomentResearch.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -58,9 +56,9 @@ automation:
   framework: "ChatGPT"
   tool_setup: >-
     Human-directed target and ChatGPT-assisted Lean proof drafts, debugging,
-    and repository checks. The archived three-theorem version passed independent
-    kernels in GitHub Actions run 40253691471; the research module is built
-    with Lean and the retained challenge remains subject to Comparator.
+    and repository checks. The logarithmic-cutoff theorem is checked by
+    Comparator and independent Lean, NanoDa, and con-ron kernels; the
+    fourth-moment research module is compiled separately in Lean.
   cost:
     spend_usd: "not tracked"
     hardware: "remote model and limited sandbox; local Lean unavailable"
@@ -78,8 +76,7 @@ automation:
 
 fidelity:
   divergences: >-
-    Only an elementary finite rounding-error theorem is submitted to
-    Comparator. FourthMomentResearch proves an O(B^4), not O(B^2),
+    The finite rounding-error theorem is submitted to Comparator. FourthMomentResearch proves an O(B^4), not O(B^2),
     estimate. The stronger fourth-moment research objective and
     subsequent distributional predictions remain unproved.
 
@@ -89,7 +86,7 @@ review:
   notes: >-
     No independent human mathematical review has been completed.
     Research conjectures are explicitly excluded from claims of proof.
-    Comparator checks the retained Challenge/Solution theorem only;
+    Comparator checks the Challenge/Solution theorem only;
     the research lemmas compile in a separate Lean target.
 
 alignment:

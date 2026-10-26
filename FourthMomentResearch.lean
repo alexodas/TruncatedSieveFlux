@@ -19,8 +19,8 @@ This module establishes the much weaker, elementary O(B^4) estimate
 on arbitrary finite averaging intervals. It checks the definitions,
 the existing rounding-error bridge, and the basic normalization.
 
-The two older elementary public theorems are preserved in historical
-commit 339c27e6; the logarithmic-cutoff residual result is retained.
+The logarithmic-cutoff residual theorem in Solution.lean provides the
+finite rounding-error estimate used below.
 -/
 
 /-- The finite rounding error, equal to the Möbius fractional-part sum. -/

@@ -10,8 +10,7 @@ namespace TruncatedSieveFlux
 # Truncated divisor sieve
 
 A real-valued finite divisor sieve, with an upper cutoff depending on an
-integer index. This Challenge retains the logarithmic-cutoff residual approximation.
-Two earlier elementary declarations are archived at commit 339c27e6.
+integer index. This Challenge states the finite logarithmic-cutoff residual approximation.
 
 No unqualified analytic asymptotic estimate is asserted.
 -/

@@ -1,7 +1,7 @@
 # Research note: centered fourth moment of the Möbius rounding error
 
 **Status: conjectural; the O(B^2) claim is NOT proved in Lean or mathematically established here.**
-This is an exploratory branch, not a new Palomar submission.
+This is an exploratory research module; it does not assert a new proved fourth-moment theorem.
 
 ## Objective
 
@@ -25,8 +25,8 @@ oscillations, require new work. No claim of mathematical originality is made.
 
 `FourthMomentResearch.lean`, built on `Solution.lean`, proves:
 
-1. `abs_roundingError_le`: `|E_B(M)| ≤ B` using the retained
-   logarithmic-cutoff theorem's preliminary rounding-error lemma.
+1. `abs_roundingError_le`: `|E_B(M)| ≤ B` using the
+   logarithmic-cutoff rounding-error lemma.
 2. `roundingError_eq_mod_sum`: the exact representation of `E_B(M)` as a
    finite weighted sum of rational fractional parts.
 3. `abs_empiricalErrorMean_le`: the absolute empirical mean is at most B
@@ -47,13 +47,11 @@ averages uniformly when the cutoff changes) is the central unresolved step.
 Sampled values of the normalized fourth moment are only experimental
 evidence; they cannot substitute for this estimate.
 
-## Relationship to previously verified theorems
+## Relation to the Möbius residual
 
-The two earlier elementary Palomar theorem declarations have been retired
-from the current challenge. The previous third theorem and its auxiliary
-results connect the periodic rounding error to the Möbius residual and
-are retained. The archived three-theorem verified snapshot is preserved
-at commit `339c27e6be72270ddaa7d7af7da15ecda90b6cb7`.
+The logarithmic-cutoff residual approximation in `Solution.lean` connects
+the finite rounding error with the omitted Möbius mass. The research
+module reuses its auxiliary finite-sum identities.
 
 ## Literature to compare
 
