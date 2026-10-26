@@ -118,6 +118,35 @@ private theorem fourth_power_finset_sum (s : Finset ℕ) (f : ℕ → ℝ) :
   simp only [pow_succ, pow_zero, mul_one,
     Finset.sum_mul, Finset.mul_sum, mul_assoc]
 
+
+/-- The local centered rational fractional part at a fixed divisor. -/
+noncomputable def centeredModularFraction (M d H : ℕ) : ℝ :=
+  (((M % d : ℕ) : ℝ) / (d : ℝ)) - modularFractionMean d H
+
+/-- The exact fourth-moment tensor prior to any analytic cancellation:
+this identity isolates the four-divisor correlations that would need
+to be bounded to obtain O(B²) instead of the trivial O(B⁴). -/
+theorem empiricalFourthMoment_eq_fourfold_sum (B H : ℕ) :
+    empiricalFourthMoment B H =
+      (∑ m ∈ Finset.range H,
+        ∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+        ∑ c ∈ Finset.Icc 1 B,
+        ∑ d ∈ Finset.Icc 1 B,
+          (moebiusReal a * centeredModularFraction m a H) *
+          (moebiusReal b * centeredModularFraction m b H) *
+          (moebiusReal c * centeredModularFraction m c H) *
+          (moebiusReal d * centeredModularFraction m d H)) / (H : ℝ) := by
+  unfold empiricalFourthMoment
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [centered_roundingError_eq_modular_sum]
+  change (∑ d ∈ Finset.Icc 1 B,
+      moebiusReal d * centeredModularFraction m d H) ^ 4 = _
+  exact fourth_power_finset_sum (Finset.Icc 1 B)
+    (fun d => moebiusReal d * centeredModularFraction m d H)
+
 /-- Reuse of the already verified quantitative rounding bound. -/
 theorem abs_roundingError_le (M B : ℕ) :
     |roundingError M B| ≤ (B : ℝ) := by
