@@ -385,4 +385,39 @@ theorem moebius_log_cutoff_residual_approximation
         ((Nat.ceil x - 1 : ℕ) : ℝ) * harmonicMoebiusMass B| := abs_neg _
     _ ≤ (B : ℝ) := moebius_floor_rounding_error_le _ _
 
+
+/-- Exact modulo representation for the finite rounding discrepancy. -/
+theorem harmonic_floor_discrepancy_eq_mod_sum (M B : ℕ) :
+    (M : ℝ) * harmonicMoebiusMass B - floorWeightedMoebiusMass M B =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d * (((M % d : ℕ) : ℝ) / (d : ℝ)) := by
+  classical
+  have hterm (d : ℕ) (hd : d ∈ Finset.Icc 1 B) :
+      (M : ℝ) * (moebiusReal d / (d : ℝ)) -
+          moebiusReal d * ((M / d : ℕ) : ℝ) =
+        moebiusReal d * (((M % d : ℕ) : ℝ) / (d : ℝ)) := by
+    have hdpos : 0 < d := (Finset.mem_Icc.mp hd).1
+    have hne : (d : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hdpos)
+    have hmod : (M : ℝ) =
+        ((M % d : ℕ) : ℝ) + (d : ℝ) * ((M / d : ℕ) : ℝ) := by
+      exact_mod_cast (Nat.mod_add_div M d).symm
+    have hfrac :
+        (M : ℝ) / (d : ℝ) - ((M / d : ℕ) : ℝ) =
+          ((M % d : ℕ) : ℝ) / (d : ℝ) := by
+      apply (eq_div_iff hne).2
+      field_simp [hne]
+      nlinarith [hmod]
+    calc
+      (M : ℝ) * (moebiusReal d / (d : ℝ)) -
+          moebiusReal d * ((M / d : ℕ) : ℝ) =
+          moebiusReal d *
+            ((M : ℝ) / (d : ℝ) - ((M / d : ℕ) : ℝ)) := by ring
+      _ = moebiusReal d *
+          (((M % d : ℕ) : ℝ) / (d : ℝ)) := by rw [hfrac]
+  unfold harmonicMoebiusMass floorWeightedMoebiusMass
+  rw [Finset.mul_sum, ← Finset.sum_sub_distrib]
+  apply Finset.sum_congr rfl
+  intro d hd
+  exact hterm d hd
+
 end TruncatedSieveFlux
