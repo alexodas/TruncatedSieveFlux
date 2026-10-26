@@ -126,9 +126,9 @@ fidelity:
     modulus-three proof commit `b6a0810`.
     The CRT factorization of independent coprime residue sums and
     the centered ZMod correlation have passed Lean compilation.
-    A newly proposed natural-indexed CRT bridge and exact covariance
-    theorem cover all positive coprime pairs on any common period,
-    but their Lean CI is still pending. The general non-coprime
+    The natural-indexed CRT bridge and exact gcd covariance theorem
+    for all positive coprime pairs on any positive common period have
+    passed GitHub Actions Lean verify. The general non-coprime
     off-diagonal gcd covariance remains open.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
