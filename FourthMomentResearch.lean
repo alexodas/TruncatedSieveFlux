@@ -1463,7 +1463,13 @@ private theorem mod_three_shift_residue_sum
     m % 3 + (b + m) % 3 + ((b + b) + m) % 3 = 3 := by
   have hfirst : m % 3 < 3 := Nat.mod_lt m (by omega)
   have hsecond : b % 3 < 3 := Nat.mod_lt b (by omega)
-  omega
+  have hcase : b % 3 = 1 ∨ b % 3 = 2 := by omega
+  simp only [Nat.add_mod]
+  rcases hcase with hcase | hcase
+  · rw [hcase]
+    omega
+  · rw [hcase]
+    omega
 
 /-- The three centered fractions modulo three cancel after translating
 by b and 2b, when b is coprime to three. -/
