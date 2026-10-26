@@ -117,6 +117,24 @@ the arithmetic bound still need formalization in Lean.
 The detailed argument and precise verification status appear in
 [FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md).
 
+### CRT route toward arbitrary coprime moduli (proofs under CI review)
+
+The new general-purpose lemmas `coprime_zmod_product_sum_factorization` and
+`coprime_zmod_centered_orthogonality` use Mathlib's **Chinese remainder
+equivalence** `ZMod (a*b) ≃ ZMod a × ZMod b` for coprime moduli. This changes
+a complete sum of a product of residue functions into the **product of their
+separate complete sums**. The subsequent `centered_zmod_residue_sum_zero`
+and `coprime_zmod_centered_residue_product_zero` specialize the mechanism
+to centered real residues, obtaining exact zero correlation in
+CRT-indexed form for arbitrary coprime moduli.
+
+These additions are **not yet CI-confirmed**. In particular, the bridge from
+CRT-indexed sums on `ZMod (a*b)` back to the existing
+`empiricalModularCovariance a b T` on natural-number ranges remains to be
+formalized. Therefore **the full coprime covariance theorem is not yet
+claimed**, and the non-coprime off-diagonal gcd identity and the uniform
+fourth-moment target remain open.
+
 ## Supporting lemmas and the finite-sieve theorem
 
 The file `FourthMomentResearch.lean` also proves the exact rational
