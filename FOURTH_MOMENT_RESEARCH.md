@@ -86,10 +86,13 @@ The `Solution.lean` module supplies the finite Möbius divisor-sieve
 identity and the quotient/remainder bound. The original `comparator.json` selects only
 `moebius_log_cutoff_residual_approximation`, which bounds
 the residual-rounding discrepancy by the integer cutoff.
-The second `comparator-covariance.json` selects two
-Mathlib-only challenges proving the general gcd covariance and
-exact second moment. Both research wrappers passed independent
-NanoDa and con-ron Comparator verification. Other helper
+The second `comparator-covariance.json` selects five
+Mathlib-only challenge statements: the general gcd covariance,
+exact second moment, unconditional quartic fourth-moment bound,
+fourth-to-second-moment inequality, and the conditional cubic
+estimate. The first two wrappers passed NanoDa and con-ron;
+the three further fourth-moment comparisons have been added
+and await their own Comparator CI result. Other helper
 theorems are not individually selected. Auxiliary
 lemmas prove the modular mean over any number of full periods,
 the rational remainder representation, and the unconditional
@@ -191,8 +194,10 @@ have passed the Lean build. The latter has now additionally
 been re-stated in a Mathlib-only `CovarianceChallenge` and
 compared against `CovarianceSolution` through
 `comparator-covariance.json`, alongside the exact finite
-second moment. The separate Comparator run passed both
-NanoDa and con-ron independent kernel checks.
+second moment. The separate Comparator run for those two research statements
+passed both NanoDa and con-ron. Three additional fourth-moment
+statements have been added to the same comparison; their
+new independent-kernel outcome is still pending.
 Individual auxiliary lemmas are not separately named
 Comparator declarations.
 The theorem `empiricalModularCovariance_gcd_general` has
