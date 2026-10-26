@@ -1983,6 +1983,7 @@ private theorem coprime_centered_shifted_product_sum
         ((r * s : ℕ) : ℝ) * (u * v) := by
           simp only [Finset.sum_add_distrib, ← Finset.mul_sum,
             Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+          ring
     _ = ((r * s : ℕ) : ℝ) * u * v := by
           rw [hprod, hsumR, hsumS]
           ring
