@@ -10,8 +10,8 @@ namespace TruncatedSieveFlux
 # Truncated divisor sieve
 
 A real-valued finite divisor sieve, with an upper cutoff depending on an
-integer index. The stated results concern an exact residual identity and a
-combinatorial estimate for classical Möbius coefficients.
+integer index. This module retains the quantitative finite approximation of the
+omitted Möbius mass, with private supporting divisor identities.
 
 No unqualified analytic asymptotic estimate is asserted.
 -/
@@ -49,17 +49,6 @@ noncomputable def omittedMass
     (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (μ : ℕ → ℝ) : ℝ :=
   ∑ n ∈ Finset.range (Nat.ceil x),
     ∑ d ∈ omittedDivisors K A k n, μ d
-
-/-- Number of omitted divisor incidences, counted with multiplicity in `n`. -/
-noncomputable def omittedCount
-    (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) : ℝ :=
-  ∑ n ∈ Finset.range (Nat.ceil x),
-    ((omittedDivisors K A k n).card : ℝ)
-
-/-- Absolute value of the admitted signed mass. -/
-noncomputable def density
-    (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (μ : ℕ → ℝ) : ℝ :=
-  |admittedMass K A k x μ|
 
 /-! ## Finite Möbius cancellation and the residual decomposition -/
 
@@ -107,66 +96,12 @@ private theorem admitted_add_omitted
     (Finset.sum_filter_add_sum_filter_not (Nat.divisors n)
       (fun d : ℕ => A < (d : ℝ) ∧ (d : ℝ) ≤ K k) μ)
 
-/-- Main residual identity. -/
-theorem moebius_residual_identity
-    (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (hx : 2 ≤ x) :
-    density K A k x moebiusReal =
-      |1 - omittedMass K A k x moebiusReal| := by
-  have h := admitted_add_omitted K A k x moebiusReal
-  rw [complete_moebius_mass x hx] at h
-  change |admittedMass K A k x moebiusReal| =
-    |1 - omittedMass K A k x moebiusReal|
-  congr 1
-  linarith
-
 private theorem abs_moebiusReal_le_one (d : ℕ) :
     |moebiusReal d| ≤ 1 := by
   rcases ArithmeticFunction.moebius_eq_or d with h | h | h
   · simp [moebiusReal, h]
   · simp [moebiusReal, h]
   · simp [moebiusReal, h]
-
-private theorem abs_omittedMass_le_count
-    (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) :
-    |omittedMass K A k x moebiusReal| ≤ omittedCount K A k x := by
-  unfold omittedMass omittedCount
-  calc
-    |∑ n ∈ Finset.range (Nat.ceil x),
-      ∑ d ∈ omittedDivisors K A k n, moebiusReal d| ≤
-        ∑ n ∈ Finset.range (Nat.ceil x),
-          |∑ d ∈ omittedDivisors K A k n, moebiusReal d| :=
-            Finset.abs_sum_le_sum_abs _ _
-    _ ≤ ∑ n ∈ Finset.range (Nat.ceil x),
-          ∑ d ∈ omittedDivisors K A k n, |moebiusReal d| := by
-        apply Finset.sum_le_sum
-        intro n hn
-        exact Finset.abs_sum_le_sum_abs _ _
-    _ ≤ ∑ n ∈ Finset.range (Nat.ceil x),
-          ∑ d ∈ omittedDivisors K A k n, (1 : ℝ) := by
-        apply Finset.sum_le_sum
-        intro n hn
-        apply Finset.sum_le_sum
-        intro d hd
-        exact abs_moebiusReal_le_one d
-    _ = ∑ n ∈ Finset.range (Nat.ceil x),
-          ((omittedDivisors K A k n).card : ℝ) := by simp
-
-/-- Quantitative upper bound by omitted divisor incidences. -/
-theorem moebius_density_le_omitted_count
-    (K : ℕ → ℝ) (A : ℝ) (k : ℕ) (x : ℝ) (hx : 2 ≤ x) :
-    density K A k x moebiusReal ≤
-      1 + omittedCount K A k x := by
-  calc
-    density K A k x moebiusReal =
-        |1 - omittedMass K A k x moebiusReal| :=
-          moebius_residual_identity K A k x hx
-    _ ≤ 1 + |omittedMass K A k x moebiusReal| := by
-        have h := abs_add_le (1 : ℝ)
-          (-omittedMass K A k x moebiusReal)
-        simpa only [sub_eq_add_neg, abs_one, abs_neg] using h
-    _ ≤ 1 + omittedCount K A k x := by
-        exact add_le_add_right (abs_omittedMass_le_count K A k x) 1
-
 
 /-! ## Quantitative approximation of the floor-weighted Möbius sum -/
 

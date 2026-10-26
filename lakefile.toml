@@ -1,6 +1,6 @@
 name = "TruncatedSieveFlux"
 version = "0.1.0"
-defaultTargets = ["Challenge", "Solution"]
+defaultTargets = ["Challenge", "Solution", "FourthMomentResearch"]
 
 [[require]]
 name = "mathlib"
@@ -14,6 +14,7 @@ roots = ["Challenge"]
 [[lean_lib]]
 name = "Solution"
 roots = ["Solution"]
+
 [[lean_lib]]
 name = "FourthMomentResearch"
 roots = ["FourthMomentResearch"]
