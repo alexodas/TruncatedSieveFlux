@@ -86,7 +86,9 @@ theorem modularFractionMean_self (d : ℕ) (hd : 0 < d) :
   have hsum :
       (∑ n ∈ Finset.range d, (n : ℝ)) * 2 =
         (d : ℝ) * (((d - 1 : ℕ) : ℝ)) := by
-    exact_mod_cast (Finset.sum_range_id_mul_two d)
+    have hnat := congrArg (fun z : ℕ => (z : ℝ))
+      (Finset.sum_range_id_mul_two d)
+    simpa only [Nat.cast_mul, Nat.cast_sum] using hnat
   have hmod :
       (∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ))) =
         ∑ n ∈ Finset.range d, ((n : ℝ) / (d : ℝ)) := by
@@ -94,10 +96,9 @@ theorem modularFractionMean_self (d : ℕ) (hd : 0 < d) :
     intro n hn
     rw [Nat.mod_eq_of_lt (Finset.mem_range.mp hn)]
   unfold modularFractionMean
-  rw [hmod, Finset.sum_div, div_div_eq_div_mul]
+  rw [hmod, Finset.sum_div]
   have hsum' := congrArg (fun z : ℝ => z * (d : ℝ)) hsum
-  apply (div_eq_div_iff (mul_ne_zero hne hne)
-    (mul_ne_zero (by norm_num) hne)).2
+  field_simp
   nlinarith [hsum']
 
 /-- Exact regrouping: averaging the Möbius sum amounts to summing the
