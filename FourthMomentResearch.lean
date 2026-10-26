@@ -1882,6 +1882,40 @@ theorem gcd_reduced_moduli_coprime
   exact Nat.coprime_div_gcd_div_gcd
     (Nat.gcd_pos_of_pos_left b ha)
 
+/-- Exact decomposition of a centered modular residue on a gcd
+fiber: an independent quotient-residue fluctuation plus a correction
+depending only on the residue t modulo the gcd g. -/
+theorem centered_residue_on_gcd_fiber
+    (g r k t : ℕ) (hg : 0 < g) (hr : 0 < r) (ht : t < g) :
+    (((( (k * g + t) % (g * r) : ℕ) : ℝ) / ((g * r : ℕ) : ℝ)) -
+      (((g * r - 1 : ℕ) : ℝ) / (2 * ((g * r : ℕ) : ℝ)))) =
+    (((((k % r : ℕ) : ℝ) / (r : ℝ)) -
+      (((r - 1 : ℕ) : ℝ) / (2 * (r : ℝ)))) +
+      (((t : ℝ) - (((g - 1 : ℕ) : ℝ) / 2)) /
+        ((g : ℝ) * (r : ℝ)))) := by
+  rw [gcd_fiber_mod g r k t hg hr ht]
+  have hgr : 0 < g * r := Nat.mul_pos hg hr
+  have hsub : g * r - 1 = g * (r - 1) + (g - 1) := by
+    calc
+      g * r - 1 = g * ((r - 1) + 1) - 1 := by
+        rw [Nat.sub_add_cancel (by omega : 1 ≤ r)]
+      _ = g * (r - 1) + (g - 1) := by
+        rw [Nat.mul_add]
+        omega
+  rw [hsub]
+  have hgsub : (((g - 1 : ℕ) : ℝ)) = (g : ℝ) - 1 := by
+    rw [Nat.cast_sub (by omega : 1 ≤ g)]
+    norm_num
+  have hrsub : (((r - 1 : ℕ) : ℝ)) = (r : ℝ) - 1 := by
+    rw [Nat.cast_sub (by omega : 1 ≤ r)]
+    norm_num
+  simp only [Nat.cast_add, Nat.cast_mul]
+  rw [hgsub, hrsub]
+  have hgR : (g : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hg)
+  have hrR : (r : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hr)
+  field_simp [hgR, hrR]
+  <;> ring
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
