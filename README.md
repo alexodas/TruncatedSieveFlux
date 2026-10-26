@@ -1,133 +1,109 @@
-# Möbius rounding error and logarithmically truncated sieve — Lean 4
+# Periodic Möbius rounding error — Lean 4 / Mathlib
 
-A Lean 4/Mathlib development centered on a **finite rounding-error theorem**
-and verified preliminary lemmas for a **fourth-moment research problem**.
-The sharper fourth-moment conjecture remains unproved.
+This repository formalizes **exact periodic moments** of a truncated Möbius
+rounding error and develops a route toward a genuinely stronger oscillation
+theorem. The main research target is **open**; the verified finite identities
+are structural reductions, not yet a new asymptotic result.
 
-## Verified theorem
+## Outstanding research question — not yet proved
 
-The public `Challenge.lean` / `Solution.lean` pair verifies the theorem:
-`TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`.
+For integers `B ≥ 2` and `M ≥ 0`, define
 
-For `x ≥ 2`, put `B = 1 + ⌈(log x)^4⌉` and `M = ⌈x⌉ - 1`.
-With lower threshold `A = 0`, upper cutoff `K(k) = k`, and omitted
-signed Möbius mass `R(B,x)`, it proves the finite inequality
+```text
+E_B(M) = sum_{1 ≤ d ≤ B} mu(d) * ((M mod d) / d),
+L_B = lcm(1, ..., B),
+mean_B = (1/L_B) * sum_{0 ≤ M < L_B} E_B(M).
+```
+
+Does there exist a constant `C4 > 0`, independent of `B`, such that
+
+```text
+(1/L_B) * sum_{0 ≤ M < L_B} (E_B(M) - mean_B)^4 ≤ C4 * B^2
+```
+
+for all `B ≥ 2`? Establishing this bound could support quantitative
+results about the frequency of large oscillations. **Neither the bound
+nor those consequences have been proved, and no originality claim is made.**
+
+## Main results actually verified in Lean
+
+**Exact periodicity and centering.** Every positive common multiple
+`T` of `1,...,B` is a period of `E_B`, and its mean is exactly
+
+```text
+E_B(M + T) = E_B(M),
+mean_(B,T) = sum_{1 ≤ d ≤ B} mu(d) * (d - 1)/(2*d),
+E_B(M) - mean_(B,T)
+  = sum_{1 ≤ d ≤ B} mu(d) * ((M mod d)/d - (d - 1)/(2*d)).
+```
+
+In particular `T = B!` works. These statements have been proved for
+arbitrary positive common periods, not only for a sample of integers.
+
+**Second moment: reduction to pair correlations.** Define
+
+```text
+r_(d,H)(M) = (M mod d)/d
+             - (1/H) * sum_{0 ≤ n < H} (n mod d)/d,
+V_(B,H) = (1/H) * sum_{0 ≤ M < H} (E_B(M)-mean_(B,H))^2.
+```
+
+Lean proves that `V_(B,H)` is nonnegative and expands exactly into
+the double sum of weighted pair correlations:
+
+```text
+V_(B,H) = (1/H) * sum_{0 ≤ M < H} sum_{1 ≤ a,b ≤ B}
+  mu(a)*mu(b)*r_(a,H)(M)*r_(b,H)(M).
+```
+
+The diagonal covariance for a complete modulus is also formalized:
+
+```text
+(1/d) * sum_{0 ≤ M < d} (M/d - (d-1)/(2*d))^2
+   = (d^2 - 1)/(12*d^2)    (d ≥ 1).
+```
+
+**Fourth moment: exact correlation expansion.** The analogous
+four-index expansion is verified in Lean. It reduces the problem to
+four-way arithmetic correlations; it does **not** bound their total
+contribution by `O(B^2)`.
+
+See [FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md) for the
+precise open problem, mathematical obstacles, and proof status.
+
+## Supporting lemmas and the finite-sieve theorem
+
+The file `FourthMomentResearch.lean` also proves the exact rational
+remainder representation, mean over complete modular periods,
+elementary uniform bounds, and the coarse fourth-moment bound
+
+```text
+|E_B(M)| ≤ B,
+fourth_(B,H) ≤ 16*B^4    (H ≥ 1).
+```
+
+The `Challenge.lean` / `Solution.lean` pair has **one** submitted
+Comparator theorem, `moebius_log_cutoff_residual_approximation`.
+It links the periodic error to the omitted signed divisor mass of the
+logarithmically truncated sieve: for `x ≥ 2`,
+`B = 1+ceil((log x)^4)` and `M=ceil(x)-1`,
 
 ```text
 |R(B,x) - 1 + M * sum_{1 ≤ d ≤ B} mu(d)/d| ≤ B.
 ```
 
-This is an elementary bound on a *rounding discrepancy*, not an
-asymptotic cancellation estimate for the Möbius function.
+This is a supporting **finite** approximation, not an asymptotic
+cancellation theorem. It is not the claimed resolution of the open
+fourth-moment question.
 
-## Additional machine-checked research lemmas
+## Checking the proofs
 
-The separate Lean module `FourthMomentResearch.lean` defines
-
-```text
-E_B(M) = M * sum_{1 ≤ d ≤ B} mu(d)/d
-         - sum_{1 ≤ d ≤ B} mu(d) * floor(M/d)
-       = sum_{1 ≤ d ≤ B} mu(d) * ((M mod d)/d).
-```
-
-For `H ≥ 1`, let `mean_(B,H)` be the average of `E_B(M)` on
-`0 ≤ M < H`, and `fourth_(B,H)` the corresponding centered fourth
-moment. The following statements have been proved in Lean:
-
-```text
-|E_B(M)| ≤ B
-|mean_(B,H)| ≤ B
-fourth_(B,H) ≤ (2B)^4 = 16B^4.
-```
-
-The exact modulo representation is also proved in Lean. These finite
-facts set up the research question but are **not** a nontrivial
-fourth-moment improvement: the `B^4` growth follows from the
-pointwise error bound.
-
-## Exact periodicity and fourth-order correlations
-
-The research module also establishes that the fractional-part error is
-periodic for every common multiple `T` of `1,...,B`:
-
-```text
-E_B(M + T) = E_B(M),    in particular T = B!.
-```
-
-For each `H`, write
-
-```text
-r_(d,H)(M) = (M mod d)/d - (1/H) * sum_{0 ≤ n < H} (n mod d)/d.
-```
-
-A proved exact decomposition isolates the correlations:
-
-```text
-E_B(M) - mean_(B,H) = sum_{1 ≤ d ≤ B} mu(d) * r_(d,H)(M).
-```
-
-Expanding the fourth power gives a proved, **finite fourfold formula**:
-
-```text
-fourth_(B,H) =
-  (1/H) * sum_{0 ≤ M < H} sum_{a,b,c,d ≤ B}
-    mu(a)*mu(b)*mu(c)*mu(d)
-    * r_(a,H)(M)*r_(b,H)(M)*r_(c,H)(M)*r_(d,H)(M).
-```
-
-No bound on these four-way correlations beyond the elementary
-`O(B^4)` estimate is established. That is the outstanding research task.
-
-## Exact mean over a complete period
-
-For a positive integer `T` divisible by every `1 ≤ d ≤ B`, the new
-Lean theorems prove the closed formula
-
-```text
-mean_(B,T) = sum_{1 ≤ d ≤ B} mu(d) * (d-1)/(2*d).
-```
-
-The proof first shows that the average of `(M mod d)/d` over
-`q*d` consecutive integers is exactly `(d-1)/(2*d)`, for
-all `q,d ≥ 1`. The formula therefore applies in particular
-to `T = B!` and is independent of the chosen positive common
-period. The resulting centered error is explicitly
-
-```text
-E_B(M) - mean_(B,T) =
-  sum_{1 ≤ d ≤ B} mu(d) * ((M mod d)/d - (d-1)/(2*d)).
-```
-
-These are exact finite identities, **not** a bound of order
-`O(B^2)` on the fourth moment.
-
-## Open research problem (NOT proved)
-
-Write `L_B = lcm(1,...,B)` and `mean_B` for the average of `E_B`
-over `0 ≤ M < L_B`. The proposed theorem asks whether an
-absolute constant `C4 > 0` exists such that
-
-```text
-(1/L_B) * sum_{0 ≤ M < L_B} (E_B(M)-mean_B)^4 ≤ C4*B^2
-```
-
-for every `B ≥ 2`.
-
-This **has not been proved**, and no mathematical novelty or
-positive-density consequence is claimed. See
-[FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md) for the
-precise research status and obstacles.
-
-## Verification
-
-`Challenge.lean` has **one intentional** theorem `sorry`.
-`Solution.lean` and `FourthMomentResearch.lean` have no `sorry`.
-
-The CI builds all three modules. Comparator, with independent Lean,
-NanoDa and con-ron kernels, compares the stated theorem
-between Challenge and Solution. The additional fourth-moment lemmas
-are checked by the normal Lean compiler, but are not registered as
-separate Comparator challenges.
+`Challenge.lean` contains one **intentional** `sorry` for the challenge
+statement. `Solution.lean` and `FourthMomentResearch.lean` contain
+no `sorry`. The CI builds all three Lean modules; Comparator compares
+the one Challenge/Solution theorem with Lean, NanoDa and con-ron.
+The research lemmas are compiled by Lean, but are not separately listed
+as Comparator challenge theorems.
 
 ```sh
 lake exe cache get
@@ -135,17 +111,18 @@ lake build Challenge Solution FourthMomentResearch
 bash scripts/check.sh
 ```
 
-Comparator also requires `bwrap` and the bundled independent kernels.
+Running Comparator also requires `bwrap` and its independent kernels.
 
-## Authorship and AI-use transparency
+## Authorship and transparent AI assistance
 
 **Author and responsible maintainer:** Alessandro Odasso.
 
-**AI disclosure:** ChatGPT **GPT-6 with High thinking effort**
-(as reported by the contributor) was used in Lean proof drafting,
-debugging, research exploration, and repository configuration.
-Human-directed, AI-assisted work. Machine verification is not
-independent mathematical peer review and does not establish novelty.
+ChatGPT **GPT-6 with High thinking effort** (as reported by the
+contributor) assisted with mathematical exploration, proof drafting,
+debugging, and repository verification. The project was human-directed
+and AI-assisted. Formal verification establishes correctness of the
+Lean statements actually proved; it does not establish mathematical
+originality or replace independent mathematical review.
 
-Metadata and source limitations are recorded in
-[formalization.yaml](formalization.yaml). License: Apache-2.0.
+Project metadata: [formalization.yaml](formalization.yaml).
+License: Apache-2.0.
