@@ -201,6 +201,22 @@ theorem empiricalErrorMean_factorial (B : ℕ) :
   exact Nat.dvd_factorial (Finset.mem_Icc.mp hd).1
     (Finset.mem_Icc.mp hd).2
 
+/-- Exact centering formula for the Möbius error on every positive
+common period. The subtracted mean is independent of the chosen period. -/
+theorem centered_roundingError_common_period (M B T : ℕ)
+    (hTpos : 0 < T) (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    roundingError M B - empiricalErrorMean B T =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d *
+          ((((M % d : ℕ) : ℝ) / (d : ℝ)) -
+            (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ)))) := by
+  rw [roundingError_eq_mod_sum,
+    empiricalErrorMean_common_period B T hTpos hT,
+    ← Finset.sum_sub_distrib]
+  apply Finset.sum_congr rfl
+  intro d hd
+  ring
+
 /-- Each centered error is a weighted sum of centered modular fractions.
 This is the direct starting point for a fourth-order correlation expansion. -/
 theorem centered_roundingError_eq_modular_sum (M B H : ℕ) :
