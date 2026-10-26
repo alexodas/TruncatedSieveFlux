@@ -98,10 +98,13 @@ V_(B,T) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*
 ```
 
 for every positive common period `T` of `1,…,B`.
-This exact identity is proved in Lean; the quantitative upper bound
+This exact identity is proved in Lean and its corresponding
+independently stated result has **also passed Comparator**
+with NanoDa and con-ron (see below). The quantitative upper bound
 `V_(B,T) ≤ 3B/4` from the paper-level argument is **not**
-yet formalized. The research lemmas are Lean-compiled, not
-independently checked by Palomar Comparator.
+yet formalized. Supporting lemmas are checked by Lean and those
+needed by compared proofs are covered as dependencies, but not
+all have separate Comparator Challenge statements.
 
 **Period invariance.** Lean also proves that any two positive
 common averaging periods give the same variance and the same
@@ -225,15 +228,11 @@ research declarations:
   the cubic estimate **assuming** a linear variance bound, not
   an unconditional cubic theorem.
 
-The additional Comparator run has **passed** on commit `207c7e3`:
-Lean's kernel replay, NanoDa, and con-ron accepted the exported
-proofs of both originally selected covariance/variance theorems.
-The three fourth-moment claims were also checked successfully:
-the full five-theorem comparison passed Lean's replay,
-NanoDa, and con-ron on commit `d7be10a`.
-The original
-`comparator.json` continues to check **only** the finite
-cutoff-sieve theorem. The two configurations can be submitted
+All **five** selected research claims have passed Comparator
+with independent NanoDa and con-ron kernel checks, as confirmed
+by [GitHub Actions run 40368689838](https://github.com/alexodas/TruncatedSieveFlux/actions/runs/40368689838).
+The original `comparator.json` continues to check **only**
+the finite cutoff-sieve theorem. The two configurations can be submitted
 **separately** to Palomar using the same full commit SHA; each
 configuration corresponds to a separate registry entry.
 
@@ -271,14 +270,15 @@ for a Comparator challenge. The completed proof modules
 `formalization.yaml` reports `status.sorry_count: 0`,
 excluding the deliberate placeholders in both Challenge modules.
 
-**Important submission scope:** `comparator.json` selects **only**
-`TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`
-from the `Challenge`/`Solution` pair. The general gcd-covariance
-theorem and exact second-moment formula are already **proved by Lean**
-in `FourthMomentResearch.lean`, but they are **not part of the
-Comparator submission**. Passing Comparator with the present
-configuration does **not** amount to an independent-kernel
-comparison of those research theorems.
+**Important submission scope:** the original `comparator.json`
+selects **only** `TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`
+from `Challenge`/`Solution`. The separate
+`comparator-covariance.json` selects **five** research statements
+from `CovarianceChallenge`/`CovarianceSolution`, including the
+general gcd covariance and exact second moment. Both configurations
+have passed Comparator with independent kernels. To substantiate a
+particular result in Palomar, submit the corresponding configuration;
+passing one does not imply that the other was submitted.
 
 ```sh
 lake exe cache get
@@ -288,17 +288,16 @@ bash scripts/check.sh comparator-covariance.json
 ```
 
 For a Palomar submission, use the public repository
-`alexodas/TruncatedSieveFlux`, the **full 40-character SHA of the
-commit being submitted**, and the repository-relative Comparator
-configuration path `comparator.json`. The conventional metadata
-path is `formalization.yaml`. A branch name or short SHA is not
-a substitute for the full commit identifier. Running Comparator
-locally also requires the configured independent-kernel tooling.
-
-To submit the **general gcd covariance itself** to Comparator in
-a future iteration, the corresponding statement must first be
-exposed in the Challenge/Solution comparison interface and listed
-in `comparator.json`; documentation changes alone cannot do that.
+`alexodas/TruncatedSieveFlux` and the **full 40-character SHA
+of the commit being submitted**. Select the repository-relative
+configuration path `comparator.json` for the finite-sieve theorem,
+or `comparator-covariance.json` for the five research results.
+The metadata path is `formalization.yaml`. A branch name or
+short SHA is not a substitute for a pinned full commit identifier.
+Running Comparator locally also requires the independent-kernel
+tooling. These are two separate Comparator configurations; the
+five research claims **already have** their own Challenge/Solution
+interface and a successful independent-kernel comparison.
 
 ## Authorship and transparent AI assistance
 
