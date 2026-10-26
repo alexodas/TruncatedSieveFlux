@@ -336,6 +336,70 @@ private theorem sum_range_square_real (d : ℕ) :
       simp only [Finset.sum_range_succ, Nat.cast_succ]
       nlinarith [ih]
 
+
+/-- Diagonal modular covariance over one complete modulus.
+This is the classical variance (d²-1)/(12d²) of the discrete uniform grid. -/
+theorem empiricalModularCovariance_diagonal (d : ℕ) (hd : 0 < d) :
+    empiricalModularCovariance d d d =
+      (((d : ℝ) ^ 2 - 1) / (12 * (d : ℝ) ^ 2)) := by
+  let D : ℝ := (d : ℝ)
+  let C : ℝ := (((d - 1 : ℕ) : ℝ) / (2 * D))
+  let S₁ : ℝ := ∑ m ∈ Finset.range d, (m : ℝ)
+  let S₂ : ℝ := ∑ m ∈ Finset.range d, (m : ℝ) ^ 2
+  have hD : D ≠ 0 := by
+    dsimp [D]
+    exact_mod_cast (Nat.ne_of_gt hd)
+  have hsubNat : 1 ≤ d := hd
+  have hsub : (((d - 1 : ℕ) : ℝ)) = D - 1 := by
+    dsimp [D]
+    rw [Nat.cast_sub hsubNat]
+    norm_num
+  have hS₁ : S₁ * 2 = D * (D - 1) := by
+    dsimp [S₁, D]
+    have hnat := congrArg (fun z : ℕ => (z : ℝ))
+      (Finset.sum_range_id_mul_two d)
+    simpa [hsub] using hnat
+  have hS₂ : S₂ * 6 = D * (D - 1) * (2 * D - 1) := by
+    exact sum_range_square_real d
+  have hC : C = (D - 1) / (2 * D) := by
+    dsimp [C]
+    rw [hsub]
+  have hcov :
+      empiricalModularCovariance d d d =
+        (∑ m ∈ Finset.range d, ((m : ℝ) / D - C) ^ 2) / D := by
+    unfold empiricalModularCovariance
+    apply congrArg (fun y : ℝ => y / (d : ℝ))
+    apply Finset.sum_congr rfl
+    intro m hm
+    simp only [centeredModularFraction, modularFractionMean_self d hd,
+      Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
+    dsimp [D, C]
+    ring
+  have hsum :
+      (∑ m ∈ Finset.range d, ((m : ℝ) / D - C) ^ 2) =
+        S₂ / D ^ 2 - (2 * C / D) * S₁ + D * C ^ 2 := by
+    have hterm (m : ℕ) :
+        ((m : ℝ) / D - C) ^ 2 =
+          (m : ℝ) ^ 2 / D ^ 2 - (2 * C / D) * (m : ℝ) + C ^ 2 := by ring
+    calc
+      (∑ m ∈ Finset.range d, ((m : ℝ) / D - C) ^ 2) =
+          ∑ m ∈ Finset.range d,
+            ((m : ℝ) ^ 2 / D ^ 2 - (2 * C / D) * (m : ℝ) + C ^ 2) := by
+              apply Finset.sum_congr rfl
+              intro m hm
+              exact hterm m
+      _ = S₂ / D ^ 2 - (2 * C / D) * S₁ + D * C ^ 2 := by
+              dsimp [S₁, S₂, D]
+              simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib,
+                div_eq_mul_inv, ← Finset.sum_mul, ← Finset.mul_sum,
+                Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+              ring
+  rw [hcov, hsum, hC]
+  dsimp [D]
+  field_simp
+  nlinarith [hS₁, hS₂,
+    congrArg (fun x : ℝ => x * (D - 1)) hS₁]
+
 /-- Reuse of the already verified quantitative rounding bound. -/
 theorem abs_roundingError_le (M B : ℕ) :
     |roundingError M B| ≤ (B : ℝ) := by
