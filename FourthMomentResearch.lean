@@ -96,7 +96,7 @@ theorem modularFractionMean_self (d : ℕ) (hd : 0 < d) :
     intro n hn
     rw [Nat.mod_eq_of_lt (Finset.mem_range.mp hn)]
   unfold modularFractionMean
-  rw [hmod, Finset.sum_div]
+  rw [hmod, ← Finset.sum_div]
   have hsum' := congrArg (fun z : ℝ => z * (d : ℝ)) hsum
   calc
     ((∑ n ∈ Finset.range d, (n : ℝ)) / (d : ℝ)) / (d : ℝ) =
