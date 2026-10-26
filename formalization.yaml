@@ -36,31 +36,32 @@ related_formalizations: []
 
 status:
   scope: >-
-    The mathematical focus is on exact periodic Möbius rounding-error
-    moments. FourthMomentResearch.lean proves a common-period formula
-    for the mean and centering, the exact weighted quadratic-form
-    expression for the second moment, covariance symmetry, the modulus-one
-    boundary case for gcd covariance, a pointwise common-period
-    centering normal form, a full-period explicit centered-product
-    formula for arbitrary two moduli, a generic covariance
-    two-sided quadratic inequalities, a common-period product
-    periodicity lemma, an explicit covariance formula on the
-    least common period, the theorem that covariance is invariant
-    across all positive common periods, and an exact diagonal
-    covariance value valid on every positive multiple, and new
-    period-invariance statements for the full second and fourth
-    centered moments (Lean compilation verified), as well as the fourfold expansion,
-    an unconditional B^4/16 fourth-moment bound on full periods,
-    and a conditional cubic bound from an assumed linear variance bound.
-    A paper-level O(B^3) estimate using a classical gcd covariance
-    formula is recorded in the research notes but is NOT proved in Lean.
-    The desired uniform O(B^2) fourth-moment inequality and the
-    associated positive-density or Gaussian consequences are OPEN.
-    The single Comparator-checked Palomar theorem is
-    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation;
-    its finite residual bound is a supporting result.
-    Challenge contains one intentionally admitted theorem statement,
-    whereas Solution and FourthMomentResearch have no sorry.
+    FourthMomentResearch.lean formalizes exact periodic Möbius
+    rounding errors, centering, covariance and fourth-moment
+    correlation expansions, and the complete centered second
+    moment as a finite gcd-weighted quadratic form.
+    The verified theorem empiricalModularCovariance_gcd_general
+    proves C(a,b;T)=(gcd(a,b)^2-1)/(12*a*b) for all positive a,b
+    and every positive common period T; no comparability or
+    coprimality between the original moduli is required.
+    Its proof splits by g=gcd(a,b), applies CRT to the
+    coprime quotients and reduces remaining correlations
+    to the verified diagonal covariance at g.
+    The theorem empiricalSecondMoment_eq_gcd_sum proves
+    the exact Möbius-weighted sum using this identity.
+    The full second and fourth moments are also invariant
+    under changing positive common periods, and
+    the full-period B^4/16 fourth-moment bound and
+    conditional fourth-to-second-moment inequality are proved.
+    The paper-level linear variance bound and resulting
+    O(B^3) fourth-moment estimate remain unformalized.
+    The uniform O(B^2) fourth-moment conjecture and its
+    potential density or Gaussian consequences remain OPEN.
+    No originality or novel asymptotic theorem is claimed.
+    The only Comparator-submitted theorem remains
+    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
+    Challenge contains one intentionally admitted theorem
+    statement, while Solution and FourthMomentResearch have no sorry.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -94,51 +95,19 @@ automation:
 
 fidelity:
   divergences: >-
-    The verified structural formulas are not a nontrivial bound
-    for the fourth moment. FourthMomentResearch proves only
-    O(B^4) unconditionally, not the conjectured O(B^2).
-    The diagonal modular covariance is proved, but the general
-    off-diagonal gcd covariance formula is not yet formalized; only
-    the modulus-one boundary case and the explicit pointwise
-    common-period centering normal form and the exact arbitrary-modulus
-    explicit centered-product reduction and the generic bound
-    -(C(a,a;H)+C(b,b;H)) <= 2*C(a,b;H) <=
-    C(a,a;H)+C(b,b;H) and common-period product periodicity
-    and the lcm-period specialization and covariance invariance
-    under common-period changes are newly included. The diagonal
-    formula extends to every positive multiple of its modulus.
-    New proof scripts assert that the full variance and fourth
-    moment agree on any two positive common periods; these do not
-    settle the asymptotic fourth-moment research target.
-    A new divisor-family gcd-covariance proof is proposed and pending
-    CI validation: if a divides b, covariance equals
-    (gcd(a,b)^2-1)/(12*a*b) over any positive multiple of b.
-    Symmetric corollaries target all positive pairs comparable
-    under divisibility (a divides b or b divides a).
-    The new proof for (2,b) with b odd uses cancellation on the
-    common period 2*b and has passed Lean verify. The follow-up
-    even/odd case split and symmetry target all positive pairs with
-    either modulus equal to two; both corollaries passed Lean verify.
-    The next proposed proof treats all (3,b) with 3 not dividing b
-    by cancellation across three b-blocks, then combines it with
-    the divisible case to cover any pair with modulus three;
-    Lean and Comparator checks have succeeded on the corrected
-    modulus-three proof commit `b6a0810`.
-    The CRT factorization of independent coprime residue sums and
-    the centered ZMod correlation have passed Lean compilation.
-    The natural-indexed CRT bridge and exact gcd covariance theorem
-    for all positive coprime pairs on any positive common period have
-    passed GitHub Actions Lean verify. The new gcd-fiber route
-    reduces arbitrary a,b to coprime quotients after factoring
-    g=gcd(a,b), reindexes into g residue fibers, and uses the
-    centered-fraction decomposition and shifted CRT correlation.
-    The fiber reindexing and pointwise decomposition passed Lean
-    compilation. A complete general gcd-covariance proof has been
-    submitted in Lean but its CI is still pending; do not count it
-    as a verified result yet. The fourth-moment O(B^2) target
-    remains open.
-    The existing Comparator challenge concerns only the finite
-    logarithmic-cutoff error theorem, not the open research target.
+    Lean has verified the complete finite covariance identity
+    and the explicit gcd-weighted quadratic formula for the
+    second moment on positive common periods, using CRT and
+    the general gcd-fiber decomposition. These are classical
+    finite identities, not novel analytic cancellation.
+    The arithmetic bound V_B <= 3B/4, the unconditional
+    O(B^3) fourth-moment estimate derived at paper level,
+    and especially the desired O(B^2) fourth-moment bound
+    are NOT proved in Lean. The four-variable correlations
+    remain an independent mathematical obstacle.
+    The Palomar Comparator challenge concerns only the
+    supporting finite logarithmic-cutoff error estimate,
+    not the general gcd covariance or the open moment bounds.
 
 review:
   status: "unreviewed; Lean compilation and Comparator checks apply to proved results"
