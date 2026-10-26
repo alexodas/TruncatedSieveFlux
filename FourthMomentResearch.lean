@@ -115,8 +115,8 @@ private theorem fourth_power_finset_sum (s : Finset ℕ) (f : ℕ → ℝ) :
     (∑ d ∈ s, f d) ^ 4 =
       ∑ a ∈ s, ∑ b ∈ s, ∑ c ∈ s, ∑ d ∈ s,
         f a * f b * f c * f d := by
-  simp only [pow_succ, pow_zero, mul_one,
-    Finset.sum_mul, Finset.mul_sum, mul_assoc]
+  simp only [pow_succ, pow_zero, one_mul,
+    Finset.sum_mul, Finset.mul_sum, mul_assoc, mul_comm, mul_left_comm]
 
 
 /-- The local centered rational fractional part at a fixed divisor. -/
