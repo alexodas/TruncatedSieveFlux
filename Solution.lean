@@ -276,8 +276,9 @@ private theorem admittedMass_integer_cutoff_eq_floor
   classical
   let M : ℕ := Nat.ceil x - 1
   have hceil : M + 1 = Nat.ceil x := by
+    have h02 : ((0 : ℕ) : ℝ) < (2 : ℝ) := by norm_num
     have hn : 0 < Nat.ceil x :=
-      Nat.lt_ceil.mpr (by linarith : (0 : ℝ) < x)
+      Nat.lt_ceil.mpr (lt_of_lt_of_le h02 hx)
     dsimp [M]
     omega
   have hinner (n : ℕ) :
