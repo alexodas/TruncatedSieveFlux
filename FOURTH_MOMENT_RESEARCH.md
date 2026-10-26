@@ -63,6 +63,65 @@ lemmas prove the modular mean over any number of full periods,
 the rational remainder representation, and the unconditional
 `16 B^4` centered fourth-moment bound.
 
+## Quantitative reduction and an O(B³) paper argument
+
+On any positive common period `T`, the following are **proved in Lean**:
+`abs_centered_roundingError_common_period_le_half`,
+`empiricalFourthMoment_le_secondMoment_mul`,
+`empiricalFourthMoment_le_half_quartic`, and
+`empiricalFourthMoment_le_cubic_of_variance_le`.
+
+```text
+|E_B(M) - mean_(B,T)| ≤ B/2
+fourth_(B,T) ≤ (B²/4) * V_(B,T)
+fourth_(B,T) ≤ B⁴/16
+V_(B,T) ≤ C*B  ==>  fourth_(B,T) ≤ (C/4)*B³
+```
+
+The cubic Lean theorem **assumes** the stated variance bound.
+That assumption is not yet proved in Lean.
+
+A **separate paper-level derivation**, not yet machine-checked,
+uses the classical finite-period covariance formula
+
+```text
+Cov((M mod a)/a, (M mod b)/b)
+    = (gcd(a,b)² - 1)/(12*a*b).
+```
+
+By the Möbius coefficient bound `|mu(d)| ≤ 1`,
+
+```text
+V_B ≤ (1/12) * sum_{1 ≤ a,b ≤ B} gcd(a,b)²/(a*b).
+```
+
+Write `a=g*r`, `b=g*s`, with `g=gcd(a,b)`. Dropping
+the coprimality restriction on `r,s`, and counting possible
+positive `g`, gives
+
+```text
+sum_{1 ≤ a,b ≤ B} gcd(a,b)²/(a*b)
+  ≤ B * sum_{r,s ≥ 1} 1/(r*s*max(r,s))
+  ≤ B * (sum_{n ≥ 1} n^(-3/2))²
+  ≤ 9B.
+```
+
+The last bound follows from
+`sum_{n ≥ 1} n^(-3/2) ≤ 1 + integral_1^infty x^(-3/2) dx = 3`.
+Hence, on every positive common period,
+
+```text
+V_B ≤ 3B/4
+fourth_(B,T) ≤ (B²/4)*V_B ≤ 3B³/16.
+```
+
+**Verification status:** the gcd covariance identity and final
+unconditional cubic estimate have *not* yet been proved in Lean.
+The covariance identity is classical; see for example
+https://math.stackexchange.com/questions/140499/a-sum-of-fractional-parts .
+The paper-level estimate should be independently reviewed.
+No claim of originality is made.
+
 ## What must be proved next
 
 The current file has **not** evaluated the off-diagonal modular
