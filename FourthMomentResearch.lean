@@ -1807,7 +1807,7 @@ theorem empiricalModularCovariance_gcd_coprime
         (12 * (a : ℝ) * (b : ℝ))) := by
   have habpos : 0 < a * b := Nat.mul_pos ha hb
   have ha_ab : a ∣ a * b := ⟨b, rfl⟩
-  have hb_ab : b ∣ a * b := ⟨a, by omega⟩
+  have hb_ab : b ∣ a * b := ⟨a, by simp [Nat.mul_comm]⟩
   have hcov :
       empiricalModularCovariance a b T =
         empiricalModularCovariance a b (a * b) := by
