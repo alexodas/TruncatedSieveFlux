@@ -85,6 +85,34 @@ contribution by `O(B^2)`.
 See [FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md) for the
 precise open problem, mathematical obstacles, and proof status.
 
+## A quantitative reduction (partially formalized)
+
+For every positive common period `T`, **Lean has proved** the
+pointwise and moment estimates
+
+```text
+|E_B(M) - mean_(B,T)| ≤ B/2,
+fourth_(B,T) ≤ (B²/4) * V_(B,T),
+fourth_(B,T) ≤ B⁴/16.
+```
+
+It also proves the conditional implication
+
+```text
+V_(B,T) ≤ C*B  ==>  fourth_(B,T) ≤ (C/4)*B³.
+```
+
+**Mathematical derivation, not yet fully in Lean:** combining the
+classical gcd-based covariance formula for rational fractional parts
+with an elementary divisor-sum bound gives `V_(B,T) ≤ 3B/4`,
+hence `fourth_(B,T) ≤ 3B³/16`. This is a genuine exponent
+improvement from 4 to 3, but appears elementary and is **not claimed
+as a novel mathematical result**. The full covariance formula and
+the arithmetic bound still need formalization in Lean.
+
+The detailed argument and precise verification status appear in
+[FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md).
+
 ## Supporting lemmas and the finite-sieve theorem
 
 The file `FourthMomentResearch.lean` also proves the exact rational
