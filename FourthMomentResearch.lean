@@ -108,6 +108,52 @@ theorem modularFractionMean_self (d : ℕ) (hd : 0 < d) :
             (mul_ne_zero (by norm_num) hne)).2
           nlinarith [hsum']
 
+/-- Summing the fractional parts over q complete cycles gives q copies
+of the sum over the basic modulus. -/
+private theorem modularFraction_sum_mul (d q : ℕ) :
+    (∑ n ∈ Finset.range (q * d), (((n % d : ℕ) : ℝ) / (d : ℝ))) =
+      (q : ℝ) * ∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ)) := by
+  let f : ℕ → ℝ := fun n => (((n % d : ℕ) : ℝ) / (d : ℝ))
+  change (∑ n ∈ Finset.range (q * d), f n) =
+    (q : ℝ) * ∑ n ∈ Finset.range d, f n
+  induction q with
+  | zero => simp
+  | succ q ih =>
+      calc
+        (∑ n ∈ Finset.range (q.succ * d), f n) =
+            (∑ n ∈ Finset.range (q * d), f n) +
+            (∑ n ∈ Finset.range d, f (q * d + n)) := by
+              simpa only [Nat.succ_mul] using
+                (Finset.sum_range_add f (q * d) d)
+        _ = (∑ n ∈ Finset.range (q * d), f n) +
+            (∑ n ∈ Finset.range d, f n) := by
+              congr 1
+              apply Finset.sum_congr rfl
+              intro n hn
+              simp [f, Nat.add_mod, Nat.mul_mod]
+        _ = (q.succ : ℝ) * ∑ n ∈ Finset.range d, f n := by
+              rw [ih]
+              push_cast
+              ring
+
+/-- Every positive integer multiple of d has the same average fractional
+part as one basic d-period. -/
+theorem modularFractionMean_multiple (d q : ℕ) (hd : 0 < d) (hq : 0 < q) :
+    modularFractionMean d (q * d) =
+      (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  have hqne : (q : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hq)
+  have hdne : (d : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hd)
+  have hbase := modularFractionMean_self d hd
+  unfold modularFractionMean at hbase ⊢
+  rw [modularFraction_sum_mul d q, Nat.cast_mul]
+  calc
+    ((q : ℝ) *
+      (∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ)))) /
+        ((q : ℝ) * (d : ℝ)) =
+      (∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ))) / (d : ℝ) := by
+        field_simp [hqne, hdne]
+    _ = (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := hbase
+
 /-- Exact regrouping: averaging the Möbius sum amounts to summing the
 averages of its individual rational fractional-part terms. -/
 theorem empiricalErrorMean_eq_weighted_modular_means (B H : ℕ) :
