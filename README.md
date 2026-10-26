@@ -1,20 +1,22 @@
 # Truncated Möbius divisor sieve — Lean 4
 
-A self-contained Lean 4/Mathlib project for two **elementary finite** results:
+A self-contained Lean 4/Mathlib project for three **elementary finite** results:
 
 1. An exact residual identity for the admitted Möbius mass of an indexed,
    truncated divisor sieve.
 2. An unconditional upper bound by one plus the number of omitted divisor
    incidences.
+3. A finite logarithmic-cutoff approximation to the omitted Möbius mass,
+   with an explicit bound on the rounding error.
 
 The mathematical statement is **not** an asymptotic cancellation estimate.
 There are no claims about the general growth of arbitrary sieve thresholds.
-The `Challenge.lean` file deliberately has the two `sorry` markers that a
+The `Challenge.lean` file deliberately has three `sorry` markers that a
 Comparator challenge is expected to contain. `Solution.lean` contains no
 `sorry` and imports only Mathlib. **Both Lean modules compile successfully**
 under GitHub Actions (Lean v4.35.0-rc2; run 40246677026).
-Comparator accepted both theorem declarations using Lean, NanoDa and con-ron
-(GitHub Actions run 40247244629). An independent mathematical review has
+Comparator accepted all three theorem declarations using Lean, NanoDa and
+con-ron (GitHub Actions run 40253160016). An independent mathematical review has
 **not yet** been completed.
 
 ## Why this formalization may be interesting
@@ -35,6 +37,20 @@ Here `density` is the absolute value of a **finite signed divisor sum**,
 not an asymptotic density of primes. The underlying finite sums range over
 `Nat.divisors n` for `n < Nat.ceil x`; `omittedCount` counts omitted
 **divisor incidences** across those values of `n`, not just distinct divisors.
+
+For the concrete specialization `A = 0`, `K(k) = k`, and
+`k(x) = 1 + ⌈(log x)^4⌉`, let `B = k(x)` and `M = ⌈x⌉ - 1`.
+The third theorem gives an **explicit finite approximation**:
+
+```text
+|R(k(x), x) - 1 + M * sum_{1 ≤ d ≤ B} (mu(d) / d)| ≤ B
+```
+
+The proof regroups the admitted divisor sum according to its divisors
+and bounds the combined error in replacing `floor(M / d)` by `M / d`.
+This controls the **rounding error**, not the harmonic Möbius sum itself.
+In particular, no new asymptotic cancellation estimate follows from this
+theorem without additional number-theoretic input.
 
 Three aspects may make the development useful:
 
@@ -76,7 +92,7 @@ The structured disclosure is also recorded in `formalization.yaml`.
 - `Challenge.lean`: standalone mathematical interface (definitions, declarations
   to audit, and deliberate theorem holes).
 - `Solution.lean`: duplicates the independent definitions and supplies proofs.
-- `comparator.json`: compares the two named theorem statements and proofs.
+- `comparator.json`: compares all three named theorem statements and proofs.
 - `lakefile.toml`, `lake-manifest.json`, `lean-toolchain`: pinned Lake project,
   copied consistently from the public Palomar starter dependencies.
 - `formalization.yaml`: project scope, attribution, AI use, and review status.
