@@ -1588,6 +1588,43 @@ theorem empiricalModularCovariance_gcd_three_coprime
     hgcd]
   norm_num
 
+/-- The gcd covariance identity for modulus three and any positive
+second modulus. The divisible case uses the earlier general theorem;
+the coprime case uses cancellation over three translated blocks. -/
+theorem empiricalModularCovariance_gcd_three_any
+    (b T : ℕ) (hb : 0 < b) (hTpos : 0 < T)
+    (h3T : 3 ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance 3 b T =
+      (((Nat.gcd 3 b : ℝ) ^ 2 - 1) /
+        (12 * (3 : ℝ) * (b : ℝ))) := by
+  by_cases hdiv : b % 3 = 0
+  · have h3b : 3 ∣ b := Nat.dvd_of_mod_eq_zero hdiv
+    exact empiricalModularCovariance_gcd_of_dvd
+      3 b T (by norm_num) hb hTpos h3b hbT
+  · exact empiricalModularCovariance_gcd_three_coprime
+      b T hdiv hTpos h3T hbT
+
+/-- The symmetric all-moduli family for the fixed modulus three. -/
+theorem empiricalModularCovariance_gcd_any_three
+    (a T : ℕ) (ha : 0 < a) (hTpos : 0 < T)
+    (haT : a ∣ T) (h3T : 3 ∣ T) :
+    empiricalModularCovariance a 3 T =
+      (((Nat.gcd a 3 : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (3 : ℝ))) := by
+  calc
+    empiricalModularCovariance a 3 T =
+        empiricalModularCovariance 3 a T :=
+          empiricalModularCovariance_comm a 3 T
+    _ = (((Nat.gcd 3 a : ℝ) ^ 2 - 1) /
+        (12 * (3 : ℝ) * (a : ℝ))) :=
+          empiricalModularCovariance_gcd_three_any
+            a T ha hTpos h3T haT
+    _ = (((Nat.gcd a 3 : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (3 : ℝ))) := by
+          rw [Nat.gcd_comm 3 a]
+          congr 1
+          ring
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
