@@ -120,7 +120,9 @@ fidelity:
     even/odd case split and symmetry target all positive pairs with
     either modulus equal to two; both corollaries passed Lean verify.
     The next proposed proof treats all (3,b) with 3 not dividing b
-    by cancellation across three b-blocks; Lean CI is pending.
+    by cancellation across three b-blocks, then combines it with
+    the divisible case to cover any pair with modulus three;
+    Lean CI is pending.
     The general off-diagonal identity remains unproved.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
