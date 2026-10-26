@@ -835,6 +835,22 @@ theorem centeredModularFraction_mul_add_common_period
     simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd hbT]
   rw [hmoda, hmodb]
 
+/-- The least common multiple is a valid averaging period for the
+explicit centered-residue covariance formula. This specializes the
+common-period expansion, without yet evaluating the gcd correlation. -/
+theorem empiricalModularCovariance_lcm_explicit
+    (a b : ℕ) (ha : 0 < a) (hb : 0 < b) :
+    empiricalModularCovariance a b (Nat.lcm a b) =
+      (∑ m ∈ Finset.range (Nat.lcm a b),
+        ((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+          (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+        ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+          (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))) /
+        (Nat.lcm a b : ℝ) := by
+  exact empiricalModularCovariance_common_period_explicit
+    a b (Nat.lcm a b) ha hb
+    (Nat.lcm_pos ha hb) (Nat.dvd_lcm_left a b) (Nat.dvd_lcm_right a b)
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
