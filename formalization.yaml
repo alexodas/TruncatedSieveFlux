@@ -128,8 +128,15 @@ fidelity:
     the centered ZMod correlation have passed Lean compilation.
     The natural-indexed CRT bridge and exact gcd covariance theorem
     for all positive coprime pairs on any positive common period have
-    passed GitHub Actions Lean verify. The general non-coprime
-    off-diagonal gcd covariance remains open.
+    passed GitHub Actions Lean verify. The new gcd-fiber route
+    reduces arbitrary a,b to coprime quotients after factoring
+    g=gcd(a,b), reindexes into g residue fibers, and uses the
+    centered-fraction decomposition and shifted CRT correlation.
+    The fiber reindexing and pointwise decomposition passed Lean
+    compilation. A complete general gcd-covariance proof has been
+    submitted in Lean but its CI is still pending; do not count it
+    as a verified result yet. The fourth-moment O(B^2) target
+    remains open.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
 
