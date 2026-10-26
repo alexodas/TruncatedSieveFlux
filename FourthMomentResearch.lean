@@ -1121,6 +1121,152 @@ private theorem sum_range_mul_index_of_period_zero_mean
               push_cast
               ring
 
+/-- For a positive divisor a of b, covariance with modulus b on one
+full b-period is the diagonal covariance at a scaled by a/b. -/
+theorem empiricalModularCovariance_dvd_right_base
+    (a b : ℕ) (ha : 0 < a) (hb : 0 < b) (hab : a ∣ b) :
+    empiricalModularCovariance a b b =
+      ((a : ℝ) / (b : ℝ)) * empiricalModularCovariance a a a := by
+  obtain ⟨q, hq⟩ := hab
+  have hbq : b = q * a := by simpa only [Nat.mul_comm] using hq
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    simp [hqzero] at hbq
+    omega
+  have haR : (a : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt ha)
+  have hbR : (b : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hb)
+  have hqR : (q : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hqpos)
+  let f : ℕ → ℝ := fun m => centeredModularFraction m a a
+  have hperiod (m : ℕ) : f (m + a) = f m := by
+    dsimp [f]
+    rw [centeredModularFraction_common_period (m + a) a a ha ha (dvd_refl a),
+      centeredModularFraction_common_period m a a ha ha (dvd_refl a)]
+    have hmod : (m + a) % a = m % a := by
+      simpa [Nat.add_mod]
+    rw [hmod]
+  have hzero : (∑ m ∈ Finset.range a, f m) = 0 :=
+    centeredModularFraction_sum_self_zero a ha
+  have hzerob : (∑ m ∈ Finset.range b, f m) = 0 := by
+    rw [hbq, sum_range_mul_of_period f a q hperiod, hzero]
+    ring
+  have hcenter (m : ℕ) : centeredModularFraction m a b = f m := by
+    dsimp [f]
+    rw [centeredModularFraction_common_period m a b ha hb (by
+      exact ⟨q, by simpa only [Nat.mul_comm] using hq⟩),
+      centeredModularFraction_common_period m a a ha ha (dvd_refl a)]
+  have hfrac (m : ℕ) (hm : m ∈ Finset.range a) :
+      f m = (m : ℝ) / (a : ℝ) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))) := by
+    dsimp [f]
+    rw [centeredModularFraction_common_period m a a ha ha (dvd_refl a),
+      Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
+  have hweighted_diag :
+      (∑ m ∈ Finset.range a, f m * (m : ℝ)) =
+        (a : ℝ) * ∑ m ∈ Finset.range a, f m * f m := by
+    have hpoint (m : ℕ) (hm : m ∈ Finset.range a) :
+        f m * (m : ℝ) =
+          (a : ℝ) * (f m * f m) +
+            (((a - 1 : ℕ) : ℝ) / 2) * f m := by
+      rw [hfrac m hm]
+      field_simp [haR]
+      <;> ring
+    calc
+      (∑ m ∈ Finset.range a, f m * (m : ℝ)) =
+          ∑ m ∈ Finset.range a,
+            ((a : ℝ) * (f m * f m) +
+              (((a - 1 : ℕ) : ℝ) / 2) * f m) := by
+                apply Finset.sum_congr rfl
+                intro m hm
+                exact hpoint m hm
+      _ = (a : ℝ) * (∑ m ∈ Finset.range a, f m * f m) +
+          (((a - 1 : ℕ) : ℝ) / 2) *
+            (∑ m ∈ Finset.range a, f m) := by
+              rw [Finset.sum_add_distrib, Finset.mul_sum, Finset.mul_sum]
+      _ = (a : ℝ) * ∑ m ∈ Finset.range a, f m * f m := by
+            rw [hzero]
+            ring
+  have hweightedb :
+      (∑ m ∈ Finset.range b, f m * (m : ℝ)) =
+        (q : ℝ) * (∑ m ∈ Finset.range a, f m * (m : ℝ)) := by
+    rw [hbq]
+    exact sum_range_mul_index_of_period_zero_mean f a q hperiod hzero
+  have hprod :
+      (∑ m ∈ Finset.range b,
+        centeredModularFraction m a b * centeredModularFraction m b b) =
+      (∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ) := by
+    let c : ℝ := (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ)))
+    calc
+      (∑ m ∈ Finset.range b,
+        centeredModularFraction m a b * centeredModularFraction m b b) =
+        ∑ m ∈ Finset.range b, f m * ((m : ℝ) / (b : ℝ) - c) := by
+          apply Finset.sum_congr rfl
+          intro m hm
+          rw [hcenter m,
+            centeredModularFraction_common_period m b b hb hb (dvd_refl b),
+            Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
+          rfl
+      _ = ∑ m ∈ Finset.range b,
+          (f m * (m : ℝ)) / (b : ℝ) - c * f m := by
+            apply Finset.sum_congr rfl
+            intro m hm
+            ring
+      _ = (∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ) -
+          c * (∑ m ∈ Finset.range b, f m) := by
+            rw [Finset.sum_sub_distrib, Finset.sum_div, Finset.mul_sum]
+      _ = (∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ) := by
+            rw [hzerob]
+            ring
+  have hcovexpr :
+      empiricalModularCovariance a b b =
+        ((∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ)) /
+          (b : ℝ) := by
+    unfold empiricalModularCovariance
+    rw [hprod]
+  have hdiagcov :
+      empiricalModularCovariance a a a =
+        (∑ m ∈ Finset.range a, f m * f m) / (a : ℝ) := rfl
+  calc
+    empiricalModularCovariance a b b =
+        ((∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ)) /
+          (b : ℝ) := hcovexpr
+    _ = (((q : ℝ) * ((a : ℝ) *
+          (∑ m ∈ Finset.range a, f m * f m))) / (b : ℝ)) /
+          (b : ℝ) := by rw [hweightedb, hweighted_diag]
+    _ = ((a : ℝ) / (b : ℝ)) *
+          empiricalModularCovariance a a a := by
+            rw [hdiagcov, hbq]
+            push_cast
+            field_simp [haR, hqR]
+            <;> ring
+
+/-- The exact gcd covariance formula for the non-diagonal family
+a dividing b, over any positive common averaging period. -/
+theorem empiricalModularCovariance_gcd_of_dvd
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (hab : a ∣ b) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  have haT : a ∣ T := dvd_trans hab hbT
+  have hcov : empiricalModularCovariance a b T =
+      empiricalModularCovariance a b b := by
+    calc
+      empiricalModularCovariance a b T =
+          empiricalModularCovariance a b (Nat.lcm a b) :=
+            empiricalModularCovariance_eq_lcm a b T
+              ha hb hTpos haT hbT
+      _ = empiricalModularCovariance a b b :=
+            (empiricalModularCovariance_eq_lcm a b b
+              ha hb hb hab (dvd_refl b)).symm
+  have hgcd : Nat.gcd a b = a := Nat.gcd_eq_left_iff_dvd.mpr hab
+  rw [hcov, empiricalModularCovariance_dvd_right_base a b ha hb hab,
+    empiricalModularCovariance_diagonal a ha, hgcd]
+  have haR : (a : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt ha)
+  have hbR : (b : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hb)
+  field_simp [haR, hbR]
+  <;> ring
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
