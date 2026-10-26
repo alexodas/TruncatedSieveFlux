@@ -1916,6 +1916,77 @@ theorem centered_residue_on_gcd_fiber
   field_simp [hgR, hrR]
   <;> ring
 
+/-- CRT makes any two independently centered coprime residue
+functions uncorrelated; after adding arbitrary constants u and v,
+their sum over the product period is precisely r*s*u*v.
+This holds for arbitrary positive coprime quotient moduli r,s. -/
+private theorem coprime_centered_shifted_product_sum
+    (r s : ℕ) (hr : 0 < r) (hs : 0 < s) (hcop : r.Coprime s)
+    (u v : ℝ) :
+    (∑ k ∈ Finset.range (r * s),
+      (centeredModularFraction k r r + u) *
+        (centeredModularFraction k s s + v)) =
+      ((r * s : ℕ) : ℝ) * u * v := by
+  let fr : ℕ → ℝ := fun k => centeredModularFraction k r r
+  let fs : ℕ → ℝ := fun k => centeredModularFraction k s s
+  have hperiodR (m : ℕ) : fr (m + r) = fr m := by
+    dsimp [fr]
+    rw [centeredModularFraction_common_period (m + r) r r
+          hr hr (dvd_refl r),
+      centeredModularFraction_common_period m r r hr hr (dvd_refl r)]
+    have hmod : (m + r) % r = m % r := by simp [Nat.add_mod]
+    rw [hmod]
+  have hperiodS (m : ℕ) : fs (m + s) = fs m := by
+    dsimp [fs]
+    rw [centeredModularFraction_common_period (m + s) s s
+          hs hs (dvd_refl s),
+      centeredModularFraction_common_period m s s hs hs (dvd_refl s)]
+    have hmod : (m + s) % s = m % s := by simp [Nat.add_mod]
+    rw [hmod]
+  have hsumR : (∑ k ∈ Finset.range (r * s), fr k) = 0 := by
+    have h := sum_range_mul_of_period fr r s hperiodR
+    rw [Nat.mul_comm s r] at h
+    rw [h, centeredModularFraction_sum_self_zero r hr]
+    ring
+  have hsumS : (∑ k ∈ Finset.range (r * s), fs k) = 0 := by
+    have h := sum_range_mul_of_period fs s r hperiodS
+    rw [h, centeredModularFraction_sum_self_zero s hs]
+    ring
+  have hprod : (∑ k ∈ Finset.range (r * s), fr k * fs k) = 0 := by
+    calc
+      (∑ k ∈ Finset.range (r * s), fr k * fs k) =
+          (∑ k ∈ Finset.range (r * s),
+            ((((k % r : ℕ) : ℝ) / (r : ℝ)) -
+              (((r - 1 : ℕ) : ℝ) / (2 * (r : ℝ)))) *
+            ((((k % s : ℕ) : ℝ) / (s : ℝ)) -
+              (((s - 1 : ℕ) : ℝ) / (2 * (s : ℝ))))) := by
+            apply Finset.sum_congr rfl
+            intro k hk
+            dsimp [fr, fs]
+            rw [centeredModularFraction_common_period k r r hr hr
+                  (dvd_refl r),
+              centeredModularFraction_common_period k s s hs hs
+                  (dvd_refl s)]
+      _ = 0 := coprime_centered_modular_sum_zero r s hr hs hcop
+  change (∑ k ∈ Finset.range (r * s), (fr k + u) * (fs k + v)) =
+    ((r * s : ℕ) : ℝ) * u * v
+  calc
+    (∑ k ∈ Finset.range (r * s), (fr k + u) * (fs k + v)) =
+        ∑ k ∈ Finset.range (r * s),
+          (fr k * fs k + v * fr k + u * fs k + u * v) := by
+            apply Finset.sum_congr rfl
+            intro k hk
+            ring
+    _ = (∑ k ∈ Finset.range (r * s), fr k * fs k) +
+        v * (∑ k ∈ Finset.range (r * s), fr k) +
+        u * (∑ k ∈ Finset.range (r * s), fs k) +
+        ((r * s : ℕ) : ℝ) * (u * v) := by
+          simp only [Finset.sum_add_distrib, ← Finset.mul_sum,
+            Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+    _ = ((r * s : ℕ) : ℝ) * u * v := by
+          rw [hprod, hsumR, hsumS]
+          ring
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
