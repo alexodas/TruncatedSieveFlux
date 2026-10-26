@@ -1206,9 +1206,8 @@ theorem empiricalModularCovariance_dvd_right_base
           rw [hcenter m,
             centeredModularFraction_common_period m b b hb hb (dvd_refl b),
             Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
-          rfl
-      _ = ∑ m ∈ Finset.range b,
-          (f m * (m : ℝ)) / (b : ℝ) - c * f m := by
+      _ = (∑ m ∈ Finset.range b,
+          ((f m * (m : ℝ)) / (b : ℝ) - c * f m)) := by
             apply Finset.sum_congr rfl
             intro m hm
             ring
