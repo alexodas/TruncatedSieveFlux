@@ -47,7 +47,9 @@ status:
     periodicity lemma, an explicit covariance formula on the
     least common period, the theorem that covariance is invariant
     across all positive common periods, and an exact diagonal
-    covariance value valid on every positive multiple, as well as the fourfold expansion,
+    covariance value valid on every positive multiple, and new
+    period-invariance statements for the full second and fourth
+    centered moments (subject to CI verification), as well as the fourfold expansion,
     an unconditional B^4/16 fourth-moment bound on full periods,
     and a conditional cubic bound from an assumed linear variance bound.
     A paper-level O(B^3) estimate using a classical gcd covariance
@@ -105,6 +107,9 @@ fidelity:
     and the lcm-period specialization and covariance invariance
     under common-period changes are newly included. The diagonal
     formula extends to every positive multiple of its modulus.
+    New proof scripts assert that the full variance and fourth
+    moment agree on any two positive common periods; these do not
+    settle the asymptotic fourth-moment research target.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
 
