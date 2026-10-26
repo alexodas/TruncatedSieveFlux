@@ -1464,7 +1464,17 @@ private theorem mod_three_shift_residue_sum
   have hfirst : m % 3 < 3 := Nat.mod_lt m (by omega)
   have hsecond : b % 3 < 3 := Nat.mod_lt b (by omega)
   have hcase : b % 3 = 1 ∨ b % 3 = 2 := by omega
-  simp only [Nat.add_mod]
+  have hshift1 : (b + m) % 3 = (b % 3 + m % 3) % 3 :=
+    Nat.add_mod b m 3
+  have hshift2 : ((b + b) + m) % 3 =
+      ((b % 3 + b % 3) % 3 + m % 3) % 3 := by
+    calc
+      ((b + b) + m) % 3 =
+          ((b + b) % 3 + m % 3) % 3 :=
+            Nat.add_mod (b + b) m 3
+      _ = ((b % 3 + b % 3) % 3 + m % 3) % 3 := by
+            rw [Nat.add_mod b b 3]
+  rw [hshift1, hshift2]
   rcases hcase with hcase | hcase
   · rw [hcase]
     omega
