@@ -2147,6 +2147,28 @@ theorem empiricalModularCovariance_gcd_general
     g r s T hg hr hs hcop hTpos hrT hsT
   simpa only [hagr, hbgs, g] using h
 
+/-- The full second moment of the truncated Möbius rounding error is
+an explicit finite gcd-weighted quadratic form on every positive
+common averaging period. This is exact, with no unproved covariance
+term left; no linear-in-B upper bound is inferred here. -/
+theorem empiricalSecondMoment_eq_gcd_sum
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalSecondMoment B T =
+      ∑ a ∈ Finset.Icc 1 B,
+      ∑ b ∈ Finset.Icc 1 B,
+        (moebiusReal a * moebiusReal b) *
+          (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+            (12 * (a : ℝ) * (b : ℝ))) := by
+  rw [empiricalSecondMoment_eq_covariance_sum]
+  apply Finset.sum_congr rfl
+  intro a ha
+  apply Finset.sum_congr rfl
+  intro b hb
+  rw [empiricalModularCovariance_gcd_general
+    a b T (Finset.mem_Icc.mp ha).1 (Finset.mem_Icc.mp hb).1
+      hTpos (hT a ha) (hT b hb)]
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
