@@ -767,6 +767,54 @@ theorem two_mul_empiricalModularCovariance_le_diagonal
             centeredModularFraction m b H) / (H : ℝ) := by
           rw [Finset.sum_add_distrib, add_div]
 
+/-- The complementary bound, from the square of the sum of two
+centered modular fractions. -/
+theorem neg_diagonal_le_two_mul_empiricalModularCovariance
+    (a b H : ℕ) (hH : 0 < H) :
+    -(empiricalModularCovariance a a H +
+        empiricalModularCovariance b b H) ≤
+      2 * empiricalModularCovariance a b H := by
+  have hHreal : (0 : ℝ) < (H : ℝ) := by exact_mod_cast hH
+  have hpoint (m : ℕ) :
+      -(centeredModularFraction m a H *
+          centeredModularFraction m a H +
+        centeredModularFraction m b H *
+          centeredModularFraction m b H) ≤
+        2 * (centeredModularFraction m a H *
+          centeredModularFraction m b H) := by
+    nlinarith [sq_nonneg
+      (centeredModularFraction m a H +
+        centeredModularFraction m b H)]
+  have hsum :
+      -(empiricalModularCovariance a a H +
+        empiricalModularCovariance b b H) ≤
+      2 * empiricalModularCovariance a b H := by
+    unfold empiricalModularCovariance
+    rw [← add_div, ← neg_div]
+    calc
+      -( ((∑ m ∈ Finset.range H,
+          centeredModularFraction m a H * centeredModularFraction m a H) +
+          (∑ m ∈ Finset.range H,
+          centeredModularFraction m b H * centeredModularFraction m b H)) /
+          (H : ℝ)) =
+        (∑ m ∈ Finset.range H,
+          -(centeredModularFraction m a H * centeredModularFraction m a H +
+            centeredModularFraction m b H * centeredModularFraction m b H)) /
+          (H : ℝ) := by
+            rw [← Finset.sum_add_distrib, ← Finset.sum_neg_distrib]
+      _ ≤ (∑ m ∈ Finset.range H,
+          2 * (centeredModularFraction m a H *
+            centeredModularFraction m b H)) / (H : ℝ) := by
+            apply div_le_div_of_nonneg_right
+            · exact Finset.sum_le_sum (fun m hm => hpoint m)
+            · exact le_of_lt hHreal
+      _ = 2 * ((∑ m ∈ Finset.range H,
+          centeredModularFraction m a H *
+            centeredModularFraction m b H) / (H : ℝ)) := by
+            rw [← Finset.mul_sum]
+            ring
+  exact hsum
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
