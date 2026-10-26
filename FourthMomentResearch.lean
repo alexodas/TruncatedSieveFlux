@@ -815,6 +815,24 @@ theorem neg_diagonal_le_two_mul_empiricalModularCovariance
             ring
   exact hsum
 
+/-- The product of two centered modular fractions is periodic in
+any common multiple of their moduli, provided the averaging period
+is itself a common multiple. -/
+theorem centeredModularFraction_mul_add_common_period
+    (m a b T : ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hTpos : 0 < T) (haT : a ∣ T) (hbT : b ∣ T) :
+    centeredModularFraction (m + T) a T *
+      centeredModularFraction (m + T) b T =
+    centeredModularFraction m a T *
+      centeredModularFraction m b T := by
+  rw [centeredModularFraction_common_period (m + T) a T ha hTpos haT,
+    centeredModularFraction_common_period (m + T) b T hb hTpos hbT,
+    centeredModularFraction_common_period m a T ha hTpos haT,
+    centeredModularFraction_common_period m b T hb hTpos hbT]
+  rw [Nat.add_mod, Nat.mod_eq_zero_of_dvd haT,
+    Nat.add_mod, Nat.mod_eq_zero_of_dvd hbT]
+  simp
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
