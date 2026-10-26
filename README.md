@@ -98,8 +98,10 @@ V_(B,T) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*
 ```
 
 for every positive common period `T` of `1,…,B`.
-This exact identity is proved in Lean; a nontrivial upper bound
-for its arithmetic double sum is **not** yet formalized.
+This exact identity is proved in Lean; the quantitative upper bound
+`V_(B,T) ≤ 3B/4` from the paper-level argument is **not**
+yet formalized. The research lemmas are Lean-compiled, not
+independently checked by Palomar Comparator.
 
 **Period invariance.** Lean also proves that any two positive
 common averaging periods give the same variance and the same
@@ -173,12 +175,17 @@ fourth-moment bounds remain open formalization tasks**.
 
 The file `FourthMomentResearch.lean` also proves the exact rational
 remainder representation, mean over complete modular periods,
-elementary uniform bounds, and the coarse fourth-moment bound
+and elementary uniform bounds. For an **arbitrary nonempty
+averaging interval** the coarse estimate is
 
 ```text
 |E_B(M)| ≤ B,
 fourth_(B,H) ≤ 16*B^4    (H ≥ 1).
 ```
+
+On **positive common periods**, the stronger verified estimate
+`fourth_(B,T) ≤ B^4/16` applies, as stated above. Neither is
+the conjectured `O(B²)` bound.
 
 The `Challenge.lean` / `Solution.lean` pair has **one** submitted
 Comparator theorem, `moebius_log_cutoff_residual_approximation`.
