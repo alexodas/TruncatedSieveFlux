@@ -1065,7 +1065,8 @@ private theorem centeredModularFraction_sum_self_zero
   simp only [centeredModularFraction, Finset.sum_sub_distrib,
     Finset.sum_const, Finset.card_range, nsmul_eq_mul]
   unfold modularFractionMean
-  field_simp
+  field_simp [haR]
+  ring
 
 /-- If a periodic sequence has zero mean over a full period, then the
 index-weighted sum over q periods is q times the basic weighted sum. -/
