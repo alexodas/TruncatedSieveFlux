@@ -210,24 +210,35 @@ importing the project research proofs. `CovarianceSolution.lean`
 supplies proofs by bridging those identical definitions to
 `FourthMomentResearch.lean`.
 
-The separate `comparator-covariance.json` explicitly selects **two**
-principal declarations:
+The separate `comparator-covariance.json` explicitly selects **five**
+research declarations:
 
 - `TruncatedSieveFluxComparator.gcd_covariance` — exact covariance
   `(gcd(a,b)^2-1)/(12ab)` for all positive a,b and common periods.
 - `TruncatedSieveFluxComparator.second_moment_gcd` — the complete
   finite Möbius-weighted gcd quadratic form for the second moment.
+- `TruncatedSieveFluxComparator.fourth_moment_quartic` — the
+  unconditional `B⁴/16` elementary estimate on common periods.
+- `TruncatedSieveFluxComparator.fourth_moment_le_variance` — the
+  fourth-to-second-moment inequality.
+- `TruncatedSieveFluxComparator.fourth_moment_cubic_conditional` —
+  the cubic estimate **assuming** a linear variance bound, not
+  an unconditional cubic theorem.
 
 The additional Comparator run has **passed** on commit `207c7e3`:
 Lean's kernel replay, NanoDa, and con-ron accepted the exported
-proofs of both selected research theorems. The original
+proofs of both originally selected covariance/variance theorems.
+The three additional fourth-moment challenges are now included
+in the independent comparison; their new kernel-check result
+must likewise be read from the latest GitHub Actions run.
+The original
 `comparator.json` continues to check **only** the finite
 cutoff-sieve theorem. The two configurations can be submitted
 **separately** to Palomar using the same full commit SHA; each
 configuration corresponds to a separate registry entry.
 
 **Coverage limit:** the independent kernels also check the
-proof dependencies used by the two selected research theorems.
+proof dependencies used by the selected research theorems.
 The CI additionally runs `leanchecker` over each completed project
 module, replaying **all** of its local proof declarations with
 Lean's kernel. That module-wide replay is not a distinct kernel
@@ -250,7 +261,7 @@ bash scripts/check.sh comparator-covariance.json
 ## Checking the proofs
 
 `Challenge.lean` contains **one intentional `sorry`**,
-and `CovarianceChallenge.lean` contains **two intentional
+and `CovarianceChallenge.lean` contains **five intentional
 `sorry` statements**: each one is a statement placeholder
 for a Comparator challenge. The completed proof modules
 `Solution.lean`, `FourthMomentResearch.lean`, and
