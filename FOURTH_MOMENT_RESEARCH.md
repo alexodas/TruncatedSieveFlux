@@ -73,7 +73,7 @@ For the diagonal over a full modulus, the proved identity is
    = (d^2-1)/(12*d^2)   for d>0.
 ```
 
-**Full-period moment invariance (new formalization).** The new Lean theorems `empiricalSecondMoment_eq_of_common_periods` and `empiricalFourthMoment_eq_of_common_periods` respectively identify the entire variance and the entire centered fourth moment on any two positive periods divisible by every `1 ≤ d ≤ B`. The second-moment theorem combines the Möbius quadratic-form identity with `empiricalModularCovariance_eq_lcm`; the fourth-moment theorem sums the periodic centered fourth power over repeated cycles and compares periods through their least common multiple. Both moment-invariance proof scripts have passed the GitHub Actions Lean `verify` compilation; the separate independent-kernel Comparator checks the Challenge/Solution theorem. Their conclusions are exact period-independence identities, **not** the conjectured `O(B²)` bound.
+**Full-period moment invariance (new formalization).** The new Lean theorems `empiricalSecondMoment_eq_of_common_periods` and `empiricalFourthMoment_eq_of_common_periods` respectively identify the entire variance and the entire centered fourth moment on any two positive periods divisible by every `1 ≤ d ≤ B`. The second-moment theorem combines the Möbius quadratic-form identity with `empiricalModularCovariance_eq_lcm`; the fourth-moment theorem sums the periodic centered fourth power over repeated cycles and compares periods through their least common multiple. Both moment-invariance proof scripts have passed the GitHub Actions Lean `verify` compilation; their distinct theorem statements are not individually listed as Comparator targets. The Comparator checks the main finite sieve theorem and the two separately stated covariance/variance research claims. Their conclusions are exact period-independence identities, **not** the conjectured `O(B²)` bound.
 
 **Four-divisor correlations.**
 `empiricalFourthMoment_eq_fourfold_sum` expands the full empirical
@@ -83,11 +83,14 @@ These expansions are exact, but do not establish cancellation.
 ## Supporting formalization
 
 The `Solution.lean` module supplies the finite Möbius divisor-sieve
-identity and the quotient/remainder bound. The **only theorem selected by the current Palomar Comparator**
-is `moebius_log_cutoff_residual_approximation`, which bounds
+identity and the quotient/remainder bound. The original `comparator.json` selects only
+`moebius_log_cutoff_residual_approximation`, which bounds
 the residual-rounding discrepancy by the integer cutoff.
-The research module is independently compiled by Lean but is not
-a second Comparator declaration. Auxiliary
+The second `comparator-covariance.json` selects two
+Mathlib-only challenges proving the general gcd covariance and
+exact second moment. Both research wrappers passed independent
+NanoDa and con-ron Comparator verification. Other helper
+theorems are not individually selected. Auxiliary
 lemmas prove the modular mean over any number of full periods,
 the rational remainder representation, and the unconditional
 `16 B^4` centered fourth-moment bound on nonempty averaging
@@ -184,11 +187,14 @@ Summing over `t` is exactly the previously verified
 diagonal covariance computation at modulus `g`.
 The assembly theorem `empiricalModularCovariance_mul_coprime`
 and the final `empiricalModularCovariance_gcd_general`
-have passed the Lean build. These research results were
-**not** separately submitted to the multi-kernel Palomar Comparator;
-the current `comparator.json` selects only the finite
-`moebius_log_cutoff_residual_approximation` theorem from
-`Challenge.lean` and `Solution.lean`.
+have passed the Lean build. The latter has now additionally
+been re-stated in a Mathlib-only `CovarianceChallenge` and
+compared against `CovarianceSolution` through
+`comparator-covariance.json`, alongside the exact finite
+second moment. The separate Comparator run passed both
+NanoDa and con-ron independent kernel checks.
+Individual auxiliary lemmas are not separately named
+Comparator declarations.
 The theorem `empiricalModularCovariance_gcd_general` has
 **no additional coprimality, divisibility between the two moduli,
 or particular-modulus assumptions**: it requires only positive
