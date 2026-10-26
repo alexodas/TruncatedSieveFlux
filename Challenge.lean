@@ -81,4 +81,19 @@ theorem moebius_density_le_omitted_count
       1 + omittedCount K A k x := by
   sorry
 
+/-! ## Quantitative logarithmic-cutoff approximation -/
+
+/-- The finite harmonic sum of Möbius coefficients up to an integer cutoff. -/
+noncomputable def harmonicMoebiusMass (B : ℕ) : ℝ :=
+  ∑ d ∈ Finset.Icc 1 B, moebiusReal d / (d : ℝ)
+
+/-- An elementary finite approximation for the omitted Möbius mass with
+A = 0 and K(k) = k, choosing k(x) = 1 + ceil((log x)^4). -/
+theorem moebius_log_cutoff_residual_approximation
+    (x : ℝ) (hx : 2 ≤ x) :
+    |omittedMass (fun j : ℕ => (j : ℝ)) 0 (sieveIndex x) x moebiusReal
+      - 1 + ((Nat.ceil x - 1 : ℕ) : ℝ) *
+        harmonicMoebiusMass (sieveIndex x)| ≤ (sieveIndex x : ℝ) := by
+  sorry
+
 end TruncatedSieveFlux
