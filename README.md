@@ -228,9 +228,9 @@ research declarations:
 The additional Comparator run has **passed** on commit `207c7e3`:
 Lean's kernel replay, NanoDa, and con-ron accepted the exported
 proofs of both originally selected covariance/variance theorems.
-The three additional fourth-moment challenges are now included
-in the independent comparison; their new kernel-check result
-must likewise be read from the latest GitHub Actions run.
+The three fourth-moment claims were also checked successfully:
+the full five-theorem comparison passed Lean's replay,
+NanoDa, and con-ron on commit `d7be10a`.
 The original
 `comparator.json` continues to check **only** the finite
 cutoff-sieve theorem. The two configurations can be submitted
@@ -248,6 +248,8 @@ supporting lemmas and not every Lean declaration is currently a
 separate Challenge theorem. Adding all of them would require
 additional auditable Challenge/Solution statements or other dedicated
 configs; it would be misleading to claim 100% named-theorem coverage.
+The explicit coverage inventory is in
+[COMPARATOR_COVERAGE.md](COMPARATOR_COVERAGE.md).
 
 For local use (Linux with bubblewrap and supported kernel binaries):
 
