@@ -3,11 +3,16 @@ version: "v0.4"
 project:
   name: "Truncated Möbius divisor-sieve residual identity"
   description: >-
-    Elementary Lean formalization of a finite divisor sieve with an indexed
-    cutoff. The main result expresses its Möbius-weighted admitted mass as
-    the residual of the omitted mass; a second result bounds its absolute
-    value by one plus the number of omitted divisor incidences. Neither
-    result proves a new asymptotic estimate for arbitrary sieve thresholds.
+    Lean 4 formalization of two elementary finite Möbius divisor-sieve results.
+    For arbitrary lower thresholds and indexed upper cutoffs, the admitted
+    signed divisor mass is exactly the full Möbius mass (one, when x >= 2)
+    minus the signed omitted mass; its absolute value is also bounded by one
+    plus the number of omitted divisor incidences. The interest is an explicit,
+    reusable account of truncation error that separates finite combinatorial
+    bookkeeping from the further cancellation estimates needed in analytic
+    number theory. The independently checked Challenge/Solution pair also
+    provides a compact case study in formalizing finite arithmetic sums.
+    Neither a new number-theoretic theorem nor an asymptotic estimate is claimed.
   authors:
     - "Alessandro Odasso"
   license: "Apache-2.0"
@@ -34,8 +39,12 @@ status:
   scope: >-
     Formalizes the finite residual identity and its combinatorial omitted-count
     upper bound. No asymptotic analytic estimate, uniform cancellation bound,
-    or novelty claim. GitHub Actions compilation succeeded for both Lean modules; Comparator passed in run 40247244629.
-    The Challenge intentionally contains two theorem holes.
+    or novelty claim. The omitted-count bound is a coarse incidence count, not
+    an estimate showing nontrivial cancellation. The auxiliary sieveIndex is
+    defined but no special asymptotic behavior is proved for its use as k.
+    GitHub Actions compilation succeeded for both Lean modules; Comparator
+    passed in runs 40247244629 and 40247605405. Challenge intentionally
+    contains two theorem holes.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
