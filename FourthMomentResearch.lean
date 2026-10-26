@@ -87,7 +87,8 @@ theorem empiricalErrorMean_eq_weighted_modular_means (B H : ℕ) :
   simp_rw [roundingError_eq_mod_sum]
   rw [Finset.sum_comm]
   simp_rw [← Finset.mul_sum]
-  simp only [div_eq_mul_inv, Finset.sum_mul]
+  simp only [div_eq_mul_inv]
+  rw [Finset.sum_mul]
   apply Finset.sum_congr rfl
   intro d hd
   ring
