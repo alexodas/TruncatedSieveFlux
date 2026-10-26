@@ -78,6 +78,29 @@ fourth_(B,H) =
 No bound on these four-way correlations beyond the elementary
 `O(B^4)` estimate is established. That is the outstanding research task.
 
+## Exact mean over a complete period
+
+For a positive integer `T` divisible by every `1 ≤ d ≤ B`, the new
+Lean theorems prove the closed formula
+
+```text
+mean_(B,T) = sum_{1 ≤ d ≤ B} mu(d) * (d-1)/(2*d).
+```
+
+The proof first shows that the average of `(M mod d)/d` over
+`q*d` consecutive integers is exactly `(d-1)/(2*d)`, for
+all `q,d ≥ 1`. The formula therefore applies in particular
+to `T = B!` and is independent of the chosen positive common
+period. The resulting centered error is explicitly
+
+```text
+E_B(M) - mean_(B,T) =
+  sum_{1 ≤ d ≤ B} mu(d) * ((M mod d)/d - (d-1)/(2*d)).
+```
+
+These are exact finite identities, **not** a bound of order
+`O(B^2)` on the fourth moment.
+
 ## Open research problem (NOT proved)
 
 Write `L_B = lcm(1,...,B)` and `mean_B` for the average of `E_B`
