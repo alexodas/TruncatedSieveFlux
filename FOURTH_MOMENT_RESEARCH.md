@@ -83,9 +83,11 @@ These expansions are exact, but do not establish cancellation.
 ## Supporting formalization
 
 The `Solution.lean` module supplies the finite Möbius divisor-sieve
-identity and the quotient/remainder bound. The sole Palomar Comparator
-theorem, `moebius_log_cutoff_residual_approximation`, bounds the
-residual-rounding discrepancy by the integer cutoff. Auxiliary
+identity and the quotient/remainder bound. The **only theorem selected by the current Palomar Comparator**
+is `moebius_log_cutoff_residual_approximation`, which bounds
+the residual-rounding discrepancy by the integer cutoff.
+The research module is independently compiled by Lean but is not
+a second Comparator declaration. Auxiliary
 lemmas prove the modular mean over any number of full periods,
 the rational remainder representation, and the unconditional
 `16 B^4` centered fourth-moment bound on nonempty averaging
@@ -158,8 +160,11 @@ No claim of originality is made.
 
 For arbitrary `a,b>0`, put `g=gcd(a,b)`, `r=a/g`
 and `s=b/g`. The reduced moduli `r,s` are coprime.
-Decompose the common period into `m=k*g+t` with
-`0≤t<g`, `0≤k<r*s`. The new lemmas
+First calculate on the positive common period
+`P=g*r*s` by writing `m=k*g+t`, where
+`0≤t<g` and `0≤k<r*s`. Period-invariance then
+extends the result to every other positive common period `T`.
+The new lemmas
 `sum_range_mul_blocks`, `gcd_fiber_mod` and
 `centered_residue_on_gcd_fiber` provide the exact
 identity
@@ -179,11 +184,15 @@ Summing over `t` is exactly the previously verified
 diagonal covariance computation at modulus `g`.
 The assembly theorem `empiricalModularCovariance_mul_coprime`
 and the final `empiricalModularCovariance_gcd_general`
-have passed the Lean build. Their correctness is verified
-by Lean; only the separate Challenge/Solution theorem was
-submitted to the multi-kernel Palomar Comparator. The latter has no extra
-coprimality, divisibility, or particular-modulus assumptions
-beyond a positive common averaging period.
+have passed the Lean build. These research results were
+**not** separately submitted to the multi-kernel Palomar Comparator;
+the current `comparator.json` selects only the finite
+`moebius_log_cutoff_residual_approximation` theorem from
+`Challenge.lean` and `Solution.lean`.
+The theorem `empiricalModularCovariance_gcd_general` has
+**no additional coprimality, divisibility between the two moduli,
+or particular-modulus assumptions**: it requires only positive
+moduli and a positive averaging period divisible by both.
 
 The exact variance corollary
 `empiricalSecondMoment_eq_gcd_sum` eliminates all

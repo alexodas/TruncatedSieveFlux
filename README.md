@@ -203,12 +203,21 @@ fourth-moment question.
 
 ## Checking the proofs
 
-`Challenge.lean` contains one **intentional** `sorry` for the challenge
-statement. `Solution.lean` and `FourthMomentResearch.lean` contain
-no `sorry`. The CI builds all three Lean modules; Comparator compares
-the one Challenge/Solution theorem with Lean, NanoDa and con-ron.
-The research lemmas are compiled by Lean, but are not separately listed
-as Comparator challenge theorems.
+`Challenge.lean` contains **one deliberate `sorry`**, as required
+for the statement to be proved by the Comparator. The completed
+proof modules `Solution.lean` and `FourthMomentResearch.lean`
+contain **zero `sorry`**. This is why `formalization.yaml`
+reports `status.sorry_count: 0`: following the Palomar template,
+the count excludes the intentional Challenge placeholder.
+
+**Important submission scope:** `comparator.json` selects **only**
+`TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`
+from the `Challenge`/`Solution` pair. The general gcd-covariance
+theorem and exact second-moment formula are already **proved by Lean**
+in `FourthMomentResearch.lean`, but they are **not part of the
+Comparator submission**. Passing Comparator with the present
+configuration does **not** amount to an independent-kernel
+comparison of those research theorems.
 
 ```sh
 lake exe cache get
@@ -216,15 +225,25 @@ lake build Challenge Solution FourthMomentResearch
 bash scripts/check.sh
 ```
 
-Running Comparator also requires `bwrap` and its independent kernels.
+For a Palomar submission, use the public repository
+`alexodas/TruncatedSieveFlux`, the **full 40-character SHA of the
+commit being submitted**, and the repository-relative Comparator
+configuration path `comparator.json`. The conventional metadata
+path is `formalization.yaml`. A branch name or short SHA is not
+a substitute for the full commit identifier. Running Comparator
+locally also requires the configured independent-kernel tooling.
+
+To submit the **general gcd covariance itself** to Comparator in
+a future iteration, the corresponding statement must first be
+exposed in the Challenge/Solution comparison interface and listed
+in `comparator.json`; documentation changes alone cannot do that.
 
 ## Authorship and transparent AI assistance
 
 **Author and responsible maintainer:** Alessandro Odasso.
 
-ChatGPT **GPT-6 with High thinking effort** (as reported by the
-contributor) assisted with mathematical exploration, proof drafting,
-debugging, and repository verification. The project was human-directed
+ChatGPT **GPT-6** assisted with mathematical exploration,
+proof drafting, debugging, and repository verification. The project was human-directed
 and AI-assisted. Formal verification establishes correctness of the
 Lean statements actually proved; it does not establish mathematical
 originality or replace independent mathematical review.

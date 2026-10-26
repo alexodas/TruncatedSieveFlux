@@ -3,16 +3,20 @@ version: "v0.4"
 project:
   name: "Periodic Möbius rounding-error moments"
   description: >-
-    Lean 4 formalization of exact arithmetic periodicity, full-period
-    centering, the exact general gcd covariance formula for any
-    positive pair of moduli over a common period, the corresponding
-    finite gcd-weighted second moment, and fourfold correlations
-    of a truncated Möbius rounding error. A full-period
-    fourth-to-second moment inequality is also verified. The substantive research target
-    is a uniform O(B^2) centered fourth-moment bound, which is OPEN.
-    A logarithmic-cutoff residual approximation, its finite-sum
-    identities, and elementary O(B^4) bound are supporting results.
-    No new asymptotic theorem or claim of originality is made.
+    This Palomar submission compares the finite logarithmic-cutoff
+    Möbius residual approximation proved in Solution.lean against
+    its statement in Challenge.lean. The same repository also
+    contains a separate Lean-verified research development:
+    exact periodic centering, the general gcd covariance identity
+    for arbitrary positive moduli, the finite gcd-weighted
+    second-moment formula, fourfold correlation identities,
+    and a conditional fourth-to-second moment inequality.
+    Those research declarations are not selected in the
+    current comparator.json and are not separately Comparator-checked.
+    The unconditional linear variance bound, cubic fourth-moment
+    bound and the proposed uniform O(B^2) fourth-moment bound
+    remain unproved in Lean. No new asymptotic theorem or
+    originality claim is made.
   authors:
     - "Alessandro Odasso"
   license: "Apache-2.0"
@@ -61,11 +65,12 @@ status:
     No originality or novel asymptotic theorem is claimed.
     The only Comparator-submitted theorem remains
     TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
-    Challenge contains one intentionally admitted theorem
-    statement, while Solution and FourthMomentResearch have no sorry.
-    The zero sorry count below applies to completed proof modules
-    Solution and FourthMomentResearch, excluding the intentionally
-    admitted Challenge statement.
+    Challenge contains one deliberate sorry placeholder in its
+    statement, as expected in the Comparator challenge module.
+    Solution and FourthMomentResearch contain no sorry.
+  # Per PalomarTemplate: these counts exclude the deliberately
+  # admitted statement in Challenge.lean; they describe the
+  # actual proof development (Solution + FourthMomentResearch).
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -121,16 +126,22 @@ fidelity:
     not the general gcd covariance or the open moment bounds.
 
 review:
-  status: "unreviewed; Lean compilation and Comparator checks apply to proved results"
+  status: "unreviewed; Lean verifies research proofs, Comparator checks only the selected Challenge/Solution theorem"
   reviewers: []
   notes: >-
     No independent human mathematical review has been completed.
     Research conjectures are explicitly excluded from claims of proof.
-    Comparator checks the one Challenge/Solution theorem only;
-    the research lemmas, including general gcd covariance and
-    the exact second-moment identity, pass the Lean target build
-    but are not separately Comparator-checked.
+    Comparator checks the single theorem selected in comparator.json:
+    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
+    The general gcd covariance and exact second-moment identity
+    pass the FourthMomentResearch Lean build, but are not selected
+    in comparator.json and thus are not separately Comparator-checked.
+    No independent human mathematical review has been recorded.
 
+# The project-level status.main_results includes Lean research theorems.
+# alignment.statements maps the compared finite sieve result to its
+# original statement; it is not the Comparator declaration list.
+# The latter is defined exclusively by comparator.json.
 alignment:
   namespace: "TruncatedSieveFlux"
   statements:
