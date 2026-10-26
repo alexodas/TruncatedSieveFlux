@@ -685,6 +685,25 @@ theorem empiricalFourthMoment_le_trivial (B H : ℕ) (hH : 0 < H) :
         exact hpoint m
     _ = (2 * (B : ℝ))^4 * (H : ℝ) := by simp [mul_comm]
 
+/-! ## Pointwise centering on arbitrary common periods -/
+
+/-- The centering term of a modular fraction is independent of the
+chosen positive multiple of its modulus. This is the exact pointwise
+normal form used in the gcd covariance calculation. -/
+theorem centeredModularFraction_common_period
+    (m d T : ℕ) (hd : 0 < d) (hT : 0 < T) (hdT : d ∣ T) :
+    centeredModularFraction m d T =
+      (((m % d : ℕ) : ℝ) / (d : ℝ)) -
+        (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  obtain ⟨q, hq⟩ := hdT
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    simp [hqzero] at hq
+    omega
+  unfold centeredModularFraction
+  rw [hq, Nat.mul_comm d q, modularFractionMean_multiple d q hd hqpos]
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
