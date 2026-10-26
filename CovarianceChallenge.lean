@@ -48,6 +48,11 @@ noncomputable def empiricalSecondMoment (B H : ℕ) : ℝ :=
   (∑ m ∈ Finset.range H,
     (roundingError m B - empiricalErrorMean B H) ^ 2) / (H : ℝ)
 
+/-- Centered fourth moment of the signed Möbius rounding error. -/
+noncomputable def empiricalFourthMoment (B H : ℕ) : ℝ :=
+  (∑ m ∈ Finset.range H,
+    (roundingError m B - empiricalErrorMean B H) ^ 4) / (H : ℝ)
+
 /-- Full gcd covariance identity for arbitrary positive moduli
 and every positive common averaging period. -/
 theorem gcd_covariance
@@ -69,6 +74,33 @@ theorem second_moment_gcd
         (moebiusReal a * moebiusReal b) *
           (((Nat.gcd a b : ℝ) ^ 2 - 1) /
             (12 * (a : ℝ) * (b : ℝ))) := by
+  sorry
+
+
+/-- Unconditional elementary fourth-moment bound on common periods. -/
+theorem fourth_moment_quartic
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalFourthMoment B T ≤ ((B : ℝ) / 2) ^ 4 := by
+  sorry
+
+/-- Fourth moment controlled by B²/4 times the variance, on a
+positive common period. -/
+theorem fourth_moment_le_variance
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalFourthMoment B T ≤
+      ((B : ℝ) / 2) ^ 2 * empiricalSecondMoment B T := by
+  sorry
+
+/-- Conditional cubic estimate: the linear variance hypothesis is
+a premise, not a theorem. This must not be advertised as an
+unconditional O(B³) fourth-moment bound. -/
+theorem fourth_moment_cubic_conditional
+    (B T : ℕ) (C : ℝ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T)
+    (hVariance : empiricalSecondMoment B T ≤ C * (B : ℝ)) :
+    empiricalFourthMoment B T ≤ (C / 4) * (B : ℝ) ^ 3 := by
   sorry
 
 end TruncatedSieveFluxComparator
