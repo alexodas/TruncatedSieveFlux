@@ -829,9 +829,11 @@ theorem centeredModularFraction_mul_add_common_period
     centeredModularFraction_common_period (m + T) b T hb hTpos hbT,
     centeredModularFraction_common_period m a T ha hTpos haT,
     centeredModularFraction_common_period m b T hb hTpos hbT]
-  rw [Nat.add_mod, Nat.mod_eq_zero_of_dvd haT,
-    Nat.add_mod, Nat.mod_eq_zero_of_dvd hbT]
-  simp
+  have hmoda : (m + T) % a = m % a := by
+    simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd haT]
+  have hmodb : (m + T) % b = m % b := by
+    simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd hbT]
+  rw [hmoda, hmodb]
 
 /-! ## Boundary cases for the full gcd covariance identity -/
 
