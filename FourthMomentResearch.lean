@@ -722,6 +722,31 @@ theorem empiricalModularCovariance_common_period_explicit
   rw [centeredModularFraction_common_period m a T ha hTpos haT,
     centeredModularFraction_common_period m b T hb hTpos hbT]
 
+/-- A general finite covariance inequality obtained by summing
+the pointwise nonnegative square of the difference of two centered
+modular fractions. It applies even without a common-period condition. -/
+theorem two_mul_empiricalModularCovariance_le_diagonal
+    (a b H : ℕ) (hH : 0 < H) :
+    2 * empiricalModularCovariance a b H ≤
+      empiricalModularCovariance a a H +
+        empiricalModularCovariance b b H := by
+  have hHreal : (0 : ℝ) < (H : ℝ) := by exact_mod_cast hH
+  unfold empiricalModularCovariance
+  rw [← add_div]
+  apply (div_le_div_iff₀ hHreal hHreal).2
+  have hpoint (m : ℕ) :
+      2 * (centeredModularFraction m a H *
+        centeredModularFraction m b H) ≤
+        centeredModularFraction m a H *
+          centeredModularFraction m a H +
+        centeredModularFraction m b H *
+          centeredModularFraction m b H := by
+    nlinarith [sq_nonneg
+      (centeredModularFraction m a H -
+        centeredModularFraction m b H)]
+  rw [← Finset.sum_add_distrib, ← Finset.mul_sum]
+  exact Finset.sum_le_sum (fun m hm => hpoint m)
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
