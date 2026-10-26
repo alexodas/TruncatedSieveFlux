@@ -1988,6 +1988,132 @@ private theorem coprime_centered_shifted_product_sum
           rw [hprod, hsumR, hsumS]
           ring
 
+/-- The full covariance formula for *any* two moduli with a common
+factor g and coprime quotients r,s. This is the general arithmetic
+reduction, with no numeric moduli singled out. -/
+theorem empiricalModularCovariance_mul_coprime
+    (g r s T : ℕ) (hg : 0 < g) (hr : 0 < r) (hs : 0 < s)
+    (hcop : r.Coprime s) (hTpos : 0 < T)
+    (hrT : g * r ∣ T) (hsT : g * s ∣ T) :
+    empiricalModularCovariance (g * r) (g * s) T =
+      (((g : ℝ) ^ 2 - 1) /
+        (12 * (((g * r : ℕ) : ℝ) * ((g * s : ℕ) : ℝ)))) := by
+  let P : ℕ := (r * s) * g
+  have hP : 0 < P := by
+    dsimp [P]
+    exact Nat.mul_pos (Nat.mul_pos hr hs) hg
+  have hgr : 0 < g * r := Nat.mul_pos hg hr
+  have hgs : 0 < g * s := Nat.mul_pos hg hs
+  have hgrP : g * r ∣ P := ⟨s, by dsimp [P]; ring⟩
+  have hgsP : g * s ∣ P := ⟨r, by dsimp [P]; ring⟩
+  have hgR : (g : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hg)
+  have hrR : (r : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hr)
+  have hsR : (s : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hs)
+  let h : ℕ → ℝ := fun t =>
+    ((t : ℝ) - (((g - 1 : ℕ) : ℝ) / 2)) / (g : ℝ)
+  have hcenterR (k t : ℕ) (ht : t < g) :
+      centeredModularFraction (k * g + t) (g * r) P =
+        centeredModularFraction k r r + h t / (r : ℝ) := by
+    rw [centeredModularFraction_common_period
+        (k * g + t) (g * r) P hgr hP hgrP,
+      centeredModularFraction_common_period k r r hr hr (dvd_refl r)]
+    rw [centered_residue_on_gcd_fiber g r k t hg hr ht]
+    dsimp [h]
+    field_simp [hgR, hrR]
+    ring
+  have hcenterS (k t : ℕ) (ht : t < g) :
+      centeredModularFraction (k * g + t) (g * s) P =
+        centeredModularFraction k s s + h t / (s : ℝ) := by
+    rw [centeredModularFraction_common_period
+        (k * g + t) (g * s) P hgs hP hgsP,
+      centeredModularFraction_common_period k s s hs hs (dvd_refl s)]
+    rw [centered_residue_on_gcd_fiber g s k t hg hs ht]
+    dsimp [h]
+    field_simp [hgR, hsR]
+    ring
+  have hfiber (t : ℕ) (ht : t < g) :
+      (∑ k ∈ Finset.range (r * s),
+        centeredModularFraction (k * g + t) (g * r) P *
+          centeredModularFraction (k * g + t) (g * s) P) =
+        (h t) ^ 2 := by
+    calc
+      (∑ k ∈ Finset.range (r * s),
+        centeredModularFraction (k * g + t) (g * r) P *
+          centeredModularFraction (k * g + t) (g * s) P) =
+        (∑ k ∈ Finset.range (r * s),
+          (centeredModularFraction k r r + h t / (r : ℝ)) *
+            (centeredModularFraction k s s + h t / (s : ℝ))) := by
+              apply Finset.sum_congr rfl
+              intro k hk
+              rw [hcenterR k t ht, hcenterS k t ht]
+      _ = (((r * s : ℕ) : ℝ) * (h t / (r : ℝ)) *
+          (h t / (s : ℝ))) :=
+            coprime_centered_shifted_product_sum r s hr hs hcop
+              (h t / (r : ℝ)) (h t / (s : ℝ))
+      _ = (h t) ^ 2 := by
+            rw [Nat.cast_mul]
+            field_simp [hrR, hsR]
+            ring
+  have hsum :
+      (∑ m ∈ Finset.range P,
+        centeredModularFraction m (g * r) P *
+          centeredModularFraction m (g * s) P) =
+      ∑ t ∈ Finset.range g, (h t) ^ 2 := by
+    dsimp [P]
+    rw [sum_range_mul_blocks (r * s) g
+      (fun m => centeredModularFraction m (g * r) ((r * s) * g) *
+        centeredModularFraction m (g * s) ((r * s) * g))]
+    rw [Finset.sum_comm]
+    apply Finset.sum_congr rfl
+    intro t ht
+    exact hfiber t (Finset.mem_range.mp ht)
+  have hdiagval (t : ℕ) (ht : t < g) :
+      h t = centeredModularFraction t g g := by
+    rw [centeredModularFraction_common_period t g g hg hg (dvd_refl g),
+      Nat.mod_eq_of_lt ht]
+    dsimp [h]
+    field_simp [hgR]
+    ring
+  have hdiag :
+      (∑ t ∈ Finset.range g, (h t) ^ 2) =
+      (g : ℝ) * empiricalModularCovariance g g g := by
+    have hsquares :
+        (∑ t ∈ Finset.range g, (h t) ^ 2) =
+        (∑ t ∈ Finset.range g,
+          centeredModularFraction t g g * centeredModularFraction t g g) := by
+            apply Finset.sum_congr rfl
+            intro t ht
+            rw [hdiagval t (Finset.mem_range.mp ht)]
+            ring
+    rw [hsquares]
+    unfold empiricalModularCovariance
+    field_simp [hgR]
+  have hperiod :
+      empiricalModularCovariance (g * r) (g * s) T =
+        empiricalModularCovariance (g * r) (g * s) P := by
+    calc
+      empiricalModularCovariance (g * r) (g * s) T =
+          empiricalModularCovariance (g * r) (g * s)
+            (Nat.lcm (g * r) (g * s)) :=
+              empiricalModularCovariance_eq_lcm
+                (g * r) (g * s) T hgr hgs hTpos hrT hsT
+      _ = empiricalModularCovariance (g * r) (g * s) P :=
+          (empiricalModularCovariance_eq_lcm
+            (g * r) (g * s) P hgr hgs hP hgrP hgsP).symm
+  calc
+    empiricalModularCovariance (g * r) (g * s) T =
+        empiricalModularCovariance (g * r) (g * s) P := hperiod
+    _ = (∑ t ∈ Finset.range g, (h t) ^ 2) / (P : ℝ) := by
+          unfold empiricalModularCovariance
+          rw [hsum]
+    _ = (((g : ℝ) ^ 2 - 1) /
+        (12 * (((g * r : ℕ) : ℝ) * ((g * s : ℕ) : ℝ)))) := by
+          rw [hdiag, empiricalModularCovariance_diagonal g hg]
+          dsimp [P]
+          push_cast
+          field_simp [hgR, hrR, hsR]
+          ring
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
