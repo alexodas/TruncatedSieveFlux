@@ -1454,6 +1454,134 @@ theorem empiricalModularCovariance_gcd_any_two
           congr 1
           ring
 
+/-! ## Coprime correlations with modulus three -/
+
+/-- Three translated residues modulo three run through all three
+residue classes whenever the shift is not divisible by three. -/
+private theorem mod_three_shift_residue_sum
+    (m b : ℕ) (hb : b % 3 ≠ 0) :
+    m % 3 + (b + m) % 3 + ((b + b) + m) % 3 = 3 := by
+  have hfirst : m % 3 < 3 := Nat.mod_lt m (by omega)
+  have hsecond : b % 3 < 3 := Nat.mod_lt b (by omega)
+  omega
+
+/-- The three centered fractions modulo three cancel after translating
+by b and 2b, when b is coprime to three. -/
+theorem centeredModularFraction_three_block_sum_zero
+    (m b : ℕ) (hb : b % 3 ≠ 0) :
+    centeredModularFraction m 3 (3 * b) +
+      centeredModularFraction (b + m) 3 (3 * b) +
+      centeredModularFraction ((b + b) + m) 3 (3 * b) = 0 := by
+  have hbpos : 0 < b := by omega
+  have hTpos : 0 < 3 * b := by omega
+  have h3T : 3 ∣ 3 * b := ⟨b, rfl⟩
+  rw [centeredModularFraction_common_period m 3 (3 * b)
+        (by omega) hTpos h3T,
+      centeredModularFraction_common_period (b + m) 3 (3 * b)
+        (by omega) hTpos h3T,
+      centeredModularFraction_common_period ((b + b) + m) 3 (3 * b)
+        (by omega) hTpos h3T]
+  have hres : m % 3 + (b + m) % 3 +
+      ((b + b) + m) % 3 = 3 :=
+    mod_three_shift_residue_sum m b hb
+  have hresR :
+      ((m % 3 : ℕ) : ℝ) + (((b + m) % 3 : ℕ) : ℝ) +
+        ((((b + b) + m) % 3 : ℕ) : ℝ) = 3 := by
+    exact_mod_cast hres
+  norm_num
+  linarith
+
+/-- The covariance modulo three and a modulus prime to three vanishes
+on their product period, by grouping the sum into three b-blocks. -/
+theorem empiricalModularCovariance_three_coprime_product_zero
+    (b : ℕ) (hb : b % 3 ≠ 0) :
+    empiricalModularCovariance 3 b (3 * b) = 0 := by
+  let f : ℕ → ℝ := fun m =>
+    centeredModularFraction m 3 (3 * b) *
+      centeredModularFraction m b (3 * b)
+  have hblock (m : ℕ) :
+      f m + f (b + m) + f ((b + b) + m) = 0 := by
+    have hb1 : centeredModularFraction (b + m) b (3 * b) =
+        centeredModularFraction m b (3 * b) := by
+      simp [centeredModularFraction, Nat.add_mod]
+    have hb2 : centeredModularFraction ((b + b) + m) b (3 * b) =
+        centeredModularFraction m b (3 * b) := by
+      simp [centeredModularFraction, Nat.add_mod]
+    dsimp [f]
+    rw [hb1, hb2]
+    have hs := centeredModularFraction_three_block_sum_zero m b hb
+    calc
+      centeredModularFraction m 3 (3 * b) *
+          centeredModularFraction m b (3 * b) +
+        centeredModularFraction (b + m) 3 (3 * b) *
+          centeredModularFraction m b (3 * b) +
+        centeredModularFraction ((b + b) + m) 3 (3 * b) *
+          centeredModularFraction m b (3 * b) =
+        (centeredModularFraction m 3 (3 * b) +
+          centeredModularFraction (b + m) 3 (3 * b) +
+          centeredModularFraction ((b + b) + m) 3 (3 * b)) *
+            centeredModularFraction m b (3 * b) := by ring
+      _ = 0 := by rw [hs]; ring
+  have hsum : (∑ m ∈ Finset.range (3 * b), f m) = 0 := by
+    have hlen : 3 * b = (b + b) + b := by omega
+    calc
+      (∑ m ∈ Finset.range (3 * b), f m) =
+          ∑ m ∈ Finset.range b,
+            (f m + f (b + m) + f ((b + b) + m)) := by
+              rw [hlen, Finset.sum_range_add f (b + b) b,
+                Finset.sum_range_add f b b]
+              simp only [Finset.sum_add_distrib]
+      _ = 0 := by simp [hblock]
+  unfold empiricalModularCovariance
+  change (∑ m ∈ Finset.range (3 * b), f m) / (3 * b : ℕ) = 0
+  rw [hsum]
+  simp
+
+/-- The exact gcd formula for a genuinely non-comparable family:
+three and any positive modulus not divisible by three. -/
+theorem empiricalModularCovariance_gcd_three_coprime
+    (b T : ℕ) (hb : b % 3 ≠ 0) (hTpos : 0 < T)
+    (h3T : 3 ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance 3 b T =
+      (((Nat.gcd 3 b : ℝ) ^ 2 - 1) /
+        (12 * (3 : ℝ) * (b : ℝ))) := by
+  have hbpos : 0 < b := by omega
+  have h3bpos : 0 < 3 * b := by omega
+  have h3_3b : 3 ∣ 3 * b := ⟨b, rfl⟩
+  have hb_3b : b ∣ 3 * b := ⟨3, by omega⟩
+  have hcov :
+      empiricalModularCovariance 3 b T =
+        empiricalModularCovariance 3 b (3 * b) := by
+    calc
+      empiricalModularCovariance 3 b T =
+          empiricalModularCovariance 3 b (Nat.lcm 3 b) :=
+            empiricalModularCovariance_eq_lcm 3 b T
+              (by omega) hbpos hTpos h3T hbT
+      _ = empiricalModularCovariance 3 b (3 * b) :=
+            (empiricalModularCovariance_eq_lcm 3 b (3 * b)
+              (by omega) hbpos h3bpos h3_3b hb_3b).symm
+  have hgcd : Nat.gcd 3 b = 1 := by
+    have hdiv3 : Nat.gcd 3 b ∣ 3 := Nat.gcd_dvd_left 3 b
+    have hdivb : Nat.gcd 3 b ∣ b := Nat.gcd_dvd_right 3 b
+    have hne : Nat.gcd 3 b ≠ 0 := by
+      intro hzero
+      have : b = 0 := by simpa [hzero] using hdivb
+      omega
+    have hle : Nat.gcd 3 b ≤ 3 :=
+      Nat.le_of_dvd (by omega) hdiv3
+    have hnot2 : Nat.gcd 3 b ≠ 2 := by
+      intro htwo
+      have : 2 ∣ 3 := by simpa [htwo] using hdiv3
+      norm_num at this
+    have hnot3 : Nat.gcd 3 b ≠ 3 := by
+      intro hthree
+      have h : 3 ∣ b := by simpa [hthree] using hdivb
+      exact hb (Nat.mod_eq_zero_of_dvd h)
+    omega
+  rw [hcov, empiricalModularCovariance_three_coprime_product_zero b hb,
+    hgcd]
+  norm_num
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
