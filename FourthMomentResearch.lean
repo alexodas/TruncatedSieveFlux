@@ -790,9 +790,9 @@ theorem neg_diagonal_le_two_mul_empiricalModularCovariance
         empiricalModularCovariance b b H) ≤
       2 * empiricalModularCovariance a b H := by
     unfold empiricalModularCovariance
-    rw [← add_div, ← neg_div]
+    rw [← add_div]
     calc
-      -( ((∑ m ∈ Finset.range H,
+      -(((∑ m ∈ Finset.range H,
           centeredModularFraction m a H * centeredModularFraction m a H) +
           (∑ m ∈ Finset.range H,
           centeredModularFraction m b H * centeredModularFraction m b H)) /
@@ -801,7 +801,7 @@ theorem neg_diagonal_le_two_mul_empiricalModularCovariance
           -(centeredModularFraction m a H * centeredModularFraction m a H +
             centeredModularFraction m b H * centeredModularFraction m b H)) /
           (H : ℝ) := by
-            rw [← Finset.sum_add_distrib, ← Finset.sum_neg_distrib]
+            rw [← Finset.sum_add_distrib, Finset.sum_neg_distrib, neg_div]
       _ ≤ (∑ m ∈ Finset.range H,
           2 * (centeredModularFraction m a H *
             centeredModularFraction m b H)) / (H : ℝ) := by
