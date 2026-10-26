@@ -1739,6 +1739,63 @@ theorem coprime_zmod_centered_residue_product_zero
       (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))
     (centered_zmod_residue_sum_zero a ha)
 
+/-- CRT gives zero for the product of explicitly centered modular
+fractions on a natural-number period of length a*b. This is the
+bridge from ZMod to the covariance sum used by the project. -/
+theorem coprime_centered_modular_sum_zero
+    (a b : ℕ) (ha : 0 < a) (hb : 0 < b) (hcop : a.Coprime b) :
+    (∑ m ∈ Finset.range (a * b),
+      (((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+          (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+        ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+          (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ)))))) = 0 := by
+  have habpos : 0 < a * b := Nat.mul_pos ha hb
+  letI : NeZero a := ⟨Nat.ne_of_gt ha⟩
+  letI : NeZero b := ⟨Nat.ne_of_gt hb⟩
+  letI : NeZero (a * b) := ⟨Nat.ne_of_gt habpos⟩
+  let f : ℕ → ℝ := fun m =>
+    ((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+      (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+    ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+      (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))
+  have hcoord_a (x : ZMod (a * b)) :
+      (ZMod.chineseRemainder hcop x).1.val = x.val % a := by
+    have heq :
+        (ZMod.chineseRemainder hcop x).1 = (x.val : ZMod a) := by
+      simpa only [ZMod.natCast_zmod_val] using
+        (coprime_zmod_chineseRemainder_nat_coordinates a b x.val hcop).1
+    calc
+      (ZMod.chineseRemainder hcop x).1.val =
+          (x.val : ZMod a).val := congrArg ZMod.val heq
+      _ = x.val % a := ZMod.val_natCast a x.val
+  have hcoord_b (x : ZMod (a * b)) :
+      (ZMod.chineseRemainder hcop x).2.val = x.val % b := by
+    have heq :
+        (ZMod.chineseRemainder hcop x).2 = (x.val : ZMod b) := by
+      simpa only [ZMod.natCast_zmod_val] using
+        (coprime_zmod_chineseRemainder_nat_coordinates a b x.val hcop).2
+    calc
+      (ZMod.chineseRemainder hcop x).2.val =
+          (x.val : ZMod b).val := congrArg ZMod.val heq
+      _ = x.val % b := ZMod.val_natCast b x.val
+  have hsumz : (∑ x : ZMod (a * b), f x.val) = 0 := by
+    calc
+      (∑ x : ZMod (a * b), f x.val) =
+          (∑ x : ZMod (a * b),
+            (((((ZMod.chineseRemainder hcop x).1.val : ℕ) : ℝ) /
+                  (a : ℝ)) -
+              (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+            (((((ZMod.chineseRemainder hcop x).2.val : ℕ) : ℝ) /
+                  (b : ℝ)) -
+              (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))) := by
+            apply Finset.sum_congr rfl
+            intro x hx
+            dsimp [f]
+            rw [hcoord_a x, hcoord_b x]
+      _ = 0 := coprime_zmod_centered_residue_product_zero a b ha hcop
+  rw [sum_zmod_val_eq_sum_range (a * b) habpos f] at hsumz
+  simpa only [f] using hsumz
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
