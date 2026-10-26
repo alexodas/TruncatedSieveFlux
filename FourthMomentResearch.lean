@@ -1670,6 +1670,61 @@ theorem coprime_zmod_centered_orthogonality
   rw [coprime_zmod_product_sum_factorization a b hcop f g,
     hcenter, zero_mul]
 
+/-- Summing a real function of the standard residue representative
+over ZMod n equals summing it over the natural range 0,…,n−1. -/
+private theorem sum_zmod_val_eq_sum_range
+    (n : ℕ) (hn : 0 < n) (f : ℕ → ℝ) :
+    (∑ x : ZMod n, f x.val) =
+      ∑ m ∈ Finset.range n, f m := by
+  cases n with
+  | zero => omega
+  | succ n =>
+      change (∑ x : Fin (n + 1), f x.val) =
+        ∑ m ∈ Finset.range (n + 1), f m
+      exact Fin.sum_univ_eq_sum_range f (n + 1)
+
+/-- The centered real representative of any positive residue ring has
+zero complete-period sum. This provides the CRT input for covariance. -/
+theorem centered_zmod_residue_sum_zero
+    (a : ℕ) (ha : 0 < a) :
+    (∑ r : ZMod a,
+      (r.val : ℝ) / (a : ℝ) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) = 0 := by
+  rw [sum_zmod_val_eq_sum_range a ha
+    (fun m => (m : ℝ) / (a : ℝ) -
+      (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))]
+  calc
+    (∑ m ∈ Finset.range a,
+      (m : ℝ) / (a : ℝ) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) =
+        ∑ m ∈ Finset.range a, centeredModularFraction m a a := by
+          apply Finset.sum_congr rfl
+          intro m hm
+          rw [centeredModularFraction_common_period m a a
+            ha ha (dvd_refl a),
+            Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
+    _ = 0 := centeredModularFraction_sum_self_zero a ha
+
+/-- For any positive coprime moduli, the CRT-indexed centered residue
+correlation vanishes exactly, without fixing either modulus.
+The connection to empiricalModularCovariance still needs to be
+expressed in the natural-number indexing of that definition. -/
+theorem coprime_zmod_centered_residue_product_zero
+    (a b : ℕ) (ha : 0 < a) (hcop : a.Coprime b) :
+    (∑ x : ZMod (a * b),
+      (((((ZMod.chineseRemainder hcop x).1.val : ℕ) : ℝ) /
+          (a : ℝ)) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+      (((((ZMod.chineseRemainder hcop x).2.val : ℕ) : ℝ) /
+          (b : ℝ)) -
+        (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))) = 0 := by
+  exact coprime_zmod_centered_orthogonality a b hcop
+    (fun r => (r.val : ℝ) / (a : ℝ) -
+      (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))
+    (fun s => (s.val : ℝ) / (b : ℝ) -
+      (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))
+    (centered_zmod_residue_sum_zero a ha)
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
