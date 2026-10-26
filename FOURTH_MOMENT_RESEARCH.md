@@ -73,7 +73,7 @@ For the diagonal over a full modulus, the proved identity is
    = (d^2-1)/(12*d^2)   for d>0.
 ```
 
-**Full-period moment invariance (new formalization).** The new Lean theorems `empiricalSecondMoment_eq_of_common_periods` and `empiricalFourthMoment_eq_of_common_periods` respectively identify the entire variance and the entire centered fourth moment on any two positive periods divisible by every `1 ≤ d ≤ B`. The second-moment theorem combines the Möbius quadratic-form identity with `empiricalModularCovariance_eq_lcm`; the fourth-moment theorem sums the periodic centered fourth power over repeated cycles and compares periods through their least common multiple. Both moment-invariance proof scripts have passed the GitHub Actions Lean `verify` compilation; their distinct theorem statements are not individually listed as Comparator targets. The Comparator checks the main finite sieve theorem and the two separately stated covariance/variance research claims. Their conclusions are exact period-independence identities, **not** the conjectured `O(B²)` bound.
+**Full-period moment invariance (new formalization).** The new Lean theorems `empiricalSecondMoment_eq_of_common_periods` and `empiricalFourthMoment_eq_of_common_periods` respectively identify the entire variance and the entire centered fourth moment on any two positive periods divisible by every `1 ≤ d ≤ B`. The second-moment theorem combines the Möbius quadratic-form identity with `empiricalModularCovariance_eq_lcm`; the fourth-moment theorem sums the periodic centered fourth power over repeated cycles and compares periods through their least common multiple. Both moment-invariance proof scripts have passed the GitHub Actions Lean `verify` compilation and module-wide Lean kernel replay; their distinct theorem statements are not individually listed as Comparator targets. The two Comparator configurations check the finite-sieve theorem and **five** independently stated research claims. Moment invariance is an exact identity, **not** the conjectured `O(B²)` bound.
 
 **Four-divisor correlations.**
 `empiricalFourthMoment_eq_fourfold_sum` expands the full empirical
@@ -91,8 +91,9 @@ Mathlib-only challenge statements: the general gcd covariance,
 exact second moment, unconditional quartic fourth-moment bound,
 fourth-to-second-moment inequality, and the conditional cubic
 estimate. All five statements passed independent Comparator
-verification with NanoDa and con-ron on commit `d7be10a`. Other helper
-theorems are not individually selected. Auxiliary
+verification with NanoDa and con-ron in
+[GitHub Actions run 40368689838](https://github.com/alexodas/TruncatedSieveFlux/actions/runs/40368689838).
+Other helper theorems are not individually selected. Auxiliary
 lemmas prove the modular mean over any number of full periods,
 the rational remainder representation, and the unconditional
 `16 B^4` centered fourth-moment bound on nonempty averaging
