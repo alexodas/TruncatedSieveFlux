@@ -509,8 +509,7 @@ private theorem abs_centered_modular_fraction_le_half
   have hdouble :
       (((d - 1 : ℕ) : ℝ) / (d : ℝ)) =
         2 * (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
-    field_simp
-    ring
+    field_simp [ne_of_gt hdR] <;> ring
   apply abs_le.mpr
   constructor <;> linarith
 
@@ -546,8 +545,7 @@ theorem abs_centered_roundingError_common_period_le_half
               (abs_nonneg _) (by norm_num)
         _ = (1 / 2 : ℝ) := by ring
     _ = (B : ℝ) / 2 := by
-      simp [Finset.sum_const, Finset.card_Icc, nsmul_eq_mul]
-      ring
+      simp [Finset.sum_const, Nat.card_Icc, nsmul_eq_mul] <;> ring
 
 /-- A fourth moment on any complete common period is dominated by its
 variance times B²/4. This reduces the power-four problem to a
