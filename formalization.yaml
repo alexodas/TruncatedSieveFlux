@@ -12,12 +12,15 @@ project:
     second-moment formula, fourfold correlation identities,
     and a conditional fourth-to-second moment inequality.
     The original comparator.json selects only the finite-sieve
-    theorem; a second configuration comparator-covariance.json is
-    now added to compare the general covariance and exact
-    second-moment research statements against independent,
-    Mathlib-only Challenge definitions. Both new theorem wrappers
-    passed Comparator with Lean, NanoDa and con-ron on commit
-    207c7e3e48630de03aba65337097d78adbc3f7a0.
+    theorem; a second configuration comparator-covariance.json
+    compares five research claims against independent, Mathlib-only
+    Challenge definitions: general gcd covariance, exact second
+    moment, unconditional quartic bound, fourth-to-second-moment
+    inequality and the conditional cubic estimate. The first
+    two passed Comparator with Lean, NanoDa and con-ron at
+    commit 207c7e3e48630de03aba65337097d78adbc3f7a0.
+    The three newly added fourth-moment comparisons await
+    their own independent-kernel CI result.
     The unconditional linear variance bound, cubic fourth-moment
     bound and the proposed uniform O(B^2) fourth-moment bound
     remain unproved in Lean. No new asymptotic theorem or
@@ -70,11 +73,12 @@ status:
     No originality or novel asymptotic theorem is claimed.
     The original comparator.json selects
     TruncatedSieveFlux.moebius_log_cutoff_residual_approximation;
-    comparator-covariance.json additionally selects two independent
-    gcd covariance / finite second-moment wrapper declarations
-    for Comparator checking; the new kernel comparison succeeded.
+    comparator-covariance.json now selects five independently
+    stated research theorem wrappers. The gcd covariance and
+    second-moment comparisons have succeeded; fourth-moment
+    wrapper validation remains pending.
     Challenge contains one deliberate sorry placeholder and
-    CovarianceChallenge contains two deliberate sorry placeholders,
+    CovarianceChallenge contains five deliberate sorry placeholders,
     as expected for Comparator statements. Solution,
     FourthMomentResearch, and CovarianceSolution have no sorry.
   # Per PalomarTemplate: these counts exclude the deliberately
@@ -99,9 +103,10 @@ automation:
     Comparator and independent Lean, NanoDa, and con-ron kernels; the
     fourth-moment research module is compiled separately in Lean.
     A dedicated CovarianceChallenge / CovarianceSolution pair
-    adds two separately stated research conclusions to a second
-    Comparator configuration. The independent-kernel check passed
-    for the two selected statements.
+    adds five separately stated research conclusions to a second
+    Comparator configuration. The covariance and variance wrappers
+    passed the independent-kernel check; the three new
+    fourth-moment comparisons await independent checking.
   cost:
     spend_usd: "not tracked"
     hardware: "remote model and limited sandbox; local Lean unavailable"
@@ -118,8 +123,8 @@ automation:
     The Challenge/Solution finite-sieve theorem has passed the
     Comparator checks with Lean, NanoDa and con-ron. Research results
     in FourthMomentResearch.lean passed the Lean build.
-    A second independent Mathlib-only CovarianceChallenge and its
-    matching CovarianceSolution now submit the two headline
+    An independent Mathlib-only CovarianceChallenge and its
+    matching CovarianceSolution now submit five headline
     research results for additional Comparator checks.
     The new Comparator run has passed with Lean, NanoDa
     and con-ron on commit 207c7e3; only the two named
@@ -141,10 +146,12 @@ fidelity:
     remain an independent mathematical obstacle.
     The original Palomar Comparator configuration concerns only
     the supporting logarithmic-cutoff error theorem.
-    The second configuration additionally compares the
-    general gcd covariance and exact second-moment statements;
-    both have passed independent-kernel checks.
-    It does not compare any unproved fourth-moment bound.
+    The second configuration additionally compares the general
+    gcd covariance, exact second-moment identity and three
+    fourth-moment bounds already proved in Lean. The two
+    covariance/variance statements passed independent-kernel
+    checks; the three new comparison statements are pending.
+    It does not claim any unproved bound as a theorem.
     Other research lemmas are not individually selected
     as named Comparator theorems.
 
@@ -156,9 +163,10 @@ review:
     Research conjectures are explicitly excluded from claims of proof.
     comparator.json selects the original finite logarithmic-cutoff
     Challenge/Solution theorem. comparator-covariance.json selects
-    two corresponding research statements with a separate
-    Mathlib-only Challenge. These two declarations have separate
-    proof wrappers which passed Comparator with NanoDa and con-ron.
+    five corresponding research statements with a separate
+    Mathlib-only Challenge. The two original research wrappers
+    passed Comparator with NanoDa and con-ron; the three new
+    fourth-moment wrapper comparisons are pending.
     There is no claim that every independent helper lemma
     is separately a named Comparator declaration.
     No independent human mathematical review has been recorded.
