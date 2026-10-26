@@ -178,6 +178,41 @@ noncomputable def harmonicMoebiusMass (B : ℕ) : ℝ :=
 noncomputable def floorWeightedMoebiusMass (M B : ℕ) : ℝ :=
   ∑ d ∈ Finset.Icc 1 B, moebiusReal d * ((M / d : ℕ) : ℝ)
 
+
+/-- The number of positive multiples of d not exceeding M is M / d. -/
+private theorem card_multiples_Icc (M d : ℕ) (hd : 0 < d) :
+    ((Finset.Icc 1 M).filter (fun n => d ∣ n)).card = M / d := by
+  classical
+  have hinj : Function.Injective (fun q : ℕ => d * q) := by
+    intro a b h
+    apply Nat.eq_of_mul_eq_mul_left hd
+    exact h
+  have hset :
+      ((Finset.Icc 1 (M / d)).image (fun q => d * q)) =
+        (Finset.Icc 1 M).filter (fun n => d ∣ n) := by
+    ext n
+    simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_Icc]
+    constructor
+    · rintro ⟨q, ⟨hqpos, hqle⟩, rfl⟩
+      have hbound : (M / d) * d ≤ M := Nat.div_mul_le_self M d
+      refine ⟨⟨by nlinarith, ?_⟩, ?_⟩
+      · nlinarith
+      · exact dvd_mul_right d q
+    · rintro ⟨⟨hnpos, hnle⟩, hdn⟩
+      rcases hdn with ⟨q, hq⟩
+      refine ⟨q, ⟨?_, ?_⟩, hq.symm⟩
+      · by_contra h
+        have h0 : q = 0 := by omega
+        simp [h0] at hq
+        omega
+      · apply (Nat.le_div_iff_mul_le hd).2
+        nlinarith
+  calc
+    ((Finset.Icc 1 M).filter (fun n => d ∣ n)).card =
+      ((Finset.Icc 1 (M / d)).image (fun q => d * q)).card := by rw [hset]
+    _ = (Finset.Icc 1 (M / d)).card := Finset.card_image_of_injective _ hinj
+    _ = M / d := by simp
+
 /-- A fully finite error bound for replacing integer quotients by real quotients. -/
 theorem moebius_floor_rounding_error_le (M B : ℕ) :
     |floorWeightedMoebiusMass M B -
