@@ -3,7 +3,10 @@
   "solution_module": "CovarianceSolution",
   "theorem_names": [
     "TruncatedSieveFluxComparator.gcd_covariance",
-    "TruncatedSieveFluxComparator.second_moment_gcd"
+    "TruncatedSieveFluxComparator.second_moment_gcd",
+    "TruncatedSieveFluxComparator.fourth_moment_quartic",
+    "TruncatedSieveFluxComparator.fourth_moment_le_variance",
+    "TruncatedSieveFluxComparator.fourth_moment_cubic_conditional"
   ],
   "definition_names": [],
   "permitted_axioms": [
