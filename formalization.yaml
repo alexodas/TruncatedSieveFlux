@@ -124,12 +124,12 @@ fidelity:
     the divisible case to cover any pair with modulus three;
     Lean and Comparator checks have succeeded on the corrected
     modulus-three proof commit `b6a0810`.
-    A new general CRT approach (pending Lean CI) factors the sum of
-    two residue-dependent functions on coprime ZMod coordinates.
-    Companion lemmas center these coordinates and show zero
-    CRT-indexed correlation for any coprime pair. The identification
-    with the natural-indexed covariance definition is still open.
-    The general off-diagonal identity remains unproved.
+    The CRT factorization of independent coprime residue sums and
+    the centered ZMod correlation have passed Lean compilation.
+    A newly proposed natural-indexed CRT bridge and exact covariance
+    theorem cover all positive coprime pairs on any common period,
+    but their Lean CI is still pending. The general non-coprime
+    off-diagonal gcd covariance remains open.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
 
