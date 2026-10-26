@@ -957,6 +957,27 @@ theorem empiricalModularCovariance_diagonal_common_period
     Nat.lcm_self]
   exact empiricalModularCovariance_diagonal d hd
 
+/-- The full Möbius-weighted variance is independent of the chosen
+positive common period. This lifts the two-modulus covariance
+period-invariance theorem through the exact quadratic-form expansion. -/
+theorem empiricalSecondMoment_eq_of_common_periods
+    (B T U : ℕ) (hTpos : 0 < T) (hUpos : 0 < U)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T)
+    (hU : ∀ d ∈ Finset.Icc 1 B, d ∣ U) :
+    empiricalSecondMoment B T = empiricalSecondMoment B U := by
+  rw [empiricalSecondMoment_eq_covariance_sum,
+    empiricalSecondMoment_eq_covariance_sum]
+  apply Finset.sum_congr rfl
+  intro a ha
+  apply Finset.sum_congr rfl
+  intro b hb
+  have haPos : 0 < a := (Finset.mem_Icc.mp ha).1
+  have hbPos : 0 < b := (Finset.mem_Icc.mp hb).1
+  rw [empiricalModularCovariance_eq_lcm a b T haPos hbPos hTpos
+        (hT a ha) (hT b hb),
+      empiricalModularCovariance_eq_lcm a b U haPos hbPos hUpos
+        (hU a ha) (hU b hb)]
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
