@@ -1414,6 +1414,46 @@ theorem empiricalModularCovariance_gcd_two_odd
     hgcd]
   norm_num
 
+/-- The full gcd-covariance identity holds whenever the first
+positive modulus is two, with no parity restriction on the other
+modulus. Even moduli use the divisibility case; odd moduli use
+the two-block cancellation theorem. -/
+theorem empiricalModularCovariance_gcd_two_any
+    (b T : ℕ) (hb : 0 < b) (hTpos : 0 < T)
+    (h2T : 2 ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance 2 b T =
+      (((Nat.gcd 2 b : ℝ) ^ 2 - 1) /
+        (12 * (2 : ℝ) * (b : ℝ))) := by
+  by_cases heven : b % 2 = 0
+  · have h2b : 2 ∣ b := Nat.dvd_of_mod_eq_zero heven
+    exact empiricalModularCovariance_gcd_of_dvd
+      2 b T (by norm_num) hb hTpos h2b hbT
+  · have hodd : b % 2 = 1 := by
+      have hlt : b % 2 < 2 := Nat.mod_lt b (by norm_num)
+      omega
+    exact empiricalModularCovariance_gcd_two_odd b T hodd hTpos h2T hbT
+
+/-- The symmetric all-moduli family: exact covariance when the second
+modulus is two. -/
+theorem empiricalModularCovariance_gcd_any_two
+    (a T : ℕ) (ha : 0 < a) (hTpos : 0 < T)
+    (haT : a ∣ T) (h2T : 2 ∣ T) :
+    empiricalModularCovariance a 2 T =
+      (((Nat.gcd a 2 : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (2 : ℝ))) := by
+  calc
+    empiricalModularCovariance a 2 T =
+        empiricalModularCovariance 2 a T :=
+          empiricalModularCovariance_comm a 2 T
+    _ = (((Nat.gcd 2 a : ℝ) ^ 2 - 1) /
+        (12 * (2 : ℝ) * (a : ℝ))) :=
+          empiricalModularCovariance_gcd_two_any a T ha hTpos h2T haT
+    _ = (((Nat.gcd a 2 : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (2 : ℝ))) := by
+          rw [Nat.gcd_comm 2 a]
+          congr 1
+          ring
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
