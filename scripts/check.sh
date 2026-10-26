@@ -11,6 +11,8 @@ done
 
 config_source=${1:-comparator.json}
 
+lake exe cache get
+
 case "$config_source" in
   comparator.json)
     lake build Challenge Solution
@@ -23,8 +25,6 @@ case "$config_source" in
     exit 1
     ;;
 esac
-
-lake exe cache get
 
 prefix=$(lean --print-prefix)
 for executable in leanexport leanchecker nanoda_bin con-ron; do
