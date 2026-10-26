@@ -88,7 +88,9 @@ theorem, `moebius_log_cutoff_residual_approximation`, bounds the
 residual-rounding discrepancy by the integer cutoff. Auxiliary
 lemmas prove the modular mean over any number of full periods,
 the rational remainder representation, and the unconditional
-`16 B^4` centered fourth-moment bound.
+`16 B^4` centered fourth-moment bound on nonempty averaging
+intervals. On positive common periods Lean gives the sharper
+`B^4/16` estimate. Neither is a quadratic bound.
 
 ## Quantitative reduction and an O(B³) paper argument
 
@@ -177,7 +179,9 @@ Summing over `t` is exactly the previously verified
 diagonal covariance computation at modulus `g`.
 The assembly theorem `empiricalModularCovariance_mul_coprime`
 and the final `empiricalModularCovariance_gcd_general`
-have passed the Lean build. The latter has no extra
+have passed the Lean build. Their correctness is verified
+by Lean; only the separate Challenge/Solution theorem was
+submitted to the multi-kernel Palomar Comparator. The latter has no extra
 coprimality, divisibility, or particular-modulus assumptions
 beyond a positive common averaging period.
 
