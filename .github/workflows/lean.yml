@@ -2,7 +2,7 @@ name: Verify Lean proofs
 
 on:
   push:
-    branches: [main]
+    branches: [main, "research/exact-period-mean"]
   workflow_dispatch:
 
 jobs:
