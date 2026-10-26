@@ -393,7 +393,6 @@ theorem empiricalModularCovariance_diagonal (d : ℕ) (hd : 0 < d) :
               simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib,
                 div_eq_mul_inv, ← Finset.sum_mul, ← Finset.mul_sum,
                 Finset.sum_const, Finset.card_range, nsmul_eq_mul]
-              ring
   rw [hcov, hsum, hC]
   dsimp [D]
   field_simp
