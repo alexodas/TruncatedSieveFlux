@@ -1302,6 +1302,118 @@ theorem empiricalModularCovariance_gcd_of_comparable
   · exact empiricalModularCovariance_gcd_of_dvd_left
       a b T ha hb hTpos hba haT
 
+/-! ## A coprime off-diagonal family: modulus two and odd moduli -/
+
+/-- On a common period of two and an odd modulus, shifting by that odd
+modulus reverses the centered fraction modulo two. -/
+theorem centeredModularFraction_two_add_odd
+    (m b : ℕ) (hbodd : b % 2 = 1) :
+    centeredModularFraction (m + b) 2 (2 * b) =
+      -centeredModularFraction m 2 (2 * b) := by
+  have hb : 0 < b := by omega
+  have hTpos : 0 < 2 * b := by omega
+  have h2T : 2 ∣ 2 * b := ⟨b, rfl⟩
+  rw [centeredModularFraction_common_period (m + b) 2 (2 * b)
+        (by norm_num) hTpos h2T,
+      centeredModularFraction_common_period m 2 (2 * b)
+        (by norm_num) hTpos h2T]
+  have hmod : (m + b) % 2 + m % 2 = 1 := by
+    have hsum : (m + b) % 2 = (m % 2 + 1) % 2 := by
+      simp [Nat.add_mod, hbodd]
+    have hm : m % 2 < 2 := Nat.mod_lt m (by omega)
+    omega
+  have hmodR : (((m + b) % 2 : ℕ) : ℝ) + ((m % 2 : ℕ) : ℝ) = 1 := by
+    exact_mod_cast hmod
+  norm_num
+  linarith
+
+/-- Translating by b leaves the centered fraction modulo b unchanged,
+even when the averaging period is twice b. -/
+theorem centeredModularFraction_self_add_on_double
+    (m b : ℕ) :
+    centeredModularFraction (m + b) b (2 * b) =
+      centeredModularFraction m b (2 * b) := by
+  unfold centeredModularFraction
+  have hmod : (m + b) % b = m % b := by
+    simp [Nat.add_mod]
+  rw [hmod]
+
+/-- The covariance of fractions modulo two and an odd modulus is zero
+over the double period, by cancellation between its two b-blocks. -/
+theorem empiricalModularCovariance_two_odd_double_zero
+    (b : ℕ) (hbodd : b % 2 = 1) :
+    empiricalModularCovariance 2 b (2 * b) = 0 := by
+  let f : ℕ → ℝ := fun m =>
+    centeredModularFraction m 2 (2 * b) *
+      centeredModularFraction m b (2 * b)
+  have hanti (m : ℕ) : f (m + b) = -f m := by
+    dsimp [f]
+    rw [centeredModularFraction_two_add_odd m b hbodd,
+      centeredModularFraction_self_add_on_double m b]
+    ring
+  have hblock :
+      (∑ m ∈ Finset.range b, f (b + m)) =
+        -(∑ m ∈ Finset.range b, f m) := by
+    calc
+      (∑ m ∈ Finset.range b, f (b + m)) =
+          ∑ m ∈ Finset.range b, -(f m) := by
+            apply Finset.sum_congr rfl
+            intro m hm
+            simpa only [Nat.add_comm] using hanti m
+      _ = -(∑ m ∈ Finset.range b, f m) := by
+            rw [Finset.sum_neg_distrib]
+  have hsum : (∑ m ∈ Finset.range (2 * b), f m) = 0 := by
+    have hadd : b + b = 2 * b := by omega
+    rw [← hadd, Finset.sum_range_add f b b, hblock]
+    ring
+  unfold empiricalModularCovariance
+  change (∑ m ∈ Finset.range (2 * b), f m) / (2 * b : ℕ) = 0
+  rw [hsum]
+  simp
+
+/-- A new non-comparable gcd-covariance family: if b is odd, its
+centered modular fraction is uncorrelated with modulus two over every
+positive common averaging period. -/
+theorem empiricalModularCovariance_gcd_two_odd
+    (b T : ℕ) (hbodd : b % 2 = 1) (hTpos : 0 < T)
+    (h2T : 2 ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance 2 b T =
+      (((Nat.gcd 2 b : ℝ) ^ 2 - 1) /
+        (12 * (2 : ℝ) * (b : ℝ))) := by
+  have hb : 0 < b := by omega
+  have h2bpos : 0 < 2 * b := by omega
+  have h2_2b : 2 ∣ 2 * b := ⟨b, rfl⟩
+  have hb_2b : b ∣ 2 * b := ⟨2, by omega⟩
+  have hcov :
+      empiricalModularCovariance 2 b T =
+        empiricalModularCovariance 2 b (2 * b) := by
+    calc
+      empiricalModularCovariance 2 b T =
+          empiricalModularCovariance 2 b (Nat.lcm 2 b) :=
+            empiricalModularCovariance_eq_lcm 2 b T
+              (by norm_num) hb hTpos h2T hbT
+      _ = empiricalModularCovariance 2 b (2 * b) :=
+            (empiricalModularCovariance_eq_lcm 2 b (2 * b)
+              (by norm_num) hb h2bpos h2_2b hb_2b).symm
+  have hgcd : Nat.gcd 2 b = 1 := by
+    have hdiv2 : Nat.gcd 2 b ∣ 2 := Nat.gcd_dvd_left 2 b
+    have hdivb : Nat.gcd 2 b ∣ b := Nat.gcd_dvd_right 2 b
+    have hne : Nat.gcd 2 b ≠ 0 := by
+      intro hzero
+      have : b = 0 := by simpa [hzero] using hdivb
+      omega
+    have hle : Nat.gcd 2 b ≤ 2 :=
+      Nat.le_of_dvd (by omega) hdiv2
+    have hnot2 : Nat.gcd 2 b ≠ 2 := by
+      intro hh
+      have h : 2 ∣ b := by simpa [hh] using hdivb
+      have hmod : b % 2 = 0 := Nat.mod_eq_zero_of_dvd h
+      omega
+    omega
+  rw [hcov, empiricalModularCovariance_two_odd_double_zero b hbodd,
+    hgcd]
+  norm_num
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
