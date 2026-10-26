@@ -35,10 +35,11 @@ E_B(M) - mean_(B,T)
 ```
 
 **Pairwise correlations.** The newly formalized
-`empiricalSecondMoment_eq_pairwise_sum` identity writes the centered
-second moment as a finite sum over ordered pairs of divisors.
-`empiricalSecondMoment_nonneg` proves positivity, while
-`empiricalModularCovariance_comm` records covariance symmetry.
+`empiricalSecondMoment_eq_covariance_sum` theorem writes the centered
+second moment as the exact Möbius-weighted quadratic form in the modular
+covariances. The supporting `empiricalSecondMoment_eq_pairwise_sum`
+identity expands it over ordered pairs; `empiricalSecondMoment_nonneg`
+proves positivity and `empiricalModularCovariance_comm` proves symmetry.
 
 For the diagonal over a full modulus, the proved identity is
 
