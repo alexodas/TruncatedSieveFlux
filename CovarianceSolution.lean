@@ -1,6 +1,6 @@
 module
 
-public import FourthMomentResearch
+import all FourthMomentResearch
 
 public section
 
