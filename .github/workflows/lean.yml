@@ -14,8 +14,13 @@ jobs:
       - uses: leanprover/lean-action@v1
         with:
           build: "true"
-          build-args: "Challenge Solution FourthMomentResearch"
+          build-args: "Challenge Solution FourthMomentResearch CovarianceChallenge CovarianceSolution"
           use-mathlib-cache: "true"
+      - name: Kernel replay of each completed project module
+        run: |
+          lake env leanchecker Solution
+          lake env leanchecker FourthMomentResearch
+          lake env leanchecker CovarianceSolution
 
   comparator:
     name: Compare statements and proofs with independent kernels
@@ -34,4 +39,6 @@ jobs:
           sudo apt-get install -y -qq bubblewrap >/dev/null
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: Run Comparator and independent kernels
-        run: bash scripts/check.sh
+        run: |
+          bash scripts/check.sh comparator.json
+          bash scripts/check.sh comparator-covariance.json

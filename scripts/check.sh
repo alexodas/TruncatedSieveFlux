@@ -9,8 +9,22 @@ for command in python3 bwrap lake lean; do
   fi
 done
 
+config_source=${1:-comparator.json}
+
 lake exe cache get
-lake build Challenge Solution
+
+case "$config_source" in
+  comparator.json)
+    lake build Challenge Solution
+    ;;
+  comparator-covariance.json)
+    lake build CovarianceChallenge CovarianceSolution
+    ;;
+  *)
+    echo "Unsupported Comparator config: $config_source" >&2
+    exit 1
+    ;;
+esac
 
 prefix=$(lean --print-prefix)
 for executable in leanexport leanchecker nanoda_bin con-ron; do
@@ -23,12 +37,12 @@ done
 config=$(mktemp "${TMPDIR:-/tmp}/truncated-sieve-comparator.XXXXXX")
 trap 'rm -f "$config"' EXIT
 
-python3 - "$prefix" "$config" <<'PY'
+python3 - "$prefix" "$config" "$config_source" <<'PY'
 import json
 import pathlib
 import sys
-prefix, destination = sys.argv[1:]
-config = json.loads(pathlib.Path('comparator.json').read_text())
+prefix, destination, source = sys.argv[1:]
+config = json.loads(pathlib.Path(source).read_text())
 config['external_kernels'] = {
     'nanoda': [str(pathlib.Path(prefix) / 'bin' / 'nanoda_bin')],
     'con-ron': [str(pathlib.Path(prefix) / 'bin' / 'con-ron')],

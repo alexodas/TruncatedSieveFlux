@@ -98,10 +98,13 @@ V_(B,T) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*
 ```
 
 for every positive common period `T` of `1,…,B`.
-This exact identity is proved in Lean; the quantitative upper bound
+This exact identity is proved in Lean and its corresponding
+independently stated result has **also passed Comparator**
+with NanoDa and con-ron (see below). The quantitative upper bound
 `V_(B,T) ≤ 3B/4` from the paper-level argument is **not**
-yet formalized. The research lemmas are Lean-compiled, not
-independently checked by Palomar Comparator.
+yet formalized. Supporting lemmas are checked by Lean and those
+needed by compared proofs are covered as dependencies, but not
+all have separate Comparator Challenge statements.
 
 **Period invariance.** Lean also proves that any two positive
 common averaging periods give the same variance and the same
@@ -201,42 +204,100 @@ This is a supporting **finite** approximation, not an asymptotic
 cancellation theorem. It is not the claimed resolution of the open
 fourth-moment question.
 
+## Independent Comparator checks for the principal research results
+
+A second independent statement/solution pair is provided:
+`CovarianceChallenge.lean` defines fractional-part covariance and
+the centered Möbius second moment **directly from Mathlib**, without
+importing the project research proofs. `CovarianceSolution.lean`
+supplies proofs by bridging those identical definitions to
+`FourthMomentResearch.lean`.
+
+The separate `comparator-covariance.json` explicitly selects **five**
+research declarations:
+
+- `TruncatedSieveFluxComparator.gcd_covariance` — exact covariance
+  `(gcd(a,b)^2-1)/(12ab)` for all positive a,b and common periods.
+- `TruncatedSieveFluxComparator.second_moment_gcd` — the complete
+  finite Möbius-weighted gcd quadratic form for the second moment.
+- `TruncatedSieveFluxComparator.fourth_moment_quartic` — the
+  unconditional `B⁴/16` elementary estimate on common periods.
+- `TruncatedSieveFluxComparator.fourth_moment_le_variance` — the
+  fourth-to-second-moment inequality.
+- `TruncatedSieveFluxComparator.fourth_moment_cubic_conditional` —
+  the cubic estimate **assuming** a linear variance bound, not
+  an unconditional cubic theorem.
+
+All **five** selected research claims have passed Comparator
+with independent NanoDa and con-ron kernel checks, as confirmed
+by [GitHub Actions run 40368689838](https://github.com/alexodas/TruncatedSieveFlux/actions/runs/40368689838).
+The original `comparator.json` continues to check **only**
+the finite cutoff-sieve theorem. The two configurations can be submitted
+**separately** to Palomar using the same full commit SHA; each
+configuration corresponds to a separate registry entry.
+
+**Coverage limit:** the independent kernels also check the
+proof dependencies used by the selected research theorems.
+The CI additionally runs `leanchecker` over each completed project
+module, replaying **all** of its local proof declarations with
+Lean's kernel. That module-wide replay is not a distinct kernel
+implementation, and other theorems in `FourthMomentResearch.lean`
+are **not automatically added as named Comparator claims**. There are multiple independent
+supporting lemmas and not every Lean declaration is currently a
+separate Challenge theorem. Adding all of them would require
+additional auditable Challenge/Solution statements or other dedicated
+configs; it would be misleading to claim 100% named-theorem coverage.
+The explicit coverage inventory is in
+[COMPARATOR_COVERAGE.md](COMPARATOR_COVERAGE.md).
+
+For local use (Linux with bubblewrap and supported kernel binaries):
+
+```sh
+lake exe cache get
+lake build Challenge Solution FourthMomentResearch CovarianceChallenge CovarianceSolution
+bash scripts/check.sh comparator.json
+bash scripts/check.sh comparator-covariance.json
+```
+
 ## Checking the proofs
 
-`Challenge.lean` contains **one deliberate `sorry`**, as required
-for the statement to be proved by the Comparator. The completed
-proof modules `Solution.lean` and `FourthMomentResearch.lean`
-contain **zero `sorry`**. This is why `formalization.yaml`
-reports `status.sorry_count: 0`: following the Palomar template,
-the count excludes the intentional Challenge placeholder.
+`Challenge.lean` contains **one intentional `sorry`**,
+and `CovarianceChallenge.lean` contains **five intentional
+`sorry` statements**: each one is a statement placeholder
+for a Comparator challenge. The completed proof modules
+`Solution.lean`, `FourthMomentResearch.lean`, and
+`CovarianceSolution.lean` have **no `sorry`**. Accordingly,
+`formalization.yaml` reports `status.sorry_count: 0`,
+excluding the deliberate placeholders in both Challenge modules.
 
-**Important submission scope:** `comparator.json` selects **only**
-`TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`
-from the `Challenge`/`Solution` pair. The general gcd-covariance
-theorem and exact second-moment formula are already **proved by Lean**
-in `FourthMomentResearch.lean`, but they are **not part of the
-Comparator submission**. Passing Comparator with the present
-configuration does **not** amount to an independent-kernel
-comparison of those research theorems.
+**Important submission scope:** the original `comparator.json`
+selects **only** `TruncatedSieveFlux.moebius_log_cutoff_residual_approximation`
+from `Challenge`/`Solution`. The separate
+`comparator-covariance.json` selects **five** research statements
+from `CovarianceChallenge`/`CovarianceSolution`, including the
+general gcd covariance and exact second moment. Both configurations
+have passed Comparator with independent kernels. To substantiate a
+particular result in Palomar, submit the corresponding configuration;
+passing one does not imply that the other was submitted.
 
 ```sh
 lake exe cache get
 lake build Challenge Solution FourthMomentResearch
-bash scripts/check.sh
+bash scripts/check.sh comparator.json
+bash scripts/check.sh comparator-covariance.json
 ```
 
 For a Palomar submission, use the public repository
-`alexodas/TruncatedSieveFlux`, the **full 40-character SHA of the
-commit being submitted**, and the repository-relative Comparator
-configuration path `comparator.json`. The conventional metadata
-path is `formalization.yaml`. A branch name or short SHA is not
-a substitute for the full commit identifier. Running Comparator
-locally also requires the configured independent-kernel tooling.
-
-To submit the **general gcd covariance itself** to Comparator in
-a future iteration, the corresponding statement must first be
-exposed in the Challenge/Solution comparison interface and listed
-in `comparator.json`; documentation changes alone cannot do that.
+`alexodas/TruncatedSieveFlux` and the **full 40-character SHA
+of the commit being submitted**. Select the repository-relative
+configuration path `comparator.json` for the finite-sieve theorem,
+or `comparator-covariance.json` for the five research results.
+The metadata path is `formalization.yaml`. A branch name or
+short SHA is not a substitute for a pinned full commit identifier.
+Running Comparator locally also requires the independent-kernel
+tooling. These are two separate Comparator configurations; the
+five research claims **already have** their own Challenge/Solution
+interface and a successful independent-kernel comparison.
 
 ## Authorship and transparent AI assistance
 
