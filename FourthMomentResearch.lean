@@ -851,6 +851,112 @@ theorem empiricalModularCovariance_lcm_explicit
     a b (Nat.lcm a b) ha hb
     (Nat.lcm_pos ha hb) (Nat.dvd_lcm_left a b) (Nat.dvd_lcm_right a b)
 
+/-- A finite sum of a periodic real-valued sequence over q complete
+periods is q times its sum over one period. -/
+private theorem sum_range_mul_of_period
+    (f : ℕ → ℝ) (L q : ℕ) (hperiod : ∀ m, f (m + L) = f m) :
+    (∑ m ∈ Finset.range (q * L), f m) =
+      (q : ℝ) * ∑ m ∈ Finset.range L, f m := by
+  have hshift (k m : ℕ) : f (k * L + m) = f m := by
+    induction k with
+    | zero => simp
+    | succ k ih =>
+        calc
+          f (k.succ * L + m) = f ((k * L + m) + L) := by
+            congr 1
+            simp only [Nat.succ_mul]
+            omega
+          _ = f (k * L + m) := hperiod _
+          _ = f m := ih
+  induction q with
+  | zero => simp
+  | succ q ih =>
+      calc
+        (∑ m ∈ Finset.range (q.succ * L), f m) =
+            (∑ m ∈ Finset.range (q * L), f m) +
+            (∑ m ∈ Finset.range L, f (q * L + m)) := by
+              simpa only [Nat.succ_mul] using
+                (Finset.sum_range_add f (q * L) L)
+        _ = (∑ m ∈ Finset.range (q * L), f m) +
+            (∑ m ∈ Finset.range L, f m) := by
+              congr 1
+              apply Finset.sum_congr rfl
+              intro m hm
+              exact hshift q m
+        _ = (q.succ : ℝ) * ∑ m ∈ Finset.range L, f m := by
+              rw [ih]
+              push_cast
+              ring
+
+/-- Empirical modular covariance does not depend on which positive
+common multiple of a and b is used as the averaging period. In
+particular, it agrees with the covariance on lcm(a,b). -/
+theorem empiricalModularCovariance_eq_lcm
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hTpos : 0 < T) (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      empiricalModularCovariance a b (Nat.lcm a b) := by
+  let L := Nat.lcm a b
+  have hLpos : 0 < L := Nat.lcm_pos ha hb
+  have haL : a ∣ L := Nat.dvd_lcm_left a b
+  have hbL : b ∣ L := Nat.dvd_lcm_right a b
+  obtain ⟨q, hq⟩ := (Nat.lcm_dvd haT hbT)
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    simp [hqzero] at hq
+    omega
+  let f : ℕ → ℝ := fun m =>
+    ((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+      (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+    ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+      (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))
+  have hperiod (m : ℕ) : f (m + L) = f m := by
+    dsimp [f]
+    have hmoda : (m + L) % a = m % a := by
+      simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd haL]
+    have hmodb : (m + L) % b = m % b := by
+      simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd hbL]
+    rw [hmoda, hmodb]
+  have hsum :
+      (∑ m ∈ Finset.range T, f m) =
+        (q : ℝ) * (∑ m ∈ Finset.range L, f m) := by
+    rw [hq, Nat.mul_comm L q]
+    exact sum_range_mul_of_period f L q hperiod
+  have hqRne : (q : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hqpos)
+  have hLRne : (L : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hLpos)
+  calc
+    empiricalModularCovariance a b T =
+        (∑ m ∈ Finset.range T, f m) / (T : ℝ) := by
+          simpa only [f] using
+            (empiricalModularCovariance_common_period_explicit
+              a b T ha hb hTpos haT hbT)
+    _ = ((q : ℝ) * (∑ m ∈ Finset.range L, f m)) /
+        ((q : ℝ) * (L : ℝ)) := by
+          rw [hsum, hq]
+          push_cast
+          rw [mul_comm (L : ℝ) (q : ℝ)]
+    _ = (∑ m ∈ Finset.range L, f m) / (L : ℝ) := by
+          apply (div_eq_div_iff (mul_ne_zero hqRne hLRne) hLRne).2
+          ring
+    _ = empiricalModularCovariance a b L := by
+          symm
+          simpa only [f] using
+            (empiricalModularCovariance_common_period_explicit
+              a b L ha hb hLpos haL hbL)
+
+/-- The classical diagonal covariance formula holds on every positive
+multiple of the modulus, not merely on the minimal period. -/
+theorem empiricalModularCovariance_diagonal_common_period
+    (d T : ℕ) (hd : 0 < d) (hTpos : 0 < T) (hdT : d ∣ T) :
+    empiricalModularCovariance d d T =
+      (((d : ℝ) ^ 2 - 1) / (12 * (d : ℝ) ^ 2)) := by
+  rw [empiricalModularCovariance_eq_lcm d d T hd hd hTpos hdT hdT,
+    Nat.lcm_self]
+  exact empiricalModularCovariance_diagonal d hd
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
