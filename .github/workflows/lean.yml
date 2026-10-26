@@ -16,6 +16,11 @@ jobs:
           build: "true"
           build-args: "Challenge Solution FourthMomentResearch CovarianceChallenge CovarianceSolution"
           use-mathlib-cache: "true"
+      - name: Kernel replay of each completed project module
+        run: |
+          lake env leanchecker Solution
+          lake env leanchecker FourthMomentResearch
+          lake env leanchecker CovarianceSolution
 
   comparator:
     name: Compare statements and proofs with independent kernels
