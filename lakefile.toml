@@ -1,6 +1,6 @@
 name = "TruncatedSieveFlux"
 version = "0.1.0"
-defaultTargets = ["Challenge", "Solution", "FourthMomentResearch"]
+defaultTargets = ["Challenge", "Solution", "FourthMomentResearch", "CovarianceChallenge", "CovarianceSolution"]
 
 [[require]]
 name = "mathlib"
@@ -18,3 +18,11 @@ roots = ["Solution"]
 [[lean_lib]]
 name = "FourthMomentResearch"
 roots = ["FourthMomentResearch"]
+
+[[lean_lib]]
+name = "CovarianceChallenge"
+roots = ["CovarianceChallenge"]
+
+[[lean_lib]]
+name = "CovarianceSolution"
+roots = ["CovarianceSolution"]
