@@ -685,4 +685,1511 @@ theorem empiricalFourthMoment_le_trivial (B H : ℕ) (hH : 0 < H) :
         exact hpoint m
     _ = (2 * (B : ℝ))^4 * (H : ℝ) := by simp [mul_comm]
 
+/-! ## Pointwise centering on arbitrary common periods -/
+
+/-- The centering term of a modular fraction is independent of the
+chosen positive multiple of its modulus. This is the exact pointwise
+normal form used in the gcd covariance calculation. -/
+theorem centeredModularFraction_common_period
+    (m d T : ℕ) (hd : 0 < d) (hT : 0 < T) (hdT : d ∣ T) :
+    centeredModularFraction m d T =
+      (((m % d : ℕ) : ℝ) / (d : ℝ)) -
+        (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  obtain ⟨q, hq⟩ := hdT
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    simp [hqzero] at hq
+    omega
+  unfold centeredModularFraction
+  rw [hq, Nat.mul_comm d q, modularFractionMean_multiple d q hd hqpos]
+
+/-- The general full-period covariance reduces exactly to a finite sum of
+explicitly centered modular residues. No gcd evaluation is asserted here. -/
+theorem empiricalModularCovariance_common_period_explicit
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hTpos : 0 < T) (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (∑ m ∈ Finset.range T,
+        ((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+          (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+        ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+          (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))) / (T : ℝ) := by
+  unfold empiricalModularCovariance
+  congr 1
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [centeredModularFraction_common_period m a T ha hTpos haT,
+    centeredModularFraction_common_period m b T hb hTpos hbT]
+
+/-- A general finite covariance inequality obtained by summing
+the pointwise nonnegative square of the difference of two centered
+modular fractions. It applies even without a common-period condition. -/
+theorem two_mul_empiricalModularCovariance_le_diagonal
+    (a b H : ℕ) (hH : 0 < H) :
+    2 * empiricalModularCovariance a b H ≤
+      empiricalModularCovariance a a H +
+        empiricalModularCovariance b b H := by
+  have hHreal : (0 : ℝ) < (H : ℝ) := by exact_mod_cast hH
+  have hpoint (m : ℕ) :
+      2 * (centeredModularFraction m a H *
+        centeredModularFraction m b H) ≤
+        centeredModularFraction m a H *
+          centeredModularFraction m a H +
+        centeredModularFraction m b H *
+          centeredModularFraction m b H := by
+    nlinarith [sq_nonneg
+      (centeredModularFraction m a H -
+        centeredModularFraction m b H)]
+  unfold empiricalModularCovariance
+  calc
+    2 * ((∑ m ∈ Finset.range H,
+        centeredModularFraction m a H *
+          centeredModularFraction m b H) / (H : ℝ)) =
+      (∑ m ∈ Finset.range H,
+        2 * (centeredModularFraction m a H *
+          centeredModularFraction m b H)) / (H : ℝ) := by
+        rw [← Finset.mul_sum]
+        ring
+    _ ≤ (∑ m ∈ Finset.range H,
+        (centeredModularFraction m a H *
+          centeredModularFraction m a H +
+        centeredModularFraction m b H *
+          centeredModularFraction m b H)) / (H : ℝ) := by
+          apply div_le_div_of_nonneg_right
+          · exact Finset.sum_le_sum (fun m hm => hpoint m)
+          · exact le_of_lt hHreal
+    _ = (∑ m ∈ Finset.range H,
+          centeredModularFraction m a H *
+            centeredModularFraction m a H) / (H : ℝ) +
+        (∑ m ∈ Finset.range H,
+          centeredModularFraction m b H *
+            centeredModularFraction m b H) / (H : ℝ) := by
+          rw [Finset.sum_add_distrib, add_div]
+
+/-- The complementary bound, from the square of the sum of two
+centered modular fractions. -/
+theorem neg_diagonal_le_two_mul_empiricalModularCovariance
+    (a b H : ℕ) (hH : 0 < H) :
+    -(empiricalModularCovariance a a H +
+        empiricalModularCovariance b b H) ≤
+      2 * empiricalModularCovariance a b H := by
+  have hHreal : (0 : ℝ) < (H : ℝ) := by exact_mod_cast hH
+  have hpoint (m : ℕ) :
+      -(centeredModularFraction m a H *
+          centeredModularFraction m a H +
+        centeredModularFraction m b H *
+          centeredModularFraction m b H) ≤
+        2 * (centeredModularFraction m a H *
+          centeredModularFraction m b H) := by
+    nlinarith [sq_nonneg
+      (centeredModularFraction m a H +
+        centeredModularFraction m b H)]
+  have hsum :
+      -(empiricalModularCovariance a a H +
+        empiricalModularCovariance b b H) ≤
+      2 * empiricalModularCovariance a b H := by
+    unfold empiricalModularCovariance
+    rw [← add_div]
+    calc
+      -(((∑ m ∈ Finset.range H,
+          centeredModularFraction m a H * centeredModularFraction m a H) +
+          (∑ m ∈ Finset.range H,
+          centeredModularFraction m b H * centeredModularFraction m b H)) /
+          (H : ℝ)) =
+        (∑ m ∈ Finset.range H,
+          -(centeredModularFraction m a H * centeredModularFraction m a H +
+            centeredModularFraction m b H * centeredModularFraction m b H)) /
+          (H : ℝ) := by
+            rw [← Finset.sum_add_distrib, Finset.sum_neg_distrib, neg_div]
+      _ ≤ (∑ m ∈ Finset.range H,
+          2 * (centeredModularFraction m a H *
+            centeredModularFraction m b H)) / (H : ℝ) := by
+            apply div_le_div_of_nonneg_right
+            · exact Finset.sum_le_sum (fun m hm => hpoint m)
+            · exact le_of_lt hHreal
+      _ = 2 * ((∑ m ∈ Finset.range H,
+          centeredModularFraction m a H *
+            centeredModularFraction m b H) / (H : ℝ)) := by
+            rw [← Finset.mul_sum]
+            ring
+  exact hsum
+
+/-- The product of two centered modular fractions is periodic in
+any common multiple of their moduli, provided the averaging period
+is itself a common multiple. -/
+theorem centeredModularFraction_mul_add_common_period
+    (m a b T : ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hTpos : 0 < T) (haT : a ∣ T) (hbT : b ∣ T) :
+    centeredModularFraction (m + T) a T *
+      centeredModularFraction (m + T) b T =
+    centeredModularFraction m a T *
+      centeredModularFraction m b T := by
+  rw [centeredModularFraction_common_period (m + T) a T ha hTpos haT,
+    centeredModularFraction_common_period (m + T) b T hb hTpos hbT,
+    centeredModularFraction_common_period m a T ha hTpos haT,
+    centeredModularFraction_common_period m b T hb hTpos hbT]
+  have hmoda : (m + T) % a = m % a := by
+    simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd haT]
+  have hmodb : (m + T) % b = m % b := by
+    simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd hbT]
+  rw [hmoda, hmodb]
+
+/-- The least common multiple is a valid averaging period for the
+explicit centered-residue covariance formula. This specializes the
+common-period expansion, without yet evaluating the gcd correlation. -/
+theorem empiricalModularCovariance_lcm_explicit
+    (a b : ℕ) (ha : 0 < a) (hb : 0 < b) :
+    empiricalModularCovariance a b (Nat.lcm a b) =
+      (∑ m ∈ Finset.range (Nat.lcm a b),
+        ((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+          (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+        ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+          (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))) /
+        (Nat.lcm a b : ℝ) := by
+  exact empiricalModularCovariance_common_period_explicit
+    a b (Nat.lcm a b) ha hb
+    (Nat.lcm_pos ha hb) (Nat.dvd_lcm_left a b) (Nat.dvd_lcm_right a b)
+
+/-- A finite sum of a periodic real-valued sequence over q complete
+periods is q times its sum over one period. -/
+private theorem sum_range_mul_of_period
+    (f : ℕ → ℝ) (L q : ℕ) (hperiod : ∀ m, f (m + L) = f m) :
+    (∑ m ∈ Finset.range (q * L), f m) =
+      (q : ℝ) * ∑ m ∈ Finset.range L, f m := by
+  have hshift (k m : ℕ) : f (k * L + m) = f m := by
+    induction k with
+    | zero => simp
+    | succ k ih =>
+        calc
+          f (k.succ * L + m) = f ((k * L + m) + L) := by
+            congr 1
+            simp only [Nat.succ_mul]
+            omega
+          _ = f (k * L + m) := hperiod _
+          _ = f m := ih
+  induction q with
+  | zero => simp
+  | succ q ih =>
+      calc
+        (∑ m ∈ Finset.range (q.succ * L), f m) =
+            (∑ m ∈ Finset.range (q * L), f m) +
+            (∑ m ∈ Finset.range L, f (q * L + m)) := by
+              simpa only [Nat.succ_mul] using
+                (Finset.sum_range_add f (q * L) L)
+        _ = (∑ m ∈ Finset.range (q * L), f m) +
+            (∑ m ∈ Finset.range L, f m) := by
+              congr 1
+              apply Finset.sum_congr rfl
+              intro m hm
+              exact hshift q m
+        _ = (q.succ : ℝ) * ∑ m ∈ Finset.range L, f m := by
+              rw [ih]
+              push_cast
+              ring
+
+/-- Empirical modular covariance does not depend on which positive
+common multiple of a and b is used as the averaging period. In
+particular, it agrees with the covariance on lcm(a,b). -/
+theorem empiricalModularCovariance_eq_lcm
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b)
+    (hTpos : 0 < T) (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      empiricalModularCovariance a b (Nat.lcm a b) := by
+  let L := Nat.lcm a b
+  have hLpos : 0 < L := Nat.lcm_pos ha hb
+  have haL : a ∣ L := Nat.dvd_lcm_left a b
+  have hbL : b ∣ L := Nat.dvd_lcm_right a b
+  obtain ⟨q, hq⟩ := (Nat.lcm_dvd haT hbT)
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    simp [hqzero] at hq
+    omega
+  let f : ℕ → ℝ := fun m =>
+    ((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+      (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+    ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+      (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))
+  have hperiod (m : ℕ) : f (m + L) = f m := by
+    dsimp [f]
+    have hmoda : (m + L) % a = m % a := by
+      simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd haL]
+    have hmodb : (m + L) % b = m % b := by
+      simpa [Nat.add_mod, Nat.mod_eq_zero_of_dvd hbL]
+    rw [hmoda, hmodb]
+  have hsum :
+      (∑ m ∈ Finset.range T, f m) =
+        (q : ℝ) * (∑ m ∈ Finset.range L, f m) := by
+    rw [hq, Nat.mul_comm L q]
+    exact sum_range_mul_of_period f L q hperiod
+  have hqRne : (q : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hqpos)
+  have hLRne : (L : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hLpos)
+  calc
+    empiricalModularCovariance a b T =
+        (∑ m ∈ Finset.range T, f m) / (T : ℝ) := by
+          simpa only [f] using
+            (empiricalModularCovariance_common_period_explicit
+              a b T ha hb hTpos haT hbT)
+    _ = ((q : ℝ) * (∑ m ∈ Finset.range L, f m)) /
+        ((q : ℝ) * (L : ℝ)) := by
+          rw [hsum, hq]
+          push_cast
+          rw [mul_comm (L : ℝ) (q : ℝ)]
+    _ = (∑ m ∈ Finset.range L, f m) / (L : ℝ) := by
+          apply (div_eq_div_iff (mul_ne_zero hqRne hLRne) hLRne).2
+          ring
+    _ = empiricalModularCovariance a b L := by
+          symm
+          simpa only [f] using
+            (empiricalModularCovariance_common_period_explicit
+              a b L ha hb hLpos haL hbL)
+
+/-- The classical diagonal covariance formula holds on every positive
+multiple of the modulus, not merely on the minimal period. -/
+theorem empiricalModularCovariance_diagonal_common_period
+    (d T : ℕ) (hd : 0 < d) (hTpos : 0 < T) (hdT : d ∣ T) :
+    empiricalModularCovariance d d T =
+      (((d : ℝ) ^ 2 - 1) / (12 * (d : ℝ) ^ 2)) := by
+  rw [empiricalModularCovariance_eq_lcm d d T hd hd hTpos hdT hdT,
+    Nat.lcm_self]
+  exact empiricalModularCovariance_diagonal d hd
+
+/-- The full Möbius-weighted variance is independent of the chosen
+positive common period. This lifts the two-modulus covariance
+period-invariance theorem through the exact quadratic-form expansion. -/
+theorem empiricalSecondMoment_eq_of_common_periods
+    (B T U : ℕ) (hTpos : 0 < T) (hUpos : 0 < U)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T)
+    (hU : ∀ d ∈ Finset.Icc 1 B, d ∣ U) :
+    empiricalSecondMoment B T = empiricalSecondMoment B U := by
+  rw [empiricalSecondMoment_eq_covariance_sum,
+    empiricalSecondMoment_eq_covariance_sum]
+  apply Finset.sum_congr rfl
+  intro a ha
+  apply Finset.sum_congr rfl
+  intro b hb
+  have haPos : 0 < a := (Finset.mem_Icc.mp ha).1
+  have hbPos : 0 < b := (Finset.mem_Icc.mp hb).1
+  rw [empiricalModularCovariance_eq_lcm a b T haPos hbPos hTpos
+        (hT a ha) (hT b hb),
+      empiricalModularCovariance_eq_lcm a b U haPos hbPos hUpos
+        (hU a ha) (hU b hb)]
+
+/-- Averaging the centered fourth power over several complete periods
+has the same value as averaging over a single common period. -/
+theorem empiricalFourthMoment_mul_common_period
+    (B T q : ℕ) (hTpos : 0 < T) (hqpos : 0 < q)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalFourthMoment B (q * T) = empiricalFourthMoment B T := by
+  have hqTpos : 0 < q * T := Nat.mul_pos hqpos hTpos
+  have hqT : ∀ d ∈ Finset.Icc 1 B, d ∣ q * T := by
+    intro d hd
+    obtain ⟨k, hk⟩ := hT d hd
+    refine ⟨q * k, ?_⟩
+    rw [hk]
+    ring
+  have hmean :
+      empiricalErrorMean B (q * T) = empiricalErrorMean B T := by
+    rw [empiricalErrorMean_common_period B (q * T) hqTpos hqT,
+      empiricalErrorMean_common_period B T hTpos hT]
+  let f : ℕ → ℝ := fun m =>
+    (roundingError m B - empiricalErrorMean B T) ^ 4
+  have hperiod (m : ℕ) : f (m + T) = f m := by
+    dsimp [f]
+    rw [roundingError_add_common_period m B T hT]
+  have hsum :
+      (∑ m ∈ Finset.range (q * T), f m) =
+        (q : ℝ) * ∑ m ∈ Finset.range T, f m :=
+    sum_range_mul_of_period f T q hperiod
+  have hqRne : (q : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hqpos)
+  have hTRne : (T : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.ne_of_gt hTpos)
+  unfold empiricalFourthMoment
+  rw [hmean]
+  change (∑ m ∈ Finset.range (q * T), f m) / (q * T : ℕ) =
+    (∑ m ∈ Finset.range T, f m) / (T : ℝ)
+  rw [hsum, Nat.cast_mul]
+  apply (div_eq_div_iff (mul_ne_zero hqRne hTRne) hTRne).2
+  ring
+
+/-- The fourth moment is constant when the common averaging period is
+replaced by any larger positive multiple. -/
+theorem empiricalFourthMoment_eq_of_common_period_dvd
+    (B T U : ℕ) (hTpos : 0 < T) (hUpos : 0 < U)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) (hTU : T ∣ U) :
+    empiricalFourthMoment B T = empiricalFourthMoment B U := by
+  obtain ⟨q, hU⟩ := hTU
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    simp [hU, hqzero] at hUpos
+  calc
+    empiricalFourthMoment B T =
+        empiricalFourthMoment B (q * T) :=
+          (empiricalFourthMoment_mul_common_period B T q hTpos hqpos hT).symm
+    _ = empiricalFourthMoment B U := by
+          rw [hU, Nat.mul_comm T q]
+
+/-- The centered fourth moment of the truncated Möbius rounding error
+is independent of the chosen positive common period. No fourth-moment
+asymptotic bound is claimed here. -/
+theorem empiricalFourthMoment_eq_of_common_periods
+    (B T U : ℕ) (hTpos : 0 < T) (hUpos : 0 < U)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T)
+    (hU : ∀ d ∈ Finset.Icc 1 B, d ∣ U) :
+    empiricalFourthMoment B T = empiricalFourthMoment B U := by
+  let L := Nat.lcm T U
+  have hLpos : 0 < L := Nat.lcm_pos hTpos hUpos
+  have hTL : T ∣ L := Nat.dvd_lcm_left T U
+  have hUL : U ∣ L := Nat.dvd_lcm_right T U
+  calc
+    empiricalFourthMoment B T =
+        empiricalFourthMoment B L :=
+          empiricalFourthMoment_eq_of_common_period_dvd
+            B T L hTpos hLpos hT hTL
+    _ = empiricalFourthMoment B U :=
+          (empiricalFourthMoment_eq_of_common_period_dvd
+            B U L hUpos hLpos hU hUL).symm
+
+/-! ## Arithmetic preparation for divisible-modulus covariance -/
+
+/-- A centered modular fraction sums to zero on its complete modulus. -/
+private theorem centeredModularFraction_sum_self_zero
+    (a : ℕ) (ha : 0 < a) :
+    (∑ m ∈ Finset.range a, centeredModularFraction m a a) = 0 := by
+  have haR : (a : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt ha)
+  simp only [centeredModularFraction, Finset.sum_sub_distrib,
+    Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+  unfold modularFractionMean
+  field_simp [haR]
+  ring
+
+/-- If a periodic sequence has zero mean over a full period, then the
+index-weighted sum over q periods is q times the basic weighted sum. -/
+private theorem sum_range_mul_index_of_period_zero_mean
+    (f : ℕ → ℝ) (L q : ℕ)
+    (hperiod : ∀ m, f (m + L) = f m)
+    (hzero : (∑ m ∈ Finset.range L, f m) = 0) :
+    (∑ m ∈ Finset.range (q * L), f m * (m : ℝ)) =
+      (q : ℝ) * ∑ m ∈ Finset.range L, f m * (m : ℝ) := by
+  have hshift (k m : ℕ) : f (k * L + m) = f m := by
+    induction k with
+    | zero => simp
+    | succ k ih =>
+        calc
+          f (k.succ * L + m) = f ((k * L + m) + L) := by
+            congr 1
+            simp only [Nat.succ_mul]
+            omega
+          _ = f (k * L + m) := hperiod _
+          _ = f m := ih
+  have hblock (k : ℕ) :
+      (∑ m ∈ Finset.range L, f (k * L + m) * ((k * L + m : ℕ) : ℝ)) =
+        ∑ m ∈ Finset.range L, f m * (m : ℝ) := by
+    calc
+      (∑ m ∈ Finset.range L, f (k * L + m) * ((k * L + m : ℕ) : ℝ)) =
+          ∑ m ∈ Finset.range L,
+            (f m * (m : ℝ) + ((k * L : ℕ) : ℝ) * f m) := by
+              apply Finset.sum_congr rfl
+              intro m hm
+              rw [hshift, Nat.cast_add]
+              ring
+      _ = (∑ m ∈ Finset.range L, f m * (m : ℝ)) +
+          ((k * L : ℕ) : ℝ) * (∑ m ∈ Finset.range L, f m) := by
+            rw [Finset.sum_add_distrib, Finset.mul_sum]
+      _ = ∑ m ∈ Finset.range L, f m * (m : ℝ) := by
+            rw [hzero]
+            ring
+  induction q with
+  | zero => simp
+  | succ q ih =>
+      calc
+        (∑ m ∈ Finset.range (q.succ * L), f m * (m : ℝ)) =
+            (∑ m ∈ Finset.range (q * L), f m * (m : ℝ)) +
+            (∑ m ∈ Finset.range L,
+              f (q * L + m) * ((q * L + m : ℕ) : ℝ)) := by
+                simpa only [Nat.succ_mul] using
+                  (Finset.sum_range_add
+                    (fun m => f m * (m : ℝ)) (q * L) L)
+        _ = (∑ m ∈ Finset.range (q * L), f m * (m : ℝ)) +
+            (∑ m ∈ Finset.range L, f m * (m : ℝ)) := by rw [hblock]
+        _ = (q.succ : ℝ) * ∑ m ∈ Finset.range L, f m * (m : ℝ) := by
+              rw [ih]
+              push_cast
+              ring
+
+/-- For a positive divisor a of b, covariance with modulus b on one
+full b-period is the diagonal covariance at a scaled by a/b. -/
+theorem empiricalModularCovariance_dvd_right_base
+    (a b : ℕ) (ha : 0 < a) (hb : 0 < b) (hab : a ∣ b) :
+    empiricalModularCovariance a b b =
+      ((a : ℝ) / (b : ℝ)) * empiricalModularCovariance a a a := by
+  obtain ⟨q, hq⟩ := hab
+  have hbq : b = q * a := by simpa only [Nat.mul_comm] using hq
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    simp [hqzero] at hbq
+    omega
+  have haR : (a : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt ha)
+  have hbR : (b : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hb)
+  have hqR : (q : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hqpos)
+  let f : ℕ → ℝ := fun m => centeredModularFraction m a a
+  have hperiod (m : ℕ) : f (m + a) = f m := by
+    dsimp [f]
+    rw [centeredModularFraction_common_period (m + a) a a ha ha (dvd_refl a),
+      centeredModularFraction_common_period m a a ha ha (dvd_refl a)]
+    have hmod : (m + a) % a = m % a := by
+      simpa [Nat.add_mod]
+    rw [hmod]
+  have hzero : (∑ m ∈ Finset.range a, f m) = 0 :=
+    centeredModularFraction_sum_self_zero a ha
+  have hzerob : (∑ m ∈ Finset.range b, f m) = 0 := by
+    rw [hbq, sum_range_mul_of_period f a q hperiod, hzero]
+    ring
+  have hcenter (m : ℕ) : centeredModularFraction m a b = f m := by
+    dsimp [f]
+    rw [centeredModularFraction_common_period m a b ha hb (by
+      exact ⟨q, by simpa only [Nat.mul_comm] using hq⟩),
+      centeredModularFraction_common_period m a a ha ha (dvd_refl a)]
+  have hfrac (m : ℕ) (hm : m ∈ Finset.range a) :
+      f m = (m : ℝ) / (a : ℝ) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))) := by
+    dsimp [f]
+    rw [centeredModularFraction_common_period m a a ha ha (dvd_refl a),
+      Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
+  have hweighted_diag :
+      (∑ m ∈ Finset.range a, f m * (m : ℝ)) =
+        (a : ℝ) * ∑ m ∈ Finset.range a, f m * f m := by
+    have hpoint (m : ℕ) (hm : m ∈ Finset.range a) :
+        f m * (m : ℝ) =
+          (a : ℝ) * (f m * f m) +
+            (((a - 1 : ℕ) : ℝ) / 2) * f m := by
+      rw [hfrac m hm]
+      field_simp [haR]
+      <;> ring
+    calc
+      (∑ m ∈ Finset.range a, f m * (m : ℝ)) =
+          ∑ m ∈ Finset.range a,
+            ((a : ℝ) * (f m * f m) +
+              (((a - 1 : ℕ) : ℝ) / 2) * f m) := by
+                apply Finset.sum_congr rfl
+                intro m hm
+                exact hpoint m hm
+      _ = (a : ℝ) * (∑ m ∈ Finset.range a, f m * f m) +
+          (((a - 1 : ℕ) : ℝ) / 2) *
+            (∑ m ∈ Finset.range a, f m) := by
+              rw [Finset.sum_add_distrib, Finset.mul_sum, Finset.mul_sum]
+      _ = (a : ℝ) * ∑ m ∈ Finset.range a, f m * f m := by
+            rw [hzero]
+            ring
+  have hweightedb :
+      (∑ m ∈ Finset.range b, f m * (m : ℝ)) =
+        (q : ℝ) * (∑ m ∈ Finset.range a, f m * (m : ℝ)) := by
+    rw [hbq]
+    exact sum_range_mul_index_of_period_zero_mean f a q hperiod hzero
+  have hprod :
+      (∑ m ∈ Finset.range b,
+        centeredModularFraction m a b * centeredModularFraction m b b) =
+      (∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ) := by
+    let c : ℝ := (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ)))
+    calc
+      (∑ m ∈ Finset.range b,
+        centeredModularFraction m a b * centeredModularFraction m b b) =
+        ∑ m ∈ Finset.range b, f m * ((m : ℝ) / (b : ℝ) - c) := by
+          apply Finset.sum_congr rfl
+          intro m hm
+          rw [hcenter m,
+            centeredModularFraction_common_period m b b hb hb (dvd_refl b),
+            Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
+      _ = (∑ m ∈ Finset.range b,
+          ((f m * (m : ℝ)) / (b : ℝ) - c * f m)) := by
+            apply Finset.sum_congr rfl
+            intro m hm
+            ring
+      _ = (∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ) -
+          c * (∑ m ∈ Finset.range b, f m) := by
+            rw [Finset.sum_sub_distrib, Finset.sum_div, Finset.mul_sum]
+      _ = (∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ) := by
+            rw [hzerob]
+            ring
+  have hcovexpr :
+      empiricalModularCovariance a b b =
+        ((∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ)) /
+          (b : ℝ) := by
+    unfold empiricalModularCovariance
+    rw [hprod]
+  have hdiagcov :
+      empiricalModularCovariance a a a =
+        (∑ m ∈ Finset.range a, f m * f m) / (a : ℝ) := rfl
+  calc
+    empiricalModularCovariance a b b =
+        ((∑ m ∈ Finset.range b, f m * (m : ℝ)) / (b : ℝ)) /
+          (b : ℝ) := hcovexpr
+    _ = (((q : ℝ) * ((a : ℝ) *
+          (∑ m ∈ Finset.range a, f m * f m))) / (b : ℝ)) /
+          (b : ℝ) := by rw [hweightedb, hweighted_diag]
+    _ = ((a : ℝ) / (b : ℝ)) *
+          empiricalModularCovariance a a a := by
+            rw [hdiagcov, hbq]
+            push_cast
+            field_simp [haR, hqR]
+            <;> ring
+
+/-- The exact gcd covariance formula for the non-diagonal family
+a dividing b, over any positive common averaging period. -/
+theorem empiricalModularCovariance_gcd_of_dvd
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (hab : a ∣ b) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  have haT : a ∣ T := dvd_trans hab hbT
+  have hcov : empiricalModularCovariance a b T =
+      empiricalModularCovariance a b b := by
+    calc
+      empiricalModularCovariance a b T =
+          empiricalModularCovariance a b (Nat.lcm a b) :=
+            empiricalModularCovariance_eq_lcm a b T
+              ha hb hTpos haT hbT
+      _ = empiricalModularCovariance a b b :=
+            (empiricalModularCovariance_eq_lcm a b b
+              ha hb hb hab (dvd_refl b)).symm
+  have hgcd : Nat.gcd a b = a := Nat.gcd_eq_left_iff_dvd.mpr hab
+  rw [hcov, empiricalModularCovariance_dvd_right_base a b ha hb hab,
+    empiricalModularCovariance_diagonal a ha, hgcd]
+  have haR : (a : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt ha)
+  have hbR : (b : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hb)
+  field_simp [haR, hbR]
+  <;> ring
+
+/-- The exact gcd covariance formula also holds when b divides a,
+by symmetry of the covariance. -/
+theorem empiricalModularCovariance_gcd_of_dvd_left
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (hba : b ∣ a) (haT : a ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  calc
+    empiricalModularCovariance a b T =
+        empiricalModularCovariance b a T :=
+          empiricalModularCovariance_comm a b T
+    _ = (((Nat.gcd b a : ℝ) ^ 2 - 1) /
+        (12 * (b : ℝ) * (a : ℝ))) :=
+          empiricalModularCovariance_gcd_of_dvd b a T hb ha hTpos hba haT
+    _ = (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+          rw [Nat.gcd_comm b a]
+          congr 1
+          ring
+
+/-- The full gcd identity for all pairs of positive comparable moduli:
+either a divides b, or b divides a. -/
+theorem empiricalModularCovariance_gcd_of_comparable
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (hcmp : a ∣ b ∨ b ∣ a) (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  rcases hcmp with hab | hba
+  · exact empiricalModularCovariance_gcd_of_dvd
+      a b T ha hb hTpos hab hbT
+  · exact empiricalModularCovariance_gcd_of_dvd_left
+      a b T ha hb hTpos hba haT
+
+/-! ## A coprime off-diagonal family: modulus two and odd moduli -/
+
+/-- On a common period of two and an odd modulus, shifting by that odd
+modulus reverses the centered fraction modulo two. -/
+theorem centeredModularFraction_two_add_odd
+    (m b : ℕ) (hbodd : b % 2 = 1) :
+    centeredModularFraction (m + b) 2 (2 * b) =
+      -centeredModularFraction m 2 (2 * b) := by
+  have hb : 0 < b := by omega
+  have hTpos : 0 < 2 * b := by omega
+  have h2T : 2 ∣ 2 * b := ⟨b, rfl⟩
+  rw [centeredModularFraction_common_period (m + b) 2 (2 * b)
+        (by norm_num) hTpos h2T,
+      centeredModularFraction_common_period m 2 (2 * b)
+        (by norm_num) hTpos h2T]
+  have hmod : (m + b) % 2 + m % 2 = 1 := by
+    have hsum : (m + b) % 2 = (m % 2 + 1) % 2 := by
+      simp [Nat.add_mod, hbodd]
+    have hm : m % 2 < 2 := Nat.mod_lt m (by omega)
+    omega
+  have hmodR : (((m + b) % 2 : ℕ) : ℝ) + ((m % 2 : ℕ) : ℝ) = 1 := by
+    exact_mod_cast hmod
+  norm_num
+  linarith
+
+/-- Translating by b leaves the centered fraction modulo b unchanged,
+even when the averaging period is twice b. -/
+theorem centeredModularFraction_self_add_on_double
+    (m b : ℕ) :
+    centeredModularFraction (m + b) b (2 * b) =
+      centeredModularFraction m b (2 * b) := by
+  unfold centeredModularFraction
+  have hmod : (m + b) % b = m % b := by
+    simp [Nat.add_mod]
+  rw [hmod]
+
+/-- The covariance of fractions modulo two and an odd modulus is zero
+over the double period, by cancellation between its two b-blocks. -/
+theorem empiricalModularCovariance_two_odd_double_zero
+    (b : ℕ) (hbodd : b % 2 = 1) :
+    empiricalModularCovariance 2 b (2 * b) = 0 := by
+  let f : ℕ → ℝ := fun m =>
+    centeredModularFraction m 2 (2 * b) *
+      centeredModularFraction m b (2 * b)
+  have hanti (m : ℕ) : f (m + b) = -f m := by
+    dsimp [f]
+    rw [centeredModularFraction_two_add_odd m b hbodd,
+      centeredModularFraction_self_add_on_double m b]
+    ring
+  have hblock :
+      (∑ m ∈ Finset.range b, f (b + m)) =
+        -(∑ m ∈ Finset.range b, f m) := by
+    calc
+      (∑ m ∈ Finset.range b, f (b + m)) =
+          ∑ m ∈ Finset.range b, -(f m) := by
+            apply Finset.sum_congr rfl
+            intro m hm
+            simpa only [Nat.add_comm] using hanti m
+      _ = -(∑ m ∈ Finset.range b, f m) := by
+            rw [Finset.sum_neg_distrib]
+  have hsum : (∑ m ∈ Finset.range (2 * b), f m) = 0 := by
+    have hadd : b + b = 2 * b := by omega
+    rw [← hadd, Finset.sum_range_add f b b, hblock]
+    ring
+  unfold empiricalModularCovariance
+  change (∑ m ∈ Finset.range (2 * b), f m) / (2 * b : ℕ) = 0
+  rw [hsum]
+  simp
+
+/-- A new non-comparable gcd-covariance family: if b is odd, its
+centered modular fraction is uncorrelated with modulus two over every
+positive common averaging period. -/
+theorem empiricalModularCovariance_gcd_two_odd
+    (b T : ℕ) (hbodd : b % 2 = 1) (hTpos : 0 < T)
+    (h2T : 2 ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance 2 b T =
+      (((Nat.gcd 2 b : ℝ) ^ 2 - 1) /
+        (12 * (2 : ℝ) * (b : ℝ))) := by
+  have hb : 0 < b := by omega
+  have h2bpos : 0 < 2 * b := by omega
+  have h2_2b : 2 ∣ 2 * b := ⟨b, rfl⟩
+  have hb_2b : b ∣ 2 * b := ⟨2, by omega⟩
+  have hcov :
+      empiricalModularCovariance 2 b T =
+        empiricalModularCovariance 2 b (2 * b) := by
+    calc
+      empiricalModularCovariance 2 b T =
+          empiricalModularCovariance 2 b (Nat.lcm 2 b) :=
+            empiricalModularCovariance_eq_lcm 2 b T
+              (by norm_num) hb hTpos h2T hbT
+      _ = empiricalModularCovariance 2 b (2 * b) :=
+            (empiricalModularCovariance_eq_lcm 2 b (2 * b)
+              (by norm_num) hb h2bpos h2_2b hb_2b).symm
+  have hgcd : Nat.gcd 2 b = 1 := by
+    have hdiv2 : Nat.gcd 2 b ∣ 2 := Nat.gcd_dvd_left 2 b
+    have hdivb : Nat.gcd 2 b ∣ b := Nat.gcd_dvd_right 2 b
+    have hne : Nat.gcd 2 b ≠ 0 := by
+      intro hzero
+      have : b = 0 := by simpa [hzero] using hdivb
+      omega
+    have hle : Nat.gcd 2 b ≤ 2 :=
+      Nat.le_of_dvd (by omega) hdiv2
+    have hnot2 : Nat.gcd 2 b ≠ 2 := by
+      intro hh
+      have h : 2 ∣ b := by simpa [hh] using hdivb
+      have hmod : b % 2 = 0 := Nat.mod_eq_zero_of_dvd h
+      omega
+    omega
+  rw [hcov, empiricalModularCovariance_two_odd_double_zero b hbodd,
+    hgcd]
+  norm_num
+
+/-- The full gcd-covariance identity holds whenever the first
+positive modulus is two, with no parity restriction on the other
+modulus. Even moduli use the divisibility case; odd moduli use
+the two-block cancellation theorem. -/
+theorem empiricalModularCovariance_gcd_two_any
+    (b T : ℕ) (hb : 0 < b) (hTpos : 0 < T)
+    (h2T : 2 ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance 2 b T =
+      (((Nat.gcd 2 b : ℝ) ^ 2 - 1) /
+        (12 * (2 : ℝ) * (b : ℝ))) := by
+  by_cases heven : b % 2 = 0
+  · have h2b : 2 ∣ b := Nat.dvd_of_mod_eq_zero heven
+    exact empiricalModularCovariance_gcd_of_dvd
+      2 b T (by norm_num) hb hTpos h2b hbT
+  · have hodd : b % 2 = 1 := by
+      have hlt : b % 2 < 2 := Nat.mod_lt b (by norm_num)
+      omega
+    exact empiricalModularCovariance_gcd_two_odd b T hodd hTpos h2T hbT
+
+/-- The symmetric all-moduli family: exact covariance when the second
+modulus is two. -/
+theorem empiricalModularCovariance_gcd_any_two
+    (a T : ℕ) (ha : 0 < a) (hTpos : 0 < T)
+    (haT : a ∣ T) (h2T : 2 ∣ T) :
+    empiricalModularCovariance a 2 T =
+      (((Nat.gcd a 2 : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (2 : ℝ))) := by
+  calc
+    empiricalModularCovariance a 2 T =
+        empiricalModularCovariance 2 a T :=
+          empiricalModularCovariance_comm a 2 T
+    _ = (((Nat.gcd 2 a : ℝ) ^ 2 - 1) /
+        (12 * (2 : ℝ) * (a : ℝ))) :=
+          empiricalModularCovariance_gcd_two_any a T ha hTpos h2T haT
+    _ = (((Nat.gcd a 2 : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (2 : ℝ))) := by
+          rw [Nat.gcd_comm 2 a]
+          congr 1
+          ring
+
+/-! ## Coprime correlations with modulus three -/
+
+/-- Three translated residues modulo three run through all three
+residue classes whenever the shift is not divisible by three. -/
+private theorem mod_three_shift_residue_sum
+    (m b : ℕ) (hb : b % 3 ≠ 0) :
+    m % 3 + (b + m) % 3 + ((b + b) + m) % 3 = 3 := by
+  have hfirst : m % 3 < 3 := Nat.mod_lt m (by omega)
+  have hsecond : b % 3 < 3 := Nat.mod_lt b (by omega)
+  have hcase : b % 3 = 1 ∨ b % 3 = 2 := by omega
+  have hshift1 : (b + m) % 3 = (b % 3 + m % 3) % 3 :=
+    Nat.add_mod b m 3
+  have hshift2 : ((b + b) + m) % 3 =
+      ((b % 3 + b % 3) % 3 + m % 3) % 3 := by
+    calc
+      ((b + b) + m) % 3 =
+          ((b + b) % 3 + m % 3) % 3 :=
+            Nat.add_mod (b + b) m 3
+      _ = ((b % 3 + b % 3) % 3 + m % 3) % 3 := by
+            rw [Nat.add_mod b b 3]
+  rw [hshift1, hshift2]
+  rcases hcase with hcase | hcase
+  · rw [hcase]
+    omega
+  · rw [hcase]
+    omega
+
+/-- The three centered fractions modulo three cancel after translating
+by b and 2b, when b is coprime to three. -/
+theorem centeredModularFraction_three_block_sum_zero
+    (m b : ℕ) (hb : b % 3 ≠ 0) :
+    centeredModularFraction m 3 (3 * b) +
+      centeredModularFraction (b + m) 3 (3 * b) +
+      centeredModularFraction ((b + b) + m) 3 (3 * b) = 0 := by
+  have hbpos : 0 < b := by omega
+  have hTpos : 0 < 3 * b := by omega
+  have h3T : 3 ∣ 3 * b := ⟨b, rfl⟩
+  rw [centeredModularFraction_common_period m 3 (3 * b)
+        (by omega) hTpos h3T,
+      centeredModularFraction_common_period (b + m) 3 (3 * b)
+        (by omega) hTpos h3T,
+      centeredModularFraction_common_period ((b + b) + m) 3 (3 * b)
+        (by omega) hTpos h3T]
+  have hres : m % 3 + (b + m) % 3 +
+      ((b + b) + m) % 3 = 3 :=
+    mod_three_shift_residue_sum m b hb
+  have hresR :
+      ((m % 3 : ℕ) : ℝ) + (((b + m) % 3 : ℕ) : ℝ) +
+        ((((b + b) + m) % 3 : ℕ) : ℝ) = 3 := by
+    exact_mod_cast hres
+  norm_num
+  linarith
+
+/-- The covariance modulo three and a modulus prime to three vanishes
+on their product period, by grouping the sum into three b-blocks. -/
+theorem empiricalModularCovariance_three_coprime_product_zero
+    (b : ℕ) (hb : b % 3 ≠ 0) :
+    empiricalModularCovariance 3 b (3 * b) = 0 := by
+  let f : ℕ → ℝ := fun m =>
+    centeredModularFraction m 3 (3 * b) *
+      centeredModularFraction m b (3 * b)
+  have hblock (m : ℕ) :
+      f m + f (b + m) + f ((b + b) + m) = 0 := by
+    have hb1 : centeredModularFraction (b + m) b (3 * b) =
+        centeredModularFraction m b (3 * b) := by
+      simp [centeredModularFraction, Nat.add_mod]
+    have hb2 : centeredModularFraction ((b + b) + m) b (3 * b) =
+        centeredModularFraction m b (3 * b) := by
+      simp [centeredModularFraction, Nat.add_mod]
+    dsimp [f]
+    rw [hb1, hb2]
+    have hs := centeredModularFraction_three_block_sum_zero m b hb
+    calc
+      centeredModularFraction m 3 (3 * b) *
+          centeredModularFraction m b (3 * b) +
+        centeredModularFraction (b + m) 3 (3 * b) *
+          centeredModularFraction m b (3 * b) +
+        centeredModularFraction ((b + b) + m) 3 (3 * b) *
+          centeredModularFraction m b (3 * b) =
+        (centeredModularFraction m 3 (3 * b) +
+          centeredModularFraction (b + m) 3 (3 * b) +
+          centeredModularFraction ((b + b) + m) 3 (3 * b)) *
+            centeredModularFraction m b (3 * b) := by ring
+      _ = 0 := by rw [hs]; ring
+  have hsum : (∑ m ∈ Finset.range (3 * b), f m) = 0 := by
+    have hlen : 3 * b = (b + b) + b := by omega
+    calc
+      (∑ m ∈ Finset.range (3 * b), f m) =
+          ∑ m ∈ Finset.range b,
+            (f m + f (b + m) + f ((b + b) + m)) := by
+              rw [hlen, Finset.sum_range_add f (b + b) b,
+                Finset.sum_range_add f b b]
+              simp only [Finset.sum_add_distrib]
+      _ = 0 := by simp [hblock]
+  unfold empiricalModularCovariance
+  change (∑ m ∈ Finset.range (3 * b), f m) / (3 * b : ℕ) = 0
+  rw [hsum]
+  simp
+
+/-- The exact gcd formula for a genuinely non-comparable family:
+three and any positive modulus not divisible by three. -/
+theorem empiricalModularCovariance_gcd_three_coprime
+    (b T : ℕ) (hb : b % 3 ≠ 0) (hTpos : 0 < T)
+    (h3T : 3 ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance 3 b T =
+      (((Nat.gcd 3 b : ℝ) ^ 2 - 1) /
+        (12 * (3 : ℝ) * (b : ℝ))) := by
+  have hbpos : 0 < b := by omega
+  have h3bpos : 0 < 3 * b := by omega
+  have h3_3b : 3 ∣ 3 * b := ⟨b, rfl⟩
+  have hb_3b : b ∣ 3 * b := ⟨3, by omega⟩
+  have hcov :
+      empiricalModularCovariance 3 b T =
+        empiricalModularCovariance 3 b (3 * b) := by
+    calc
+      empiricalModularCovariance 3 b T =
+          empiricalModularCovariance 3 b (Nat.lcm 3 b) :=
+            empiricalModularCovariance_eq_lcm 3 b T
+              (by omega) hbpos hTpos h3T hbT
+      _ = empiricalModularCovariance 3 b (3 * b) :=
+            (empiricalModularCovariance_eq_lcm 3 b (3 * b)
+              (by omega) hbpos h3bpos h3_3b hb_3b).symm
+  have hgcd : Nat.gcd 3 b = 1 := by
+    have hdiv3 : Nat.gcd 3 b ∣ 3 := Nat.gcd_dvd_left 3 b
+    have hdivb : Nat.gcd 3 b ∣ b := Nat.gcd_dvd_right 3 b
+    have hne : Nat.gcd 3 b ≠ 0 := by
+      intro hzero
+      have : b = 0 := by simpa [hzero] using hdivb
+      omega
+    have hle : Nat.gcd 3 b ≤ 3 :=
+      Nat.le_of_dvd (by omega) hdiv3
+    have hnot2 : Nat.gcd 3 b ≠ 2 := by
+      intro htwo
+      have : 2 ∣ 3 := by simpa [htwo] using hdiv3
+      norm_num at this
+    have hnot3 : Nat.gcd 3 b ≠ 3 := by
+      intro hthree
+      have h : 3 ∣ b := by simpa [hthree] using hdivb
+      exact hb (Nat.mod_eq_zero_of_dvd h)
+    omega
+  rw [hcov, empiricalModularCovariance_three_coprime_product_zero b hb,
+    hgcd]
+  norm_num
+
+/-- The gcd covariance identity for modulus three and any positive
+second modulus. The divisible case uses the earlier general theorem;
+the coprime case uses cancellation over three translated blocks. -/
+theorem empiricalModularCovariance_gcd_three_any
+    (b T : ℕ) (hb : 0 < b) (hTpos : 0 < T)
+    (h3T : 3 ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance 3 b T =
+      (((Nat.gcd 3 b : ℝ) ^ 2 - 1) /
+        (12 * (3 : ℝ) * (b : ℝ))) := by
+  by_cases hdiv : b % 3 = 0
+  · have h3b : 3 ∣ b := Nat.dvd_of_mod_eq_zero hdiv
+    exact empiricalModularCovariance_gcd_of_dvd
+      3 b T (by norm_num) hb hTpos h3b hbT
+  · exact empiricalModularCovariance_gcd_three_coprime
+      b T hdiv hTpos h3T hbT
+
+/-- The symmetric all-moduli family for the fixed modulus three. -/
+theorem empiricalModularCovariance_gcd_any_three
+    (a T : ℕ) (ha : 0 < a) (hTpos : 0 < T)
+    (haT : a ∣ T) (h3T : 3 ∣ T) :
+    empiricalModularCovariance a 3 T =
+      (((Nat.gcd a 3 : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (3 : ℝ))) := by
+  calc
+    empiricalModularCovariance a 3 T =
+        empiricalModularCovariance 3 a T :=
+          empiricalModularCovariance_comm a 3 T
+    _ = (((Nat.gcd 3 a : ℝ) ^ 2 - 1) /
+        (12 * (3 : ℝ) * (a : ℝ))) :=
+          empiricalModularCovariance_gcd_three_any
+            a T ha hTpos h3T haT
+    _ = (((Nat.gcd a 3 : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (3 : ℝ))) := by
+          rw [Nat.gcd_comm 3 a]
+          congr 1
+          ring
+
+/-! ## Chinese remainder theorem: uniform coprime residue pairs -/
+
+/-- The CRT transforms every correlation of functions of two coprime
+residue coordinates into the product of their separate complete sums.
+This is a finite, exact factorization, not yet the gcd covariance
+formula for arbitrary non-coprime moduli. -/
+theorem coprime_zmod_product_sum_factorization
+    (a b : ℕ) [NeZero a] [NeZero b] [NeZero (a * b)]
+    (hcop : a.Coprime b)
+    (f : ZMod a → ℝ) (g : ZMod b → ℝ) :
+    (∑ m : ZMod (a * b),
+      f ((ZMod.chineseRemainder hcop m).1) *
+        g ((ZMod.chineseRemainder hcop m).2)) =
+      (∑ r : ZMod a, f r) * (∑ s : ZMod b, g s) := by
+  let e : ZMod (a * b) ≃ ZMod a × ZMod b :=
+    (ZMod.chineseRemainder hcop).toEquiv
+  change (∑ m : ZMod (a * b), f (e m).1 * g (e m).2) = _
+  rw [Equiv.sum_comp e
+    (fun p : ZMod a × ZMod b => f p.1 * g p.2)]
+  rw [Fintype.sum_prod_type]
+  simp_rw [← Finset.mul_sum]
+  rw [← Finset.sum_mul]
+
+/-- A centered function of the first residue coordinate is orthogonal
+to every function of the second coordinate, for coprime moduli.
+This is the essential CRT cancellation mechanism. -/
+theorem coprime_zmod_centered_orthogonality
+    (a b : ℕ) [NeZero a] [NeZero b] [NeZero (a * b)]
+    (hcop : a.Coprime b)
+    (f : ZMod a → ℝ) (g : ZMod b → ℝ)
+    (hcenter : (∑ r : ZMod a, f r) = 0) :
+    (∑ m : ZMod (a * b),
+      f ((ZMod.chineseRemainder hcop m).1) *
+        g ((ZMod.chineseRemainder hcop m).2)) = 0 := by
+  rw [coprime_zmod_product_sum_factorization a b hcop f g,
+    hcenter, zero_mul]
+
+/-- CRT projections agree with the original natural-number residues.
+This bridges Mathlib's ring-equivalence formulation of CRT with the
+modular fractions used in this project. -/
+theorem coprime_zmod_chineseRemainder_nat_coordinates
+    (a b m : ℕ) (hcop : a.Coprime b) :
+    (ZMod.chineseRemainder hcop (m : ZMod (a * b))).1 =
+        (m : ZMod a) ∧
+      (ZMod.chineseRemainder hcop (m : ZMod (a * b))).2 =
+        (m : ZMod b) := by
+  constructor <;> simp
+
+/-- Summing a real function of the standard residue representative
+over ZMod n equals summing it over the natural range 0,…,n−1. -/
+private theorem sum_zmod_val_eq_sum_range
+    (n : ℕ) [NeZero n] (hn : 0 < n) (f : ℕ → ℝ) :
+    (∑ x : ZMod n, f x.val) =
+      ∑ m ∈ Finset.range n, f m := by
+  cases n with
+  | zero => omega
+  | succ n =>
+      change (∑ x : Fin (n + 1), f x.val) =
+        ∑ m ∈ Finset.range (n + 1), f m
+      exact Fin.sum_univ_eq_sum_range f (n + 1)
+
+/-- The centered real representative of any positive residue ring has
+zero complete-period sum. This provides the CRT input for covariance. -/
+theorem centered_zmod_residue_sum_zero
+    (a : ℕ) [NeZero a] (ha : 0 < a) :
+    (∑ r : ZMod a,
+      ((r.val : ℝ) / (a : ℝ) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))) = 0 := by
+  rw [sum_zmod_val_eq_sum_range a ha
+    (fun m => (m : ℝ) / (a : ℝ) -
+      (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))]
+  calc
+    (∑ m ∈ Finset.range a,
+      ((m : ℝ) / (a : ℝ) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))) =
+        ∑ m ∈ Finset.range a, centeredModularFraction m a a := by
+          apply Finset.sum_congr rfl
+          intro m hm
+          rw [centeredModularFraction_common_period m a a
+            ha ha (dvd_refl a),
+            Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
+    _ = 0 := centeredModularFraction_sum_self_zero a ha
+
+/-- For any positive coprime moduli, the CRT-indexed centered residue
+correlation vanishes exactly, without fixing either modulus.
+The connection to empiricalModularCovariance still needs to be
+expressed in the natural-number indexing of that definition. -/
+theorem coprime_zmod_centered_residue_product_zero
+    (a b : ℕ) [NeZero a] [NeZero b] [NeZero (a * b)]
+    (ha : 0 < a) (hcop : a.Coprime b) :
+    (∑ x : ZMod (a * b),
+      (((((ZMod.chineseRemainder hcop x).1.val : ℕ) : ℝ) /
+          (a : ℝ)) -
+        (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+      (((((ZMod.chineseRemainder hcop x).2.val : ℕ) : ℝ) /
+          (b : ℝ)) -
+        (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))) = 0 := by
+  exact coprime_zmod_centered_orthogonality a b hcop
+    (fun r => (r.val : ℝ) / (a : ℝ) -
+      (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ))))
+    (fun s => (s.val : ℝ) / (b : ℝ) -
+      (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))
+    (centered_zmod_residue_sum_zero a ha)
+
+/-- CRT gives zero for the product of explicitly centered modular
+fractions on a natural-number period of length a*b. This is the
+bridge from ZMod to the covariance sum used by the project. -/
+theorem coprime_centered_modular_sum_zero
+    (a b : ℕ) (ha : 0 < a) (hb : 0 < b) (hcop : a.Coprime b) :
+    (∑ m ∈ Finset.range (a * b),
+      (((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+          (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+        ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+          (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ)))))) = 0 := by
+  have habpos : 0 < a * b := Nat.mul_pos ha hb
+  letI : NeZero a := ⟨Nat.ne_of_gt ha⟩
+  letI : NeZero b := ⟨Nat.ne_of_gt hb⟩
+  letI : NeZero (a * b) := ⟨Nat.ne_of_gt habpos⟩
+  let f : ℕ → ℝ := fun m =>
+    ((((m % a : ℕ) : ℝ) / (a : ℝ)) -
+      (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+    ((((m % b : ℕ) : ℝ) / (b : ℝ)) -
+      (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))
+  have hcoord_a (x : ZMod (a * b)) :
+      (ZMod.chineseRemainder hcop x).1.val = x.val % a := by
+    have heq :
+        (ZMod.chineseRemainder hcop x).1 = (x.val : ZMod a) := by
+      simpa only [ZMod.natCast_zmod_val] using
+        (coprime_zmod_chineseRemainder_nat_coordinates a b x.val hcop).1
+    calc
+      (ZMod.chineseRemainder hcop x).1.val =
+          (x.val : ZMod a).val := congrArg ZMod.val heq
+      _ = x.val % a := ZMod.val_natCast a x.val
+  have hcoord_b (x : ZMod (a * b)) :
+      (ZMod.chineseRemainder hcop x).2.val = x.val % b := by
+    have heq :
+        (ZMod.chineseRemainder hcop x).2 = (x.val : ZMod b) := by
+      simpa only [ZMod.natCast_zmod_val] using
+        (coprime_zmod_chineseRemainder_nat_coordinates a b x.val hcop).2
+    calc
+      (ZMod.chineseRemainder hcop x).2.val =
+          (x.val : ZMod b).val := congrArg ZMod.val heq
+      _ = x.val % b := ZMod.val_natCast b x.val
+  have hsumz : (∑ x : ZMod (a * b), f x.val) = 0 := by
+    calc
+      (∑ x : ZMod (a * b), f x.val) =
+          (∑ x : ZMod (a * b),
+            (((((ZMod.chineseRemainder hcop x).1.val : ℕ) : ℝ) /
+                  (a : ℝ)) -
+              (((a - 1 : ℕ) : ℝ) / (2 * (a : ℝ)))) *
+            (((((ZMod.chineseRemainder hcop x).2.val : ℕ) : ℝ) /
+                  (b : ℝ)) -
+              (((b - 1 : ℕ) : ℝ) / (2 * (b : ℝ))))) := by
+            apply Finset.sum_congr rfl
+            intro x hx
+            dsimp [f]
+            rw [hcoord_a x, hcoord_b x]
+      _ = 0 := coprime_zmod_centered_residue_product_zero a b ha hcop
+  rw [sum_zmod_val_eq_sum_range (a * b) habpos f] at hsumz
+  simpa only [f] using hsumz
+
+/-- The exact gcd covariance identity for *every* positive coprime
+pair, on *every* positive common averaging period. It follows from
+CRT factorization and the zero mean of the centered residues. -/
+theorem empiricalModularCovariance_gcd_coprime
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (hcop : a.Coprime b) (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  have habpos : 0 < a * b := Nat.mul_pos ha hb
+  have ha_ab : a ∣ a * b := ⟨b, rfl⟩
+  have hb_ab : b ∣ a * b := ⟨a, by simp [Nat.mul_comm]⟩
+  have hcov :
+      empiricalModularCovariance a b T =
+        empiricalModularCovariance a b (a * b) := by
+    calc
+      empiricalModularCovariance a b T =
+          empiricalModularCovariance a b (Nat.lcm a b) :=
+            empiricalModularCovariance_eq_lcm a b T
+              ha hb hTpos haT hbT
+      _ = empiricalModularCovariance a b (a * b) :=
+            (empiricalModularCovariance_eq_lcm a b (a * b)
+              ha hb habpos ha_ab hb_ab).symm
+  have hbase : empiricalModularCovariance a b (a * b) = 0 := by
+    rw [empiricalModularCovariance_common_period_explicit
+      a b (a * b) ha hb habpos ha_ab hb_ab]
+    rw [coprime_centered_modular_sum_zero a b ha hb hcop]
+    simp
+  have hgcd : Nat.gcd a b = 1 := hcop
+  rw [hcov, hbase, hgcd]
+  norm_num
+
+/-! ## General gcd-fiber decomposition -/
+
+/-- Splitting a range of length n*g into successive blocks of length g.
+This reindexing is the first step in decomposing an arbitrary pair of
+moduli by their gcd, without selecting particular numeric moduli. -/
+private theorem sum_range_mul_blocks
+    (n g : ℕ) (f : ℕ → ℝ) :
+    (∑ m ∈ Finset.range (n * g), f m) =
+      ∑ k ∈ Finset.range n, ∑ t ∈ Finset.range g, f (k * g + t) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+      calc
+        (∑ m ∈ Finset.range (n.succ * g), f m) =
+            (∑ m ∈ Finset.range (n * g), f m) +
+            (∑ t ∈ Finset.range g, f (n * g + t)) := by
+              simpa only [Nat.succ_mul] using
+                (Finset.sum_range_add f (n * g) g)
+        _ = (∑ k ∈ Finset.range n,
+                ∑ t ∈ Finset.range g, f (k * g + t)) +
+            (∑ t ∈ Finset.range g, f (n * g + t)) := by rw [ih]
+        _ = ∑ k ∈ Finset.range n.succ,
+                ∑ t ∈ Finset.range g, f (k * g + t) := by
+                  rw [Finset.sum_range_succ]
+
+/-- On a fixed remainder t modulo g, reduction modulo g*r
+is equivalent to reduction of the quotient coordinate modulo r. -/
+private theorem gcd_fiber_mod
+    (g r k t : ℕ) (hg : 0 < g) (hr : 0 < r) (ht : t < g) :
+    (k * g + t) % (g * r) = g * (k % r) + t := by
+  have hk : k % r + 1 ≤ r := by
+    have := Nat.mod_lt k hr
+    omega
+  have hmul : g * (k % r) + g ≤ g * r := by
+    simpa [Nat.mul_add] using (Nat.mul_le_mul_left g hk)
+  have hlt : g * (k % r) + t < g * r := by omega
+  have hdecomp :
+      k * g + t = (k / r) * (g * r) + (g * (k % r) + t) := by
+    calc
+      k * g + t = (k % r + r * (k / r)) * g + t := by
+        rw [Nat.mod_add_div]
+      _ = (k / r) * (g * r) + (g * (k % r) + t) := by ring
+  rw [hdecomp]
+  simp [Nat.add_mod, Nat.mul_mod, Nat.mod_eq_of_lt hlt]
+
+/-- A positive pair of arbitrary moduli has coprime quotients after
+dividing by its positive gcd; this is the arithmetic input to the CRT
+on each gcd fiber. -/
+theorem gcd_reduced_moduli_coprime
+    (a b : ℕ) (ha : 0 < a) :
+    (a / Nat.gcd a b).Coprime (b / Nat.gcd a b) := by
+  exact Nat.coprime_div_gcd_div_gcd
+    (Nat.gcd_pos_of_pos_left b ha)
+
+/-- Exact decomposition of a centered modular residue on a gcd
+fiber: an independent quotient-residue fluctuation plus a correction
+depending only on the residue t modulo the gcd g. -/
+theorem centered_residue_on_gcd_fiber
+    (g r k t : ℕ) (hg : 0 < g) (hr : 0 < r) (ht : t < g) :
+    (((( (k * g + t) % (g * r) : ℕ) : ℝ) / ((g * r : ℕ) : ℝ)) -
+      (((g * r - 1 : ℕ) : ℝ) / (2 * ((g * r : ℕ) : ℝ)))) =
+    (((((k % r : ℕ) : ℝ) / (r : ℝ)) -
+      (((r - 1 : ℕ) : ℝ) / (2 * (r : ℝ)))) +
+      (((t : ℝ) - (((g - 1 : ℕ) : ℝ) / 2)) /
+        ((g : ℝ) * (r : ℝ)))) := by
+  rw [gcd_fiber_mod g r k t hg hr ht]
+  have hgr : 0 < g * r := Nat.mul_pos hg hr
+  have hsub : g * r - 1 = g * (r - 1) + (g - 1) := by
+    calc
+      g * r - 1 = g * ((r - 1) + 1) - 1 := by
+        rw [Nat.sub_add_cancel (by omega : 1 ≤ r)]
+      _ = g * (r - 1) + (g - 1) := by
+        rw [Nat.mul_add]
+        omega
+  rw [hsub]
+  have hgsub : (((g - 1 : ℕ) : ℝ)) = (g : ℝ) - 1 := by
+    rw [Nat.cast_sub (by omega : 1 ≤ g)]
+    norm_num
+  have hrsub : (((r - 1 : ℕ) : ℝ)) = (r : ℝ) - 1 := by
+    rw [Nat.cast_sub (by omega : 1 ≤ r)]
+    norm_num
+  simp only [Nat.cast_add, Nat.cast_mul]
+  rw [hgsub, hrsub]
+  have hgR : (g : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hg)
+  have hrR : (r : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hr)
+  field_simp [hgR, hrR]
+  <;> ring
+
+/-- CRT makes any two independently centered coprime residue
+functions uncorrelated; after adding arbitrary constants u and v,
+their sum over the product period is precisely r*s*u*v.
+This holds for arbitrary positive coprime quotient moduli r,s. -/
+private theorem coprime_centered_shifted_product_sum
+    (r s : ℕ) (hr : 0 < r) (hs : 0 < s) (hcop : r.Coprime s)
+    (u v : ℝ) :
+    (∑ k ∈ Finset.range (r * s),
+      (centeredModularFraction k r r + u) *
+        (centeredModularFraction k s s + v)) =
+      ((r * s : ℕ) : ℝ) * u * v := by
+  let fr : ℕ → ℝ := fun k => centeredModularFraction k r r
+  let fs : ℕ → ℝ := fun k => centeredModularFraction k s s
+  have hperiodR (m : ℕ) : fr (m + r) = fr m := by
+    dsimp [fr]
+    rw [centeredModularFraction_common_period (m + r) r r
+          hr hr (dvd_refl r),
+      centeredModularFraction_common_period m r r hr hr (dvd_refl r)]
+    have hmod : (m + r) % r = m % r := by simp [Nat.add_mod]
+    rw [hmod]
+  have hperiodS (m : ℕ) : fs (m + s) = fs m := by
+    dsimp [fs]
+    rw [centeredModularFraction_common_period (m + s) s s
+          hs hs (dvd_refl s),
+      centeredModularFraction_common_period m s s hs hs (dvd_refl s)]
+    have hmod : (m + s) % s = m % s := by simp [Nat.add_mod]
+    rw [hmod]
+  have hsumR : (∑ k ∈ Finset.range (r * s), fr k) = 0 := by
+    have h := sum_range_mul_of_period fr r s hperiodR
+    rw [Nat.mul_comm s r] at h
+    rw [h, centeredModularFraction_sum_self_zero r hr]
+    ring
+  have hsumS : (∑ k ∈ Finset.range (r * s), fs k) = 0 := by
+    have h := sum_range_mul_of_period fs s r hperiodS
+    rw [h, centeredModularFraction_sum_self_zero s hs]
+    ring
+  have hprod : (∑ k ∈ Finset.range (r * s), fr k * fs k) = 0 := by
+    calc
+      (∑ k ∈ Finset.range (r * s), fr k * fs k) =
+          (∑ k ∈ Finset.range (r * s),
+            ((((k % r : ℕ) : ℝ) / (r : ℝ)) -
+              (((r - 1 : ℕ) : ℝ) / (2 * (r : ℝ)))) *
+            ((((k % s : ℕ) : ℝ) / (s : ℝ)) -
+              (((s - 1 : ℕ) : ℝ) / (2 * (s : ℝ))))) := by
+            apply Finset.sum_congr rfl
+            intro k hk
+            dsimp [fr, fs]
+            rw [centeredModularFraction_common_period k r r hr hr
+                  (dvd_refl r),
+              centeredModularFraction_common_period k s s hs hs
+                  (dvd_refl s)]
+      _ = 0 := coprime_centered_modular_sum_zero r s hr hs hcop
+  change (∑ k ∈ Finset.range (r * s), (fr k + u) * (fs k + v)) =
+    ((r * s : ℕ) : ℝ) * u * v
+  calc
+    (∑ k ∈ Finset.range (r * s), (fr k + u) * (fs k + v)) =
+        ∑ k ∈ Finset.range (r * s),
+          (fr k * fs k + v * fr k + u * fs k + u * v) := by
+            apply Finset.sum_congr rfl
+            intro k hk
+            ring
+    _ = (∑ k ∈ Finset.range (r * s), fr k * fs k) +
+        v * (∑ k ∈ Finset.range (r * s), fr k) +
+        u * (∑ k ∈ Finset.range (r * s), fs k) +
+        ((r * s : ℕ) : ℝ) * (u * v) := by
+          simp only [Finset.sum_add_distrib, ← Finset.mul_sum,
+            Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+          ring
+    _ = ((r * s : ℕ) : ℝ) * u * v := by
+          rw [hprod, hsumR, hsumS]
+          ring
+
+/-- The full covariance formula for *any* two moduli with a common
+factor g and coprime quotients r,s. This is the general arithmetic
+reduction, with no numeric moduli singled out. -/
+theorem empiricalModularCovariance_mul_coprime
+    (g r s T : ℕ) (hg : 0 < g) (hr : 0 < r) (hs : 0 < s)
+    (hcop : r.Coprime s) (hTpos : 0 < T)
+    (hrT : g * r ∣ T) (hsT : g * s ∣ T) :
+    empiricalModularCovariance (g * r) (g * s) T =
+      (((g : ℝ) ^ 2 - 1) /
+        (12 * ((g * r : ℕ) : ℝ) * ((g * s : ℕ) : ℝ))) := by
+  let P : ℕ := (r * s) * g
+  have hP : 0 < P := by
+    dsimp [P]
+    exact Nat.mul_pos (Nat.mul_pos hr hs) hg
+  have hgr : 0 < g * r := Nat.mul_pos hg hr
+  have hgs : 0 < g * s := Nat.mul_pos hg hs
+  have hgrP : g * r ∣ P := ⟨s, by dsimp [P]; ring⟩
+  have hgsP : g * s ∣ P := ⟨r, by dsimp [P]; ring⟩
+  have hgR : (g : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hg)
+  have hrR : (r : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hr)
+  have hsR : (s : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hs)
+  let h : ℕ → ℝ := fun t =>
+    ((t : ℝ) - (((g - 1 : ℕ) : ℝ) / 2)) / (g : ℝ)
+  have hcenterR (k t : ℕ) (ht : t < g) :
+      centeredModularFraction (k * g + t) (g * r) P =
+        centeredModularFraction k r r + h t / (r : ℝ) := by
+    rw [centeredModularFraction_common_period
+        (k * g + t) (g * r) P hgr hP hgrP,
+      centeredModularFraction_common_period k r r hr hr (dvd_refl r)]
+    rw [centered_residue_on_gcd_fiber g r k t hg hr ht]
+    dsimp [h]
+    field_simp [hgR, hrR]
+  have hcenterS (k t : ℕ) (ht : t < g) :
+      centeredModularFraction (k * g + t) (g * s) P =
+        centeredModularFraction k s s + h t / (s : ℝ) := by
+    rw [centeredModularFraction_common_period
+        (k * g + t) (g * s) P hgs hP hgsP,
+      centeredModularFraction_common_period k s s hs hs (dvd_refl s)]
+    rw [centered_residue_on_gcd_fiber g s k t hg hs ht]
+    dsimp [h]
+    field_simp [hgR, hsR]
+  have hfiber (t : ℕ) (ht : t < g) :
+      (∑ k ∈ Finset.range (r * s),
+        centeredModularFraction (k * g + t) (g * r) P *
+          centeredModularFraction (k * g + t) (g * s) P) =
+        (h t) ^ 2 := by
+    calc
+      (∑ k ∈ Finset.range (r * s),
+        centeredModularFraction (k * g + t) (g * r) P *
+          centeredModularFraction (k * g + t) (g * s) P) =
+        (∑ k ∈ Finset.range (r * s),
+          (centeredModularFraction k r r + h t / (r : ℝ)) *
+            (centeredModularFraction k s s + h t / (s : ℝ))) := by
+              apply Finset.sum_congr rfl
+              intro k hk
+              rw [hcenterR k t ht, hcenterS k t ht]
+      _ = (((r * s : ℕ) : ℝ) * (h t / (r : ℝ)) *
+          (h t / (s : ℝ))) :=
+            coprime_centered_shifted_product_sum r s hr hs hcop
+              (h t / (r : ℝ)) (h t / (s : ℝ))
+      _ = (h t) ^ 2 := by
+            rw [Nat.cast_mul]
+            field_simp [hrR, hsR]
+  have hsum :
+      (∑ m ∈ Finset.range P,
+        centeredModularFraction m (g * r) P *
+          centeredModularFraction m (g * s) P) =
+      ∑ t ∈ Finset.range g, (h t) ^ 2 := by
+    dsimp [P]
+    rw [sum_range_mul_blocks (r * s) g
+      (fun m => centeredModularFraction m (g * r) ((r * s) * g) *
+        centeredModularFraction m (g * s) ((r * s) * g))]
+    rw [Finset.sum_comm]
+    apply Finset.sum_congr rfl
+    intro t ht
+    exact hfiber t (Finset.mem_range.mp ht)
+  have hdiagval (t : ℕ) (ht : t < g) :
+      h t = centeredModularFraction t g g := by
+    rw [centeredModularFraction_common_period t g g hg hg (dvd_refl g),
+      Nat.mod_eq_of_lt ht]
+    dsimp [h]
+    field_simp [hgR]
+  have hdiag :
+      (∑ t ∈ Finset.range g, (h t) ^ 2) =
+      (g : ℝ) * empiricalModularCovariance g g g := by
+    have hsquares :
+        (∑ t ∈ Finset.range g, (h t) ^ 2) =
+        (∑ t ∈ Finset.range g,
+          centeredModularFraction t g g * centeredModularFraction t g g) := by
+            apply Finset.sum_congr rfl
+            intro t ht
+            rw [hdiagval t (Finset.mem_range.mp ht)]
+            ring
+    rw [hsquares]
+    unfold empiricalModularCovariance
+    field_simp [hgR]
+  have hperiod :
+      empiricalModularCovariance (g * r) (g * s) T =
+        empiricalModularCovariance (g * r) (g * s) P := by
+    calc
+      empiricalModularCovariance (g * r) (g * s) T =
+          empiricalModularCovariance (g * r) (g * s)
+            (Nat.lcm (g * r) (g * s)) :=
+              empiricalModularCovariance_eq_lcm
+                (g * r) (g * s) T hgr hgs hTpos hrT hsT
+      _ = empiricalModularCovariance (g * r) (g * s) P :=
+          (empiricalModularCovariance_eq_lcm
+            (g * r) (g * s) P hgr hgs hP hgrP hgsP).symm
+  calc
+    empiricalModularCovariance (g * r) (g * s) T =
+        empiricalModularCovariance (g * r) (g * s) P := hperiod
+    _ = (∑ t ∈ Finset.range g, (h t) ^ 2) / (P : ℝ) := by
+          unfold empiricalModularCovariance
+          rw [hsum]
+    _ = (((g : ℝ) ^ 2 - 1) /
+        (12 * ((g * r : ℕ) : ℝ) * ((g * s : ℕ) : ℝ))) := by
+          rw [hdiag, empiricalModularCovariance_diagonal g hg]
+          dsimp [P]
+          push_cast
+          field_simp [hgR, hrR, hsR]
+
+/-- General exact covariance of centered rational modular fractions.
+There are no comparability or coprimality hypotheses on the original
+positive moduli: their gcd is factored out and the reduced moduli
+are treated by CRT over every fiber. -/
+theorem empiricalModularCovariance_gcd_general
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  let g : ℕ := Nat.gcd a b
+  let r : ℕ := a / g
+  let s : ℕ := b / g
+  have hg : 0 < g := Nat.gcd_pos_of_pos_left b ha
+  have hga : g ∣ a := Nat.gcd_dvd_left a b
+  have hgb : g ∣ b := Nat.gcd_dvd_right a b
+  have hagr : g * r = a := Nat.mul_div_cancel' hga
+  have hbgs : g * s = b := Nat.mul_div_cancel' hgb
+  have hr : 0 < r := by
+    by_contra hn
+    have hrzero : r = 0 := Nat.eq_zero_of_not_pos hn
+    have hazero : a = 0 := by simpa [hrzero] using hagr.symm
+    omega
+  have hs : 0 < s := by
+    by_contra hn
+    have hszero : s = 0 := Nat.eq_zero_of_not_pos hn
+    have hbzero : b = 0 := by simpa [hszero] using hbgs.symm
+    omega
+  have hcop : r.Coprime s :=
+    gcd_reduced_moduli_coprime a b ha
+  have hrT : g * r ∣ T := by rw [hagr]; exact haT
+  have hsT : g * s ∣ T := by rw [hbgs]; exact hbT
+  have h := empiricalModularCovariance_mul_coprime
+    g r s T hg hr hs hcop hTpos hrT hsT
+  simpa only [hagr, hbgs, g] using h
+
+/-- The full second moment of the truncated Möbius rounding error is
+an explicit finite gcd-weighted quadratic form on every positive
+common averaging period. This is exact, with no unproved covariance
+term left; no linear-in-B upper bound is inferred here. -/
+theorem empiricalSecondMoment_eq_gcd_sum
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalSecondMoment B T =
+      ∑ a ∈ Finset.Icc 1 B,
+      ∑ b ∈ Finset.Icc 1 B,
+        (moebiusReal a * moebiusReal b) *
+          (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+            (12 * (a : ℝ) * (b : ℝ))) := by
+  rw [empiricalSecondMoment_eq_covariance_sum]
+  apply Finset.sum_congr rfl
+  intro a ha
+  apply Finset.sum_congr rfl
+  intro b hb
+  rw [empiricalModularCovariance_gcd_general
+    a b T (Finset.mem_Icc.mp ha).1 (Finset.mem_Icc.mp hb).1
+      hTpos (hT a ha) (hT b hb)]
+
+/-! ## Boundary cases for the full gcd covariance identity -/
+
+/-- The centered fractional part for modulus one vanishes identically. -/
+theorem centeredModularFraction_one (m H : ℕ) :
+    centeredModularFraction m 1 H = 0 := by
+  simp [centeredModularFraction, modularFractionMean, Nat.mod_one]
+
+/-- The covariance with the constant modulus-one residue is zero. -/
+theorem empiricalModularCovariance_one_left (b H : ℕ) :
+    empiricalModularCovariance 1 b H = 0 := by
+  simp [empiricalModularCovariance, centeredModularFraction_one]
+
+theorem empiricalModularCovariance_one_right (a H : ℕ) :
+    empiricalModularCovariance a 1 H = 0 := by
+  rw [empiricalModularCovariance_comm]
+  exact empiricalModularCovariance_one_left a H
+
+/-- The desired gcd formula holds whenever the first modulus is one.
+No common-period hypothesis is needed for this boundary case. -/
+theorem empiricalModularCovariance_gcd_one_left (b H : ℕ) :
+    empiricalModularCovariance 1 b H =
+      (((Nat.gcd 1 b : ℝ) ^ 2 - 1) /
+        (12 * (1 : ℝ) * (b : ℝ))) := by
+  simp [empiricalModularCovariance_one_left]
+
 end TruncatedSieveFlux

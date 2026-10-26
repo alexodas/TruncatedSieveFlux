@@ -4,10 +4,11 @@ project:
   name: "Periodic Möbius rounding-error moments"
   description: >-
     Lean 4 formalization of exact arithmetic periodicity, full-period
-    centering, two-divisor covariance expansions, a diagonal modular
-    variance identity, and fourfold correlation identities for a
-    truncated Möbius rounding error. A full-period fourth-to-second
-    moment inequality is also verified. The substantive research target
+    centering, the exact general gcd covariance formula for any
+    positive pair of moduli over a common period, the corresponding
+    finite gcd-weighted second moment, and fourfold correlations
+    of a truncated Möbius rounding error. A full-period
+    fourth-to-second moment inequality is also verified. The substantive research target
     is a uniform O(B^2) centered fourth-moment bound, which is OPEN.
     A logarithmic-cutoff residual approximation, its finite-sum
     identities, and elementary O(B^4) bound are supporting results.
@@ -36,27 +37,42 @@ related_formalizations: []
 
 status:
   scope: >-
-    The mathematical focus is on exact periodic Möbius rounding-error
-    moments. FourthMomentResearch.lean proves a common-period formula
-    for the mean and centering, the exact weighted quadratic-form
-    expression for the second moment, covariance symmetry and a
-    diagonal covariance value, as well as the fourfold expansion,
-    an unconditional B^4/16 fourth-moment bound on full periods,
-    and a conditional cubic bound from an assumed linear variance bound.
-    A paper-level O(B^3) estimate using a classical gcd covariance
-    formula is recorded in the research notes but is NOT proved in Lean.
-    The desired uniform O(B^2) fourth-moment inequality and the
-    associated positive-density or Gaussian consequences are OPEN.
-    The single Comparator-checked Palomar theorem is
-    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation;
-    its finite residual bound is a supporting result.
-    Challenge contains one intentionally admitted theorem statement,
-    whereas Solution and FourthMomentResearch have no sorry.
+    FourthMomentResearch.lean formalizes exact periodic Möbius
+    rounding errors, centering, covariance and fourth-moment
+    correlation expansions, and the complete centered second
+    moment as a finite gcd-weighted quadratic form.
+    The verified theorem empiricalModularCovariance_gcd_general
+    proves C(a,b;T)=(gcd(a,b)^2-1)/(12*a*b) for all positive a,b
+    and every positive common period T; no comparability or
+    coprimality between the original moduli is required.
+    Its proof splits by g=gcd(a,b), applies CRT to the
+    coprime quotients and reduces remaining correlations
+    to the verified diagonal covariance at g.
+    The theorem empiricalSecondMoment_eq_gcd_sum proves
+    the exact Möbius-weighted sum using this identity.
+    The full second and fourth moments are also invariant
+    under changing positive common periods, and
+    the full-period B^4/16 fourth-moment bound and
+    conditional fourth-to-second-moment inequality are proved.
+    The paper-level linear variance bound and resulting
+    O(B^3) fourth-moment estimate remain unformalized.
+    The uniform O(B^2) fourth-moment conjecture and its
+    potential density or Gaussian consequences remain OPEN.
+    No originality or novel asymptotic theorem is claimed.
+    The only Comparator-submitted theorem remains
+    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
+    Challenge contains one intentionally admitted theorem
+    statement, while Solution and FourthMomentResearch have no sorry.
+    The zero sorry count below applies to completed proof modules
+    Solution and FourthMomentResearch, excluding the intentionally
+    admitted Challenge statement.
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
   main_results:
     - "TruncatedSieveFlux.moebius_log_cutoff_residual_approximation"
+    - "TruncatedSieveFlux.empiricalModularCovariance_gcd_general"
+    - "TruncatedSieveFlux.empiricalSecondMoment_eq_gcd_sum"
 
 automation:
   methods:
@@ -75,23 +91,34 @@ automation:
   prompting_notes: >-
     Interactive requests by Alessandro Odasso to formalize the finite Möbius
     sieve and package the challenge and solution in a reproducible Lean repository.
-    ChatGPT GPT-6 was used with High thinking effort (as reported by the contributor).
+    ChatGPT GPT-6 assisted with formal proof drafting and review, as
+    documented by the contributor.
   notes: >-
-    Transparency disclosure: ChatGPT GPT-6 (High thinking effort, as reported
-    by the contributor) assisted with Lean proof drafting, debugging, repository
-    configuration, and CI troubleshooting. Alessandro Odasso is named as the
-    human author and responsible maintainer. Lean, NanoDa, and con-ron accepted
-    the proofs in GitHub Actions; independent mathematical review is pending.
+    Transparency disclosure: ChatGPT GPT-6 assisted with Lean proof drafting,
+    debugging, repository configuration, and CI troubleshooting.
+    Alessandro Odasso is the human author and responsible maintainer.
+    The Challenge/Solution theorem passed the Comparator checks with
+    independent kernels (Lean, NanoDa, and con-ron). The results in
+    FourthMomentResearch.lean, including the general gcd covariance
+    and exact variance identity, passed the separate Lean build,
+    but were not separately submitted to those Comparator kernels.
+    Independent mathematical review remains pending.
 
 fidelity:
   divergences: >-
-    The verified structural formulas are not a nontrivial bound
-    for the fourth moment. FourthMomentResearch proves only
-    O(B^4) unconditionally, not the conjectured O(B^2).
-    The diagonal modular covariance is proved, but the general
-    off-diagonal gcd covariance formula is not yet formalized.
-    The existing Comparator challenge concerns only the finite
-    logarithmic-cutoff error theorem, not the open research target.
+    Lean has verified the complete finite covariance identity
+    and the explicit gcd-weighted quadratic formula for the
+    second moment on positive common periods, using CRT and
+    the general gcd-fiber decomposition. These are classical
+    finite identities, not novel analytic cancellation.
+    The arithmetic bound V_B <= 3B/4, the unconditional
+    O(B^3) fourth-moment estimate derived at paper level,
+    and especially the desired O(B^2) fourth-moment bound
+    are NOT proved in Lean. The four-variable correlations
+    remain an independent mathematical obstacle.
+    The Palomar Comparator challenge concerns only the
+    supporting finite logarithmic-cutoff error estimate,
+    not the general gcd covariance or the open moment bounds.
 
 review:
   status: "unreviewed; Lean compilation and Comparator checks apply to proved results"
@@ -99,8 +126,10 @@ review:
   notes: >-
     No independent human mathematical review has been completed.
     Research conjectures are explicitly excluded from claims of proof.
-    Comparator checks the Challenge/Solution theorem only;
-    the research lemmas compile in a separate Lean target.
+    Comparator checks the one Challenge/Solution theorem only;
+    the research lemmas, including general gcd covariance and
+    the exact second-moment identity, pass the Lean target build
+    but are not separately Comparator-checked.
 
 alignment:
   namespace: "TruncatedSieveFlux"
@@ -111,4 +140,4 @@ alignment:
       status: "proved in Solution; independent mathematical review pending"
       note: "Finite bound at a logarithmic cutoff, with no asymptotic cancellation claim."
 
-acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 (High thinking effort) proof and tooling assistance."
+acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 proof and tooling assistance."

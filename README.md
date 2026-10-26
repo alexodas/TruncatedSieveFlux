@@ -68,7 +68,48 @@ Lean proves the exact quadratic-form identity
 V_(B,H) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*C_(a,b;H).
 ```
 
-**This does not yet evaluate off-diagonal terms** `a ≠ b`.
+**General gcd covariance — proved in Lean.** The theorem
+`empiricalModularCovariance_gcd_general` establishes, for every
+positive `a,b,T` with `a ∣ T` and `b ∣ T`:
+
+```text
+C_(a,b;T) = (gcd(a,b)^2 - 1)/(12*a*b).
+```
+
+There is **no coprimality or divisibility assumption between a and b**.
+The proof uses the positive gcd `g`, the coprime quotients
+`r=a/g`, `s=b/g`, an exact decomposition into `g` residue
+fibers, CRT cancellation of the reduced correlations, and the
+previously formalized diagonal covariance of `g`.
+The precise theorems are `gcd_fiber_mod`,
+`centered_residue_on_gcd_fiber`,
+`coprime_centered_shifted_product_sum`,
+`empiricalModularCovariance_mul_coprime`, and
+`empiricalModularCovariance_gcd_general`. The full gcd proof
+passed the GitHub Actions Lean `verify` job on commit `0bfbf58`.
+
+The additional theorem `empiricalSecondMoment_eq_gcd_sum`
+now makes the entire Möbius-weighted second moment an **explicit
+finite gcd quadratic form**:
+
+```text
+V_(B,T) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*
+          (gcd(a,b)^2 - 1)/(12*a*b)
+```
+
+for every positive common period `T` of `1,…,B`.
+This exact identity is proved in Lean; the quantitative upper bound
+`V_(B,T) ≤ 3B/4` from the paper-level argument is **not**
+yet formalized. The research lemmas are Lean-compiled, not
+independently checked by Palomar Comparator.
+
+**Period invariance.** Lean also proves that any two positive
+common averaging periods give the same variance and the same
+centered fourth moment, via
+`empiricalSecondMoment_eq_of_common_periods` and
+`empiricalFourthMoment_eq_of_common_periods`.
+These exact identities do **not** establish the desired
+`O(B²)` fourth-moment bound.
 
 The diagonal covariance for a complete modulus is also formalized:
 
@@ -103,26 +144,48 @@ V_(B,T) ≤ C*B  ==>  fourth_(B,T) ≤ (C/4)*B³.
 ```
 
 **Mathematical derivation, not yet fully in Lean:** combining the
-classical gcd-based covariance formula for rational fractional parts
-with an elementary divisor-sum bound gives `V_(B,T) ≤ 3B/4`,
+**now Lean-verified** full gcd-based covariance formula for rational
+fractional parts with a **not-yet-formalized** divisor-sum bound gives `V_(B,T) ≤ 3B/4`,
 hence `fourth_(B,T) ≤ 3B³/16`. This is a genuine exponent
 improvement from 4 to 3, but appears elementary and is **not claimed
-as a novel mathematical result**. The full covariance formula and
-the arithmetic bound still need formalization in Lean.
+as a novel mathematical result**. The covariance formula is formally proved; only
+the arithmetic bound and its consequences still need formalization in Lean.
 
 The detailed argument and precise verification status appear in
 [FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md).
+
+### CRT and gcd-fiber method
+
+For coprime `r,s`, Mathlib's Chinese remainder equivalence
+`ZMod (r*s) ≃ ZMod r × ZMod s` factors every full-period
+product correlation into separate residue sums.
+The theorem `coprime_centered_modular_sum_zero` transfers that
+cancellation to the natural-number indexing used here.
+
+For arbitrary original moduli, factoring out `g=gcd(a,b)`
+leaves just such a coprime pair. On `m=k*g+t`,
+the centered fraction becomes its reduced-modulus counterpart
+plus `(t-(g-1)/2)/(g*r)`. The mixed terms vanish under CRT,
+and the remaining sum is the variance of residues modulo `g`.
+The general theorem and the exact finite gcd variance formula are
+Lean-verified; **the unconditional cubic and conjectured quadratic
+fourth-moment bounds remain open formalization tasks**.
 
 ## Supporting lemmas and the finite-sieve theorem
 
 The file `FourthMomentResearch.lean` also proves the exact rational
 remainder representation, mean over complete modular periods,
-elementary uniform bounds, and the coarse fourth-moment bound
+and elementary uniform bounds. For an **arbitrary nonempty
+averaging interval** the coarse estimate is
 
 ```text
 |E_B(M)| ≤ B,
 fourth_(B,H) ≤ 16*B^4    (H ≥ 1).
 ```
+
+On **positive common periods**, the stronger verified estimate
+`fourth_(B,T) ≤ B^4/16` applies, as stated above. Neither is
+the conjectured `O(B²)` bound.
 
 The `Challenge.lean` / `Solution.lean` pair has **one** submitted
 Comparator theorem, `moebius_log_cutoff_residual_approximation`.
