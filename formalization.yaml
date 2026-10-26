@@ -122,7 +122,8 @@ fidelity:
     The next proposed proof treats all (3,b) with 3 not dividing b
     by cancellation across three b-blocks, then combines it with
     the divisible case to cover any pair with modulus three;
-    Lean CI is pending.
+    Lean and Comparator checks have succeeded on the corrected
+    modulus-three proof commit `b6a0810`.
     The general off-diagonal identity remains unproved.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
