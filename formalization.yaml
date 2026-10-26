@@ -11,8 +11,11 @@ project:
     for arbitrary positive moduli, the finite gcd-weighted
     second-moment formula, fourfold correlation identities,
     and a conditional fourth-to-second moment inequality.
-    Those research declarations are not selected in the
-    current comparator.json and are not separately Comparator-checked.
+    The original comparator.json selects only the finite-sieve
+    theorem; a second configuration comparator-covariance.json is
+    now added to compare the general covariance and exact
+    second-moment research statements against independent,
+    Mathlib-only Challenge definitions. Validation is pending.
     The unconditional linear variance bound, cubic fourth-moment
     bound and the proposed uniform O(B^2) fourth-moment bound
     remain unproved in Lean. No new asymptotic theorem or
@@ -63,8 +66,12 @@ status:
     The uniform O(B^2) fourth-moment conjecture and its
     potential density or Gaussian consequences remain OPEN.
     No originality or novel asymptotic theorem is claimed.
-    The only Comparator-submitted theorem remains
-    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
+    The original comparator.json selects
+    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation;
+    comparator-covariance.json additionally selects two independent
+    gcd covariance / finite second-moment wrapper declarations
+    for Comparator checking. Their CI status must be checked
+    before declaring multi-kernel verification.
     Challenge contains one deliberate sorry placeholder in its
     statement, as expected in the Comparator challenge module.
     Solution and FourthMomentResearch contain no sorry.
@@ -89,6 +96,9 @@ automation:
     and repository checks. The logarithmic-cutoff theorem is checked by
     Comparator and independent Lean, NanoDa, and con-ron kernels; the
     fourth-moment research module is compiled separately in Lean.
+    A dedicated CovarianceChallenge / CovarianceSolution pair
+    adds two separately stated research conclusions to a second
+    Comparator configuration, still under CI verification.
   cost:
     spend_usd: "not tracked"
     hardware: "remote model and limited sandbox; local Lean unavailable"
@@ -102,11 +112,14 @@ automation:
     Transparency disclosure: ChatGPT GPT-6 assisted with Lean proof drafting,
     debugging, repository configuration, and CI troubleshooting.
     Alessandro Odasso is the human author and responsible maintainer.
-    The Challenge/Solution theorem passed the Comparator checks with
-    independent kernels (Lean, NanoDa, and con-ron). The results in
-    FourthMomentResearch.lean, including the general gcd covariance
-    and exact variance identity, passed the separate Lean build,
-    but were not separately submitted to those Comparator kernels.
+    The Challenge/Solution finite-sieve theorem has passed the
+    Comparator checks with Lean, NanoDa and con-ron. Research results
+    in FourthMomentResearch.lean passed the Lean build.
+    A second independent Mathlib-only CovarianceChallenge and its
+    matching CovarianceSolution now submit the two headline
+    research results for additional Comparator checks.
+    The new Comparator CI must succeed before these wrappers
+    can be described as multi-kernel verified.
     Independent mathematical review remains pending.
 
 fidelity:
@@ -121,27 +134,34 @@ fidelity:
     and especially the desired O(B^2) fourth-moment bound
     are NOT proved in Lean. The four-variable correlations
     remain an independent mathematical obstacle.
-    The Palomar Comparator challenge concerns only the
-    supporting finite logarithmic-cutoff error estimate,
-    not the general gcd covariance or the open moment bounds.
+    The original Palomar Comparator configuration concerns only
+    the supporting logarithmic-cutoff error theorem.
+    A second configuration now proposes to compare the
+    general gcd covariance and exact second-moment statement,
+    not any of the unproved fourth-moment bounds.
+    Other research lemmas are not individually selected
+    as named Comparator theorems.
 
 review:
-  status: "unreviewed; Lean verifies research proofs, Comparator checks only the selected Challenge/Solution theorem"
+  status: "unreviewed; research Comparator wrappers under CI review, no independent human mathematical review"
   reviewers: []
   notes: >-
     No independent human mathematical review has been completed.
     Research conjectures are explicitly excluded from claims of proof.
-    Comparator checks the single theorem selected in comparator.json:
-    TruncatedSieveFlux.moebius_log_cutoff_residual_approximation.
-    The general gcd covariance and exact second-moment identity
-    pass the FourthMomentResearch Lean build, but are not selected
-    in comparator.json and thus are not separately Comparator-checked.
+    comparator.json selects the original finite logarithmic-cutoff
+    Challenge/Solution theorem. comparator-covariance.json selects
+    two corresponding research statements with a separate
+    Mathlib-only Challenge. These two declarations have separate
+    proof wrappers and are under Comparator CI verification.
+    There is no claim that every independent helper lemma
+    is separately a named Comparator declaration.
     No independent human mathematical review has been recorded.
 
 # The project-level status.main_results includes Lean research theorems.
 # alignment.statements maps the compared finite sieve result to its
 # original statement; it is not the Comparator declaration list.
-# The latter is defined exclusively by comparator.json.
+# Comparator declarations are selected by their respective JSON files.
+# alignment below records both named surfaces, not all helper lemmas.
 alignment:
   namespace: "TruncatedSieveFlux"
   statements:
@@ -150,5 +170,15 @@ alignment:
       module: "Challenge"
       status: "proved in Solution; independent mathematical review pending"
       note: "Finite bound at a logarithmic cutoff, with no asymptotic cancellation claim."
+    - source: "Exact gcd covariance of rational modular fractional parts"
+      lean: "TruncatedSieveFluxComparator.gcd_covariance"
+      module: "CovarianceChallenge"
+      status: "proved in CovarianceSolution, new Comparator CI pending"
+      note: "For arbitrary positive a,b and any positive common period; no additional coprimality hypothesis."
+    - source: "Exact Möbius-weighted second-moment gcd quadratic form"
+      lean: "TruncatedSieveFluxComparator.second_moment_gcd"
+      module: "CovarianceChallenge"
+      status: "proved in CovarianceSolution, new Comparator CI pending"
+      note: "Exact finite identity, not a linear-in-B variance bound."
 
 acknowledgements: "Mathlib, Lean, Palomar starter repository; ChatGPT GPT-6 proof and tooling assistance."
