@@ -126,7 +126,7 @@ https://math.stackexchange.com/questions/140499/a-sum-of-fractional-parts .
 The paper-level estimate should be independently reviewed.
 No claim of originality is made.
 
-**Divisibility family (new Lean proof submitted, CI pending).** The auxiliary `centeredModularFraction_sum_self_zero` and `sum_range_mul_index_of_period_zero_mean` formalize zero centering and index-weighted periodic averaging. The proposed `empiricalModularCovariance_dvd_right_base` identifies `C_(a,b;b) = (a/b) C_(a,a;a)` when `a ∣ b`; `empiricalModularCovariance_gcd_of_dvd` would then yield `(gcd(a,b)^2-1)/(12ab)` on every positive period divisible by `b`. This is a proper off-diagonal infinite family when `a < b`, but **its Lean proof is still being checked in CI**. Nothing here settles moduli with neither dividing the other.
+**Divisibility family (new Lean proof submitted, CI pending).** The auxiliary `centeredModularFraction_sum_self_zero` and `sum_range_mul_index_of_period_zero_mean` formalize zero centering and index-weighted periodic averaging. The proposed `empiricalModularCovariance_dvd_right_base` identifies `C_(a,b;b) = (a/b) C_(a,a;a)` when `a ∣ b`; `empiricalModularCovariance_gcd_of_dvd` would then yield `(gcd(a,b)^2-1)/(12ab)` on every positive period divisible by `b`. This is a proper off-diagonal infinite family when `a < b`, but **its Lean proof is still being checked in CI**. The corollaries `empiricalModularCovariance_gcd_of_dvd_left` and `empiricalModularCovariance_gcd_of_comparable` extend the pending proof by symmetry to all positive moduli comparable under divisibility. Nothing here settles moduli with neither dividing the other.
 
 ## What must be proved next
 
