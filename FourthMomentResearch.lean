@@ -77,6 +77,29 @@ noncomputable def empiricalFourthMoment (B H : ℕ) : ℝ :=
 noncomputable def modularFractionMean (d H : ℕ) : ℝ :=
   (∑ n ∈ Finset.range H, (((n % d : ℕ) : ℝ) / (d : ℝ))) / (H : ℝ)
 
+/-- The exact average of a rational fractional part over one complete
+modulus: 0, 1/d, ..., (d-1)/d. -/
+theorem modularFractionMean_self (d : ℕ) (hd : 0 < d) :
+    modularFractionMean d d =
+      (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  have hne : (d : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hd)
+  have hsum :
+      (∑ n ∈ Finset.range d, (n : ℝ)) * 2 =
+        (d : ℝ) * (((d - 1 : ℕ) : ℝ)) := by
+    exact_mod_cast (Finset.sum_range_id_mul_two d)
+  have hmod :
+      (∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ))) =
+        ∑ n ∈ Finset.range d, ((n : ℝ) / (d : ℝ)) := by
+    apply Finset.sum_congr rfl
+    intro n hn
+    rw [Nat.mod_eq_of_lt (Finset.mem_range.mp hn)]
+  unfold modularFractionMean
+  rw [hmod, Finset.sum_div, div_div_eq_div_mul]
+  have hsum' := congrArg (fun z : ℝ => z * (d : ℝ)) hsum
+  apply (div_eq_div_iff (mul_ne_zero hne hne)
+    (mul_ne_zero (by norm_num) hne)).2
+  nlinarith [hsum']
+
 /-- Exact regrouping: averaging the Möbius sum amounts to summing the
 averages of its individual rational fractional-part terms. -/
 theorem empiricalErrorMean_eq_weighted_modular_means (B H : ℕ) :
