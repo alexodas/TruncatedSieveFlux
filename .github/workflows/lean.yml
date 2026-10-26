@@ -2,7 +2,7 @@ name: Verify Lean proofs
 
 on:
   push:
-    branches: [main, "research/fourth-moment"]
+    branches: [main, "research/periodic-moments"]
   workflow_dispatch:
 
 jobs:
