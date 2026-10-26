@@ -266,4 +266,122 @@ theorem moebius_floor_rounding_error_le (M B : ℕ) :
       exact hterm d hd
     _ = (B : ℝ) := by simp
 
+
+/-- With A = 0 and integer upper cutoff B, regrouping the finite divisor
+sum gives the sum of Möbius coefficients weighted by integer quotients. -/
+private theorem admittedMass_integer_cutoff_eq_floor
+    (B : ℕ) (x : ℝ) (hx : 2 ≤ x) :
+    admittedMass (fun j : ℕ => (j : ℝ)) 0 B x moebiusReal =
+      floorWeightedMoebiusMass (Nat.ceil x - 1) B := by
+  classical
+  let M : ℕ := Nat.ceil x - 1
+  have hceil : M + 1 = Nat.ceil x := by
+    have hn : 0 < Nat.ceil x :=
+      Nat.lt_ceil.mpr (by linarith : (0 : ℝ) < x)
+    dsimp [M]
+    omega
+  have hinner (n : ℕ) :
+      (∑ d ∈ admittedDivisors (fun j : ℕ => (j : ℝ)) 0 B n,
+        moebiusReal d) =
+        ∑ d ∈ Finset.Icc 1 B,
+          if d ∣ n ∧ n ≠ 0 then moebiusReal d else 0 := by
+    have hset :
+        admittedDivisors (fun j : ℕ => (j : ℝ)) 0 B n =
+          (Finset.Icc 1 B).filter (fun d => d ∣ n ∧ n ≠ 0) := by
+      ext d
+      constructor
+      · intro hd
+        have hd' : d ∈ Nat.divisors n ∧
+            (0 : ℝ) < (d : ℝ) ∧ (d : ℝ) ≤ (B : ℝ) := by
+          simpa only [admittedDivisors, Finset.mem_filter] using hd
+        obtain ⟨hdvd, hd0, hdB⟩ := hd'
+        obtain ⟨hdiv, hn⟩ := Nat.mem_divisors.mp hdvd
+        refine Finset.mem_filter.mpr ⟨Finset.mem_Icc.mpr ⟨?_, ?_⟩, ⟨hdiv, hn⟩⟩
+        · exact_mod_cast hd0
+        · exact_mod_cast hdB
+      · intro hd
+        obtain ⟨hdi, hdiv, hn⟩ := Finset.mem_filter.mp hd
+        obtain ⟨hd0, hdB⟩ := Finset.mem_Icc.mp hdi
+        have hNat : d ∈ Nat.divisors n :=
+          Nat.mem_divisors.mpr ⟨hdiv, hn⟩
+        show d ∈ admittedDivisors (fun j : ℕ => (j : ℝ)) 0 B n
+        simp only [admittedDivisors, Finset.mem_filter]
+        exact ⟨hNat, ⟨by exact_mod_cast hd0, by exact_mod_cast hdB⟩⟩
+    rw [hset, Finset.sum_filter]
+  have hcount (d : ℕ) (hd : d ∈ Finset.Icc 1 B) :
+      ((Finset.range (Nat.ceil x)).filter (fun n => d ∣ n ∧ n ≠ 0)).card =
+        M / d := by
+    have hset :
+        (Finset.range (Nat.ceil x)).filter (fun n => d ∣ n ∧ n ≠ 0) =
+          (Finset.Icc 1 M).filter (fun n => d ∣ n) := by
+      ext n
+      simp only [Finset.mem_filter, Finset.mem_range, Finset.mem_Icc]
+      constructor
+      · rintro ⟨hnlt, hdvd, hnne⟩
+        exact ⟨⟨by omega, by omega⟩, hdvd⟩
+      · rintro ⟨⟨hnpos, hnM⟩, hdvd⟩
+        exact ⟨by omega, hdvd, by omega⟩
+    rw [hset]
+    exact card_multiples_Icc M d (Finset.mem_Icc.mp hd).1
+  unfold admittedMass floorWeightedMoebiusMass
+  calc
+    (∑ n ∈ Finset.range (Nat.ceil x),
+      ∑ d ∈ admittedDivisors (fun j : ℕ => (j : ℝ)) 0 B n,
+        moebiusReal d) =
+        ∑ n ∈ Finset.range (Nat.ceil x),
+          ∑ d ∈ Finset.Icc 1 B,
+            if d ∣ n ∧ n ≠ 0 then moebiusReal d else 0 := by
+          apply Finset.sum_congr rfl
+          intro n hn
+          exact hinner n
+    _ = ∑ d ∈ Finset.Icc 1 B,
+          ∑ n ∈ Finset.range (Nat.ceil x),
+            if d ∣ n ∧ n ≠ 0 then moebiusReal d else 0 := by
+          rw [Finset.sum_comm]
+    _ = ∑ d ∈ Finset.Icc 1 B,
+          moebiusReal d *
+            (((Finset.range (Nat.ceil x)).filter
+              (fun n => d ∣ n ∧ n ≠ 0)).card : ℝ) := by
+          apply Finset.sum_congr rfl
+          intro d hd
+          rw [← Finset.sum_filter]
+          simp [mul_comm]
+    _ = ∑ d ∈ Finset.Icc 1 B,
+          moebiusReal d * ((M / d : ℕ) : ℝ) := by
+          apply Finset.sum_congr rfl
+          intro d hd
+          rw [hcount d hd]
+
+/-- Logarithmic-cutoff quantitative approximation for the omitted Möbius
+mass. Unlike an asymptotic bound, this is a fully finite inequality. -/
+theorem moebius_log_cutoff_residual_approximation
+    (x : ℝ) (hx : 2 ≤ x) :
+    |omittedMass (fun j : ℕ => (j : ℝ)) 0 (sieveIndex x) x moebiusReal
+      - 1 + ((Nat.ceil x - 1 : ℕ) : ℝ) *
+        harmonicMoebiusMass (sieveIndex x)| ≤ (sieveIndex x : ℝ) := by
+  let B := sieveIndex x
+  have hsum :=
+    admitted_add_omitted (fun j : ℕ => (j : ℝ)) 0 B x moebiusReal
+  rw [complete_moebius_mass x hx] at hsum
+  have hfloor := admittedMass_integer_cutoff_eq_floor B x hx
+  have hr :
+      omittedMass (fun j : ℕ => (j : ℝ)) 0 B x moebiusReal =
+        1 - floorWeightedMoebiusMass (Nat.ceil x - 1) B := by
+    linarith
+  change
+    |omittedMass (fun j : ℕ => (j : ℝ)) 0 B x moebiusReal
+       - 1 + ((Nat.ceil x - 1 : ℕ) : ℝ) *
+         harmonicMoebiusMass B| ≤ (B : ℝ)
+  calc
+    |omittedMass (fun j : ℕ => (j : ℝ)) 0 B x moebiusReal
+       - 1 + ((Nat.ceil x - 1 : ℕ) : ℝ) * harmonicMoebiusMass B| =
+        |-(floorWeightedMoebiusMass (Nat.ceil x - 1) B -
+          ((Nat.ceil x - 1 : ℕ) : ℝ) * harmonicMoebiusMass B)| := by
+          rw [hr]
+          congr 1
+          ring
+    _ = |floorWeightedMoebiusMass (Nat.ceil x - 1) B -
+        ((Nat.ceil x - 1 : ℕ) : ℝ) * harmonicMoebiusMass B| := abs_neg _
+    _ ≤ (B : ℝ) := moebius_floor_rounding_error_le _ _
+
 end TruncatedSieveFlux
