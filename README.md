@@ -97,18 +97,3 @@ The last command checks the proof with `lake build Challenge Solution` and
 `lake comparator --config`, registering the bundled independent kernels in a
 temporary Comparator configuration, as in the Palomar starter project.
 The check requires `bwrap` in addition to Lean and the checked-in dependencies.
-
-## Before public submission
-
-1. Confirm the author, maintainer, and AI-assistance declarations in
-   `formalization.yaml`.
-2. Re-run `./scripts/check.sh` to reproduce the passing Comparator check and archive its results.
-3. Review the theorem statements and provenance independently of the model.
-4. Commit the final `lake-manifest.json` if Lake regenerates it; keep every
-   dependency pinned.
-5. Push a **public** GitHub repository, then submit its full 40-character
-   commit SHA to Palomar. Repository files alone are not a submitted snapshot.
-
-The repository is a draft. Its mathematical contribution is primarily the
-formal bookkeeping of truncation; no originality or registry acceptance is
-implied.
