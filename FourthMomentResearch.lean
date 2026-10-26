@@ -271,6 +271,71 @@ theorem empiricalFourthMoment_eq_fourfold_sum (B H : ℕ) :
   exact fourth_power_finset_sum (Finset.Icc 1 B)
     (fun d => moebiusReal d * centeredModularFraction m d H)
 
+
+/-! ## Second moment and two-divisor correlations -/
+
+/-- The empirical centered second moment (variance) of the rounding error. -/
+noncomputable def empiricalSecondMoment (B H : ℕ) : ℝ :=
+  (∑ m ∈ Finset.range H,
+    (roundingError m B - empiricalErrorMean B H) ^ 2) / (H : ℝ)
+
+/-- Finite empirical covariance of the modular fractions for two moduli. -/
+noncomputable def empiricalModularCovariance (a b H : ℕ) : ℝ :=
+  (∑ m ∈ Finset.range H,
+    centeredModularFraction m a H * centeredModularFraction m b H) / (H : ℝ)
+
+/-- Exact pairwise expansion of the centered second moment. This exposes the
+two-modulus correlations to be evaluated in the next arithmetic step. -/
+theorem empiricalSecondMoment_eq_pairwise_sum (B H : ℕ) :
+    empiricalSecondMoment B H =
+      (∑ m ∈ Finset.range H,
+        ∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+          (moebiusReal a * centeredModularFraction m a H) *
+          (moebiusReal b * centeredModularFraction m b H)) / (H : ℝ) := by
+  unfold empiricalSecondMoment
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [centered_roundingError_eq_modular_sum]
+  change (∑ d ∈ Finset.Icc 1 B,
+      moebiusReal d * centeredModularFraction m d H) ^ 2 = _
+  simpa only [pow_two] using
+    (Finset.sum_mul_sum (Finset.Icc 1 B) (Finset.Icc 1 B)
+      (fun d => moebiusReal d * centeredModularFraction m d H)
+      (fun d => moebiusReal d * centeredModularFraction m d H))
+
+/-- A centered second moment is nonnegative on every finite interval,
+with no arithmetic hypotheses. -/
+theorem empiricalSecondMoment_nonneg (B H : ℕ) :
+    0 ≤ empiricalSecondMoment B H := by
+  unfold empiricalSecondMoment
+  apply div_nonneg
+  · apply Finset.sum_nonneg
+    intro m hm
+    positivity
+  · positivity
+
+/-- Empirical modular covariance is symmetric. -/
+theorem empiricalModularCovariance_comm (a b H : ℕ) :
+    empiricalModularCovariance a b H =
+      empiricalModularCovariance b a H := by
+  unfold empiricalModularCovariance
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  ring
+
+/-- Real form of the classical finite sum of squares. -/
+private theorem sum_range_square_real (d : ℕ) :
+    (∑ m ∈ Finset.range d, (m : ℝ) ^ 2) * 6 =
+      (d : ℝ) * ((d : ℝ) - 1) * (2 * (d : ℝ) - 1) := by
+  induction d with
+  | zero => norm_num
+  | succ d ih =>
+      simp only [Finset.sum_range_succ, Nat.cast_succ]
+      nlinarith [ih]
+
 /-- Reuse of the already verified quantitative rounding bound. -/
 theorem abs_roundingError_le (M B : ℕ) :
     |roundingError M B| ≤ (B : ℝ) := by
