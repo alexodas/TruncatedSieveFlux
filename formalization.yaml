@@ -118,7 +118,7 @@ fidelity:
     The new proof for (2,b) with b odd uses cancellation on the
     common period 2*b and has passed Lean verify. The follow-up
     even/odd case split and symmetry target all positive pairs with
-    either modulus equal to two; those corollaries await CI.
+    either modulus equal to two; both corollaries passed Lean verify.
     The general off-diagonal identity remains unproved.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
