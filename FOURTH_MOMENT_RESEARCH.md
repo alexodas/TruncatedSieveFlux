@@ -1,102 +1,91 @@
-# Research note: centered fourth moment of the Möbius rounding error
+# Fourth-moment research program for Möbius rounding errors
 
-**Status: conjectural; the O(B^2) claim is NOT proved in Lean or mathematically established here.**
-This is an exploratory research module; it does not assert a new proved fourth-moment theorem.
+**Status: open research target; no fourth-moment `O(B^2)` proof.**
 
-## Objective
+## Central question
 
-For an integer cutoff B ≥ 2, let
-
-- `L_B = lcm(1, ..., B)` (a common period);
-- `E_B(M) = sum_{1 ≤ d ≤ B} mu(d) * ((M mod d) / d)`, for M ≥ 0;
-- `mean_B = (1/L_B) * sum_{0 ≤ M < L_B} E_B(M)`.
-
-The intended research theorem is that an **absolute** constant `C4 > 0`
-exists such that, for all B ≥ 2,
+Study the periodic signed rounding error
 
 ```text
-(1/L_B) * sum_{0 ≤ M < L_B} (E_B(M) - mean_B)^4 ≤ C4 * B^2.
+E_B(M) = sum_{1 ≤ d ≤ B} mu(d) * ((M mod d)/d).
 ```
 
-The existence of such a constant, and the implications for positive-density
-oscillations, require new work. No claim of mathematical originality is made.
-
-## What has been proved in Lean
-
-`FourthMomentResearch.lean`, built on `Solution.lean`, proves:
-
-1. `abs_roundingError_le`: `|E_B(M)| ≤ B` using the
-   logarithmic-cutoff rounding-error lemma.
-2. `roundingError_eq_mod_sum`: the exact representation of `E_B(M)` as a
-   finite weighted sum of rational fractional parts.
-3. `abs_empiricalErrorMean_le`: the absolute empirical mean is at most B
-   over any nonempty finite interval `[0,H)`.
-4. `empiricalFourthMoment_le_trivial`: the centered empirical fourth
-   moment over any nonempty finite interval is at most `(2B)^4`.
-
-The fourth point is **O(B^4)**, not the sought **O(B^2)**. It does not imply
-positive-density oscillations. Its main purpose is to check a complete
-proof skeleton, notation and finite-sum normalization with the actual Lean
-kernel while developing the substantially harder correlations.
-
-## Newly formalized structural reductions
-
-The Lean research module now additionally proves:
-
-5. `roundingError_add_common_period`: every common multiple of
-   `1,...,B` is a period of `E_B`.
-6. `roundingError_add_factorial`: `B!` is one explicit period.
-7. `empiricalErrorMean_eq_weighted_modular_means` and
-   `centered_roundingError_eq_modular_sum`: the centered error is the
-   weighted sum of centered modular fractions.
-8. `empiricalFourthMoment_eq_fourfold_sum`: the exact four-index
-   expansion of the empirical fourth moment, with no cancellation
-   assumptions.
-
-These are identities and combinatorial structure, **not** a proof of
-the desired `O(B^2)` bound. They reduce the problem to controlling
-the resulting four-point correlations.
-
-## Exact full-period centering (proved in Lean)
-
-Let `T > 0` be any multiple of all positive integers at most `B`.
-The newly formalized `empiricalErrorMean_common_period` theorem gives
+With `L_B = lcm(1,...,B)` and its period mean `mean_B`, seek an
+absolute constant `C4` such that
 
 ```text
+(1/L_B) * sum_{0 ≤ M < L_B} (E_B(M)-mean_B)^4 ≤ C4*B^2.
+```
+
+The proposed positive-density oscillation consequences would require
+additional work beyond the identity and finite-sum bounds established
+here. Neither the target inequality nor any claim of originality is proved.
+
+## Most useful exact formulas already proved
+
+**Common period and mean.** For any `T > 0` divisible by every
+`1 ≤ d ≤ B`, Lean proves
+
+```text
+E_B(M+T) = E_B(M),
 (1/T) * sum_{0 ≤ M < T} E_B(M)
-   = sum_{1 ≤ d ≤ B} mu(d) * (d-1)/(2*d).
+    = sum_{1 ≤ d ≤ B} mu(d) * (d-1)/(2*d),
+E_B(M) - mean_(B,T)
+    = sum_{1 ≤ d ≤ B} mu(d) * ((M mod d)/d - (d-1)/(2*d)).
 ```
 
-The lemma `modularFractionMean_multiple` establishes the exact mean
-of each rational fractional-part function over an arbitrary positive
-number of full periods. The specialization `empiricalErrorMean_factorial`
-uses the explicit period `B!`.
+**Pairwise correlations.** The newly formalized
+`empiricalSecondMoment_eq_covariance_sum` theorem writes the centered
+second moment as the exact Möbius-weighted quadratic form in the modular
+covariances. The supporting `empiricalSecondMoment_eq_pairwise_sum`
+identity expands it over ordered pairs; `empiricalSecondMoment_nonneg`
+proves positivity and `empiricalModularCovariance_comm` proves symmetry.
 
-The further `centered_roundingError_common_period` theorem expresses
-the entire centered error as
-`sum_{1≤d≤B} mu(d) * ((M mod d)/d - (d-1)/(2*d))`.
-This removes the empirical-mean term from the four-point correlation
-problem and is now available as a Lean lemma.
+For the diagonal over a full modulus, the proved identity is
 
-## Main mathematical obstacle
+```text
+(1/d) * sum_{0 ≤ M < d} ((M mod d)/d - (d-1)/(2*d))^2
+   = (d^2-1)/(12*d^2)   for d>0.
+```
 
-Expanding the fourth power produces correlations between four functions
-`(M mod d)/d`. Proving enough cancellation uniformly in B (and estimating
-averages uniformly when the cutoff changes) is the central unresolved step.
-Sampled values of the normalized fourth moment are only experimental
-evidence; they cannot substitute for this estimate.
+**Four-divisor correlations.**
+`empiricalFourthMoment_eq_fourfold_sum` expands the full empirical
+fourth moment into products of four centered modular fractions.
+These expansions are exact, but do not establish cancellation.
 
-## Relation to the Möbius residual
+## Supporting formalization
 
-The logarithmic-cutoff residual approximation in `Solution.lean` connects
-the finite rounding error with the omitted Möbius mass. The research
-module reuses its auxiliary finite-sum identities.
+The `Solution.lean` module supplies the finite Möbius divisor-sieve
+identity and the quotient/remainder bound. The sole Palomar Comparator
+theorem, `moebius_log_cutoff_residual_approximation`, bounds the
+residual-rounding discrepancy by the integer cutoff. Auxiliary
+lemmas prove the modular mean over any number of full periods,
+the rational remainder representation, and the unconditional
+`16 B^4` centered fourth-moment bound.
 
-## Literature to compare
+## What must be proved next
 
-- Granville, Koukoulopoulos, Maynard, *Sieve weights and their smoothings*
-  (Annales scientifiques de l'École normale supérieure, 2021),
-  https://arxiv.org/abs/1606.06781 .
-  Their work studies high moments of related truncated Möbius divisor sums;
-  an originality claim for this proposed fourth moment would require a
-  careful comparison, not just a keyword search.
+The current file has **not** evaluated the off-diagonal modular
+covariance for arbitrary `a,b` over a full common period.
+The expected classical gcd-based formula is
+
+```text
+Cov((M mod a)/a, (M mod b)/b)
+   = (gcd(a,b)^2 - 1)/(12*a*b).
+```
+
+That formula should be formalized and checked independently before
+it is used to derive a closed expression for the full variance.
+Even a verified second-moment identity would not by itself prove
+the `O(B^2)` fourth-moment target: the four-variable correlations
+remain the substantive analytic obstacle.
+
+## Literature and originality
+
+Closely related high moments and truncations occur in Granville,
+Koukoulopoulos and Maynard, *Sieve weights and their smoothings*
+(2016 preprint; later publication):
+https://arxiv.org/abs/1606.06781.
+Existing fractional-part and gcd-covariance identities also overlap
+with this area. Novelty requires a substantive mathematical and
+bibliographic review rather than a successful Lean compilation.

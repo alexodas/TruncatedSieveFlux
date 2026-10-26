@@ -271,6 +271,190 @@ theorem empiricalFourthMoment_eq_fourfold_sum (B H : ℕ) :
   exact fourth_power_finset_sum (Finset.Icc 1 B)
     (fun d => moebiusReal d * centeredModularFraction m d H)
 
+
+/-! ## Second moment and two-divisor correlations -/
+
+/-- The empirical centered second moment (variance) of the rounding error. -/
+noncomputable def empiricalSecondMoment (B H : ℕ) : ℝ :=
+  (∑ m ∈ Finset.range H,
+    (roundingError m B - empiricalErrorMean B H) ^ 2) / (H : ℝ)
+
+/-- Finite empirical covariance of the modular fractions for two moduli. -/
+noncomputable def empiricalModularCovariance (a b H : ℕ) : ℝ :=
+  (∑ m ∈ Finset.range H,
+    centeredModularFraction m a H * centeredModularFraction m b H) / (H : ℝ)
+
+/-- Exact pairwise expansion of the centered second moment. This exposes the
+two-modulus correlations to be evaluated in the next arithmetic step. -/
+theorem empiricalSecondMoment_eq_pairwise_sum (B H : ℕ) :
+    empiricalSecondMoment B H =
+      (∑ m ∈ Finset.range H,
+        ∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+          (moebiusReal a * centeredModularFraction m a H) *
+          (moebiusReal b * centeredModularFraction m b H)) / (H : ℝ) := by
+  unfold empiricalSecondMoment
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [centered_roundingError_eq_modular_sum]
+  change (∑ d ∈ Finset.Icc 1 B,
+      moebiusReal d * centeredModularFraction m d H) ^ 2 = _
+  simpa only [pow_two] using
+    (Finset.sum_mul_sum (Finset.Icc 1 B) (Finset.Icc 1 B)
+      (fun d => moebiusReal d * centeredModularFraction m d H)
+      (fun d => moebiusReal d * centeredModularFraction m d H))
+
+
+/-- Exact expression for the finite centered variance as a quadratic form
+in the pairwise modular covariances. -/
+theorem empiricalSecondMoment_eq_covariance_sum (B H : ℕ) :
+    empiricalSecondMoment B H =
+      ∑ a ∈ Finset.Icc 1 B,
+      ∑ b ∈ Finset.Icc 1 B,
+        (moebiusReal a * moebiusReal b) *
+          empiricalModularCovariance a b H := by
+  classical
+  rw [empiricalSecondMoment_eq_pairwise_sum]
+  calc
+    (∑ m ∈ Finset.range H,
+        ∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+          (moebiusReal a * centeredModularFraction m a H) *
+            (moebiusReal b * centeredModularFraction m b H)) / (H : ℝ) =
+      (∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+        ∑ m ∈ Finset.range H,
+          (moebiusReal a * centeredModularFraction m a H) *
+            (moebiusReal b * centeredModularFraction m b H)) / (H : ℝ) := by
+        apply congrArg (fun z : ℝ => z / (H : ℝ))
+        rw [Finset.sum_comm]
+        apply Finset.sum_congr rfl
+        intro a ha
+        rw [Finset.sum_comm]
+    _ = ∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+        (moebiusReal a * moebiusReal b) *
+          empiricalModularCovariance a b H := by
+        rw [Finset.sum_div]
+        apply Finset.sum_congr rfl
+        intro a ha
+        rw [Finset.sum_div]
+        apply Finset.sum_congr rfl
+        intro b hb
+        unfold empiricalModularCovariance
+        calc
+          (∑ m ∈ Finset.range H,
+              (moebiusReal a * centeredModularFraction m a H) *
+                (moebiusReal b * centeredModularFraction m b H)) / (H : ℝ) =
+            ((moebiusReal a * moebiusReal b) *
+              ∑ m ∈ Finset.range H,
+                centeredModularFraction m a H *
+                  centeredModularFraction m b H) / (H : ℝ) := by
+                congr 1
+                rw [Finset.mul_sum]
+                apply Finset.sum_congr rfl
+                intro m hm
+                ring
+          _ = (moebiusReal a * moebiusReal b) *
+                ((∑ m ∈ Finset.range H,
+                  centeredModularFraction m a H *
+                    centeredModularFraction m b H) / (H : ℝ)) := by ring
+
+/-- A centered second moment is nonnegative on every finite interval,
+with no arithmetic hypotheses. -/
+theorem empiricalSecondMoment_nonneg (B H : ℕ) :
+    0 ≤ empiricalSecondMoment B H := by
+  unfold empiricalSecondMoment
+  apply div_nonneg
+  · apply Finset.sum_nonneg
+    intro m hm
+    positivity
+  · positivity
+
+/-- Empirical modular covariance is symmetric. -/
+theorem empiricalModularCovariance_comm (a b H : ℕ) :
+    empiricalModularCovariance a b H =
+      empiricalModularCovariance b a H := by
+  unfold empiricalModularCovariance
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  ring
+
+/-- Real form of the classical finite sum of squares. -/
+private theorem sum_range_square_real (d : ℕ) :
+    (∑ m ∈ Finset.range d, (m : ℝ) ^ 2) * 6 =
+      (d : ℝ) * ((d : ℝ) - 1) * (2 * (d : ℝ) - 1) := by
+  induction d with
+  | zero => norm_num
+  | succ d ih =>
+      simp only [Finset.sum_range_succ, Nat.cast_succ]
+      nlinarith [ih]
+
+
+/-- Diagonal modular covariance over one complete modulus.
+This is the classical variance (d²-1)/(12d²) of the discrete uniform grid. -/
+theorem empiricalModularCovariance_diagonal (d : ℕ) (hd : 0 < d) :
+    empiricalModularCovariance d d d =
+      (((d : ℝ) ^ 2 - 1) / (12 * (d : ℝ) ^ 2)) := by
+  let D : ℝ := (d : ℝ)
+  let C : ℝ := (((d - 1 : ℕ) : ℝ) / (2 * D))
+  let S₁ : ℝ := ∑ m ∈ Finset.range d, (m : ℝ)
+  let S₂ : ℝ := ∑ m ∈ Finset.range d, (m : ℝ) ^ 2
+  have hD : D ≠ 0 := by
+    dsimp [D]
+    exact_mod_cast (Nat.ne_of_gt hd)
+  have hsubNat : 1 ≤ d := hd
+  have hsub : (((d - 1 : ℕ) : ℝ)) = D - 1 := by
+    dsimp [D]
+    rw [Nat.cast_sub hsubNat]
+    norm_num
+  have hS₁ : S₁ * 2 = D * (D - 1) := by
+    dsimp [S₁, D]
+    have hnat := congrArg (fun z : ℕ => (z : ℝ))
+      (Finset.sum_range_id_mul_two d)
+    simpa [hsub] using hnat
+  have hS₂ : S₂ * 6 = D * (D - 1) * (2 * D - 1) := by
+    exact sum_range_square_real d
+  have hC : C = (D - 1) / (2 * D) := by
+    dsimp [C]
+    rw [hsub]
+  have hcov :
+      empiricalModularCovariance d d d =
+        (∑ m ∈ Finset.range d, ((m : ℝ) / D - C) ^ 2) / D := by
+    unfold empiricalModularCovariance
+    apply congrArg (fun y : ℝ => y / (d : ℝ))
+    apply Finset.sum_congr rfl
+    intro m hm
+    simp only [centeredModularFraction, modularFractionMean_self d hd,
+      Nat.mod_eq_of_lt (Finset.mem_range.mp hm)]
+    dsimp [D, C]
+    ring
+  have hsum :
+      (∑ m ∈ Finset.range d, ((m : ℝ) / D - C) ^ 2) =
+        S₂ / D ^ 2 - (2 * C / D) * S₁ + D * C ^ 2 := by
+    have hterm (m : ℕ) :
+        ((m : ℝ) / D - C) ^ 2 =
+          (m : ℝ) ^ 2 / D ^ 2 - (2 * C / D) * (m : ℝ) + C ^ 2 := by ring
+    calc
+      (∑ m ∈ Finset.range d, ((m : ℝ) / D - C) ^ 2) =
+          ∑ m ∈ Finset.range d,
+            ((m : ℝ) ^ 2 / D ^ 2 - (2 * C / D) * (m : ℝ) + C ^ 2) := by
+              apply Finset.sum_congr rfl
+              intro m hm
+              exact hterm m
+      _ = S₂ / D ^ 2 - (2 * C / D) * S₁ + D * C ^ 2 := by
+              dsimp [S₁, S₂, D]
+              simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib,
+                div_eq_mul_inv, ← Finset.sum_mul, ← Finset.mul_sum,
+                Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+  rw [hcov, hsum, hC]
+  dsimp [D]
+  field_simp
+  nlinarith [hS₁, hS₂,
+    congrArg (fun x : ℝ => x * (D - 1)) hS₁]
+
 /-- Reuse of the already verified quantitative rounding bound. -/
 theorem abs_roundingError_le (M B : ℕ) :
     |roundingError M B| ≤ (B : ℝ) := by
