@@ -68,7 +68,7 @@ Lean proves the exact quadratic-form identity
 V_(B,H) = sum_{1 ≤ a,b ≤ B} mu(a)*mu(b)*C_(a,b;H).
 ```
 
-**This does not yet evaluate off-diagonal terms** `a ≠ b`.
+**This does not yet evaluate general off-diagonal terms** `a ≠ b`. The dedicated gcd-covariance branch begins with the modulus-one boundary case, in which the centered modular fraction and all associated covariances vanish. The general gcd identity remains open in Lean.
 
 The diagonal covariance for a complete modulus is also formalized:
 
