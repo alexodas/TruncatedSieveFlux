@@ -45,6 +45,39 @@ facts set up the research question but are **not** a nontrivial
 fourth-moment improvement: the `B^4` growth follows from the
 pointwise error bound.
 
+## Exact periodicity and fourth-order correlations
+
+The research module also establishes that the fractional-part error is
+periodic for every common multiple `T` of `1,...,B`:
+
+```text
+E_B(M + T) = E_B(M),    in particular T = B!.
+```
+
+For each `H`, write
+
+```text
+r_(d,H)(M) = (M mod d)/d - (1/H) * sum_{0 ≤ n < H} (n mod d)/d.
+```
+
+A proved exact decomposition isolates the correlations:
+
+```text
+E_B(M) - mean_(B,H) = sum_{1 ≤ d ≤ B} mu(d) * r_(d,H)(M).
+```
+
+Expanding the fourth power gives a proved, **finite fourfold formula**:
+
+```text
+fourth_(B,H) =
+  (1/H) * sum_{0 ≤ M < H} sum_{a,b,c,d ≤ B}
+    mu(a)*mu(b)*mu(c)*mu(d)
+    * r_(a,H)(M)*r_(b,H)(M)*r_(c,H)(M)*r_(d,H)(M).
+```
+
+No bound on these four-way correlations beyond the elementary
+`O(B^4)` estimate is established. That is the outstanding research task.
+
 ## Open research problem (NOT proved)
 
 Write `L_B = lcm(1,...,B)` and `mean_B` for the average of `E_B`

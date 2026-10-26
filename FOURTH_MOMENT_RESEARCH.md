@@ -39,6 +39,24 @@ positive-density oscillations. Its main purpose is to check a complete
 proof skeleton, notation and finite-sum normalization with the actual Lean
 kernel while developing the substantially harder correlations.
 
+## Newly formalized structural reductions
+
+The Lean research module now additionally proves:
+
+5. `roundingError_add_common_period`: every common multiple of
+   `1,...,B` is a period of `E_B`.
+6. `roundingError_add_factorial`: `B!` is one explicit period.
+7. `empiricalErrorMean_eq_weighted_modular_means` and
+   `centered_roundingError_eq_modular_sum`: the centered error is the
+   weighted sum of centered modular fractions.
+8. `empiricalFourthMoment_eq_fourfold_sum`: the exact four-index
+   expansion of the empirical fourth moment, with no cancellation
+   assumptions.
+
+These are identities and combinatorial structure, **not** a proof of
+the desired `O(B^2)` bound. They reduce the problem to controlling
+the resulting four-point correlations.
+
 ## Main mathematical obstacle
 
 Expanding the fourth power produces correlations between four functions
