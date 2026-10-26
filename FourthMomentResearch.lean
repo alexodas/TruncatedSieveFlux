@@ -690,7 +690,7 @@ theorem empiricalFourthMoment_le_trivial (B H : ℕ) (hH : 0 < H) :
 /-- The centered fractional part for modulus one vanishes identically. -/
 theorem centeredModularFraction_one (m H : ℕ) :
     centeredModularFraction m 1 H = 0 := by
-  simp [centeredModularFraction, modularFractionMean]
+  simp [centeredModularFraction, modularFractionMean, Nat.mod_one]
 
 /-- The covariance with the constant modulus-one residue is zero. -/
 theorem empiricalModularCovariance_one_left (b H : ℕ) :
