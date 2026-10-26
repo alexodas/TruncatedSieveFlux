@@ -77,6 +77,83 @@ noncomputable def empiricalFourthMoment (B H : ℕ) : ℝ :=
 noncomputable def modularFractionMean (d H : ℕ) : ℝ :=
   (∑ n ∈ Finset.range H, (((n % d : ℕ) : ℝ) / (d : ℝ))) / (H : ℝ)
 
+/-- The exact average of a rational fractional part over one complete
+modulus: 0, 1/d, ..., (d-1)/d. -/
+theorem modularFractionMean_self (d : ℕ) (hd : 0 < d) :
+    modularFractionMean d d =
+      (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  have hne : (d : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hd)
+  have hsum :
+      (∑ n ∈ Finset.range d, (n : ℝ)) * 2 =
+        (d : ℝ) * (((d - 1 : ℕ) : ℝ)) := by
+    have hnat := congrArg (fun z : ℕ => (z : ℝ))
+      (Finset.sum_range_id_mul_two d)
+    simpa using hnat
+  have hmod :
+      (∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ))) =
+        ∑ n ∈ Finset.range d, ((n : ℝ) / (d : ℝ)) := by
+    apply Finset.sum_congr rfl
+    intro n hn
+    rw [Nat.mod_eq_of_lt (Finset.mem_range.mp hn)]
+  unfold modularFractionMean
+  rw [hmod, ← Finset.sum_div]
+  have hsum' := congrArg (fun z : ℝ => z * (d : ℝ)) hsum
+  calc
+    ((∑ n ∈ Finset.range d, (n : ℝ)) / (d : ℝ)) / (d : ℝ) =
+        (∑ n ∈ Finset.range d, (n : ℝ)) / ((d : ℝ) * (d : ℝ)) := by
+          simp only [div_eq_mul_inv, mul_inv_rev]
+          ring
+    _ = (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+          apply (div_eq_div_iff (mul_ne_zero hne hne)
+            (mul_ne_zero (by norm_num) hne)).2
+          nlinarith [hsum']
+
+/-- Summing the fractional parts over q complete cycles gives q copies
+of the sum over the basic modulus. -/
+private theorem modularFraction_sum_mul (d q : ℕ) :
+    (∑ n ∈ Finset.range (q * d), (((n % d : ℕ) : ℝ) / (d : ℝ))) =
+      (q : ℝ) * ∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ)) := by
+  let f : ℕ → ℝ := fun n => (((n % d : ℕ) : ℝ) / (d : ℝ))
+  change (∑ n ∈ Finset.range (q * d), f n) =
+    (q : ℝ) * ∑ n ∈ Finset.range d, f n
+  induction q with
+  | zero => simp
+  | succ q ih =>
+      calc
+        (∑ n ∈ Finset.range (q.succ * d), f n) =
+            (∑ n ∈ Finset.range (q * d), f n) +
+            (∑ n ∈ Finset.range d, f (q * d + n)) := by
+              simpa only [Nat.succ_mul] using
+                (Finset.sum_range_add f (q * d) d)
+        _ = (∑ n ∈ Finset.range (q * d), f n) +
+            (∑ n ∈ Finset.range d, f n) := by
+              congr 1
+              apply Finset.sum_congr rfl
+              intro n hn
+              simp [f, Nat.add_mod, Nat.mul_mod]
+        _ = (q.succ : ℝ) * ∑ n ∈ Finset.range d, f n := by
+              rw [ih]
+              push_cast
+              ring
+
+/-- Every positive integer multiple of d has the same average fractional
+part as one basic d-period. -/
+theorem modularFractionMean_multiple (d q : ℕ) (hd : 0 < d) (hq : 0 < q) :
+    modularFractionMean d (q * d) =
+      (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  have hqne : (q : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hq)
+  have hdne : (d : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hd)
+  have hbase := modularFractionMean_self d hd
+  unfold modularFractionMean at hbase ⊢
+  rw [modularFraction_sum_mul d q, Nat.cast_mul]
+  calc
+    ((q : ℝ) *
+      (∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ)))) /
+        ((q : ℝ) * (d : ℝ)) =
+      (∑ n ∈ Finset.range d, (((n % d : ℕ) : ℝ) / (d : ℝ))) / (d : ℝ) := by
+        field_simp [hqne, hdne]
+    _ = (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := hbase
+
 /-- Exact regrouping: averaging the Möbius sum amounts to summing the
 averages of its individual rational fractional-part terms. -/
 theorem empiricalErrorMean_eq_weighted_modular_means (B H : ℕ) :
@@ -89,6 +166,53 @@ theorem empiricalErrorMean_eq_weighted_modular_means (B H : ℕ) :
   simp_rw [← Finset.mul_sum]
   simp only [div_eq_mul_inv]
   rw [Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro d hd
+  ring
+
+/-- Exact Möbius rounding-error mean on any positive common period.
+The mean is independent of which common multiple is chosen. -/
+theorem empiricalErrorMean_common_period
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalErrorMean B T =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d * (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  rw [empiricalErrorMean_eq_weighted_modular_means]
+  apply Finset.sum_congr rfl
+  intro d hd
+  obtain ⟨q, hq⟩ := hT d hd
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    have hTzero : T = 0 := by simpa [hqzero] using hq
+    omega
+  rw [hq, Nat.mul_comm d q, modularFractionMean_multiple d q
+    (Finset.mem_Icc.mp hd).1 hqpos]
+
+/-- B! is a concrete common period, so its mean has a fully explicit
+expression in the Möbius coefficients and the divisor indices. -/
+theorem empiricalErrorMean_factorial (B : ℕ) :
+    empiricalErrorMean B B.factorial =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d * (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  apply empiricalErrorMean_common_period B B.factorial (Nat.factorial_pos B)
+  intro d hd
+  exact Nat.dvd_factorial (Finset.mem_Icc.mp hd).1
+    (Finset.mem_Icc.mp hd).2
+
+/-- Exact centering formula for the Möbius error on every positive
+common period. The subtracted mean is independent of the chosen period. -/
+theorem centered_roundingError_common_period (M B T : ℕ)
+    (hTpos : 0 < T) (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    roundingError M B - empiricalErrorMean B T =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d *
+          ((((M % d : ℕ) : ℝ) / (d : ℝ)) -
+            (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ)))) := by
+  rw [roundingError_eq_mod_sum,
+    empiricalErrorMean_common_period B T hTpos hT,
+    ← Finset.sum_sub_distrib]
   apply Finset.sum_congr rfl
   intro d hd
   ring
