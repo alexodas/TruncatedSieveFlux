@@ -1997,7 +1997,7 @@ theorem empiricalModularCovariance_mul_coprime
     (hrT : g * r ∣ T) (hsT : g * s ∣ T) :
     empiricalModularCovariance (g * r) (g * s) T =
       (((g : ℝ) ^ 2 - 1) /
-        (12 * (((g * r : ℕ) : ℝ) * ((g * s : ℕ) : ℝ)))) := by
+        (12 * ((g * r : ℕ) : ℝ) * ((g * s : ℕ) : ℝ))) := by
   let P : ℕ := (r * s) * g
   have hP : 0 < P := by
     dsimp [P]
@@ -2103,7 +2103,7 @@ theorem empiricalModularCovariance_mul_coprime
           unfold empiricalModularCovariance
           rw [hsum]
     _ = (((g : ℝ) ^ 2 - 1) /
-        (12 * (((g * r : ℕ) : ℝ) * ((g * s : ℕ) : ℝ)))) := by
+        (12 * ((g * r : ℕ) : ℝ) * ((g * s : ℕ) : ℝ))) := by
           rw [hdiag, empiricalModularCovariance_diagonal g hg]
           dsimp [P]
           push_cast
@@ -2129,15 +2129,13 @@ theorem empiricalModularCovariance_gcd_general
   have hbgs : g * s = b := Nat.mul_div_cancel' hgb
   have hr : 0 < r := by
     by_contra hn
-    have hrzero : r = 0 := by omega
-    rw [hrzero] at hagr
-    simp at hagr
+    have hrzero : r = 0 := Nat.eq_zero_of_not_pos hn
+    have hazero : a = 0 := by simpa [hrzero] using hagr.symm
     omega
   have hs : 0 < s := by
     by_contra hn
-    have hszero : s = 0 := by omega
-    rw [hszero] at hbgs
-    simp at hbgs
+    have hszero : s = 0 := Nat.eq_zero_of_not_pos hn
+    have hbzero : b = 0 := by simpa [hszero] using hbgs.symm
     omega
   have hcop : r.Coprime s :=
     gcd_reduced_moduli_coprime a b ha
