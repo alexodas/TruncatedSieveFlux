@@ -95,4 +95,74 @@ theorem second_moment_gcd
   exact TruncatedSieveFlux.empiricalSecondMoment_eq_gcd_sum
     B T hTpos hT
 
+
+/-- Centered fourth moment of the signed Möbius rounding error. -/
+noncomputable def empiricalFourthMoment (B H : ℕ) : ℝ :=
+  (∑ m ∈ Finset.range H,
+    (roundingError m B - empiricalErrorMean B H) ^ 4) / (H : ℝ)
+
+private theorem bridge_error (m B : ℕ) :
+    roundingError m B = TruncatedSieveFlux.roundingError m B :=
+  (TruncatedSieveFlux.roundingError_eq_mod_sum m B).symm
+
+private theorem bridge_mean (B H : ℕ) :
+    empiricalErrorMean B H =
+      TruncatedSieveFlux.empiricalErrorMean B H := by
+  unfold empiricalErrorMean TruncatedSieveFlux.empiricalErrorMean
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  exact bridge_error m B
+
+private theorem bridge_second (B H : ℕ) :
+    empiricalSecondMoment B H =
+      TruncatedSieveFlux.empiricalSecondMoment B H := by
+  unfold empiricalSecondMoment TruncatedSieveFlux.empiricalSecondMoment
+  rw [bridge_mean B H]
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [bridge_error m B]
+
+private theorem bridge_fourth (B H : ℕ) :
+    empiricalFourthMoment B H =
+      TruncatedSieveFlux.empiricalFourthMoment B H := by
+  unfold empiricalFourthMoment TruncatedSieveFlux.empiricalFourthMoment
+  rw [bridge_mean B H]
+  apply congrArg (fun y : ℝ => y / (H : ℝ))
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [bridge_error m B]
+
+/-- Unconditional elementary fourth-moment bound on common periods. -/
+theorem fourth_moment_quartic
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalFourthMoment B T ≤ ((B : ℝ) / 2) ^ 4 := by
+  rw [bridge_fourth]
+  exact TruncatedSieveFlux.empiricalFourthMoment_le_half_quartic
+    B T hTpos hT
+
+/-- Fourth moment controlled by B²/4 times the variance. -/
+theorem fourth_moment_le_variance
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalFourthMoment B T ≤
+      ((B : ℝ) / 2) ^ 2 * empiricalSecondMoment B T := by
+  rw [bridge_fourth, bridge_second]
+  exact TruncatedSieveFlux.empiricalFourthMoment_le_secondMoment_mul
+    B T hTpos hT
+
+/-- Conditional cubic estimate; the linear variance bound is a premise. -/
+theorem fourth_moment_cubic_conditional
+    (B T : ℕ) (C : ℝ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T)
+    (hVariance : empiricalSecondMoment B T ≤ C * (B : ℝ)) :
+    empiricalFourthMoment B T ≤ (C / 4) * (B : ℝ) ^ 3 := by
+  have hvar := hVariance
+  rw [bridge_second] at hvar
+  rw [bridge_fourth]
+  exact TruncatedSieveFlux.empiricalFourthMoment_le_cubic_of_variance_le
+    B T C hTpos hT hvar
+
 end TruncatedSieveFluxComparator
