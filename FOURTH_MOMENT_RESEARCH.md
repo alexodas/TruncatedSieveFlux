@@ -57,6 +57,27 @@ These are identities and combinatorial structure, **not** a proof of
 the desired `O(B^2)` bound. They reduce the problem to controlling
 the resulting four-point correlations.
 
+## Exact full-period centering (proved in Lean)
+
+Let `T > 0` be any multiple of all positive integers at most `B`.
+The newly formalized `empiricalErrorMean_common_period` theorem gives
+
+```text
+(1/T) * sum_{0 ≤ M < T} E_B(M)
+   = sum_{1 ≤ d ≤ B} mu(d) * (d-1)/(2*d).
+```
+
+The lemma `modularFractionMean_multiple` establishes the exact mean
+of each rational fractional-part function over an arbitrary positive
+number of full periods. The specialization `empiricalErrorMean_factorial`
+uses the explicit period `B!`.
+
+The further `centered_roundingError_common_period` theorem expresses
+the entire centered error as
+`sum_{1≤d≤B} mu(d) * ((M mod d)/d - (d-1)/(2*d))`.
+This removes the empirical-mean term from the four-point correlation
+problem and is now available as a Lean lemma.
+
 ## Main mathematical obstacle
 
 Expanding the fourth power produces correlations between four functions
