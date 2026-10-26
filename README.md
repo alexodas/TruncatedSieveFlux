@@ -201,7 +201,7 @@ This is a supporting **finite** approximation, not an asymptotic
 cancellation theorem. It is not the claimed resolution of the open
 fourth-moment question.
 
-## Research theorem Comparator (experimental, CI under review)
+## Independent Comparator checks for the principal research results
 
 A second independent statement/solution pair is provided:
 `CovarianceChallenge.lean` defines fractional-part covariance and
@@ -218,15 +218,21 @@ principal declarations:
 - `TruncatedSieveFluxComparator.second_moment_gcd` — the complete
   finite Möbius-weighted gcd quadratic form for the second moment.
 
-The original `comparator.json` continues to check **only** the
-finite cutoff-sieve theorem. The two configurations can be submitted
+The additional Comparator run has **passed** on commit `207c7e3`:
+Lean's kernel replay, NanoDa, and con-ron accepted the exported
+proofs of both selected research theorems. The original
+`comparator.json` continues to check **only** the finite
+cutoff-sieve theorem. The two configurations can be submitted
 **separately** to Palomar using the same full commit SHA; each
 configuration corresponds to a separate registry entry.
 
-**Coverage limit:** dependencies required by selected proof terms are
-also checked during export and independent-kernel replay, but other
-theorems in `FourthMomentResearch.lean` are **not automatically
-added as named Comparator claims**. There are multiple independent
+**Coverage limit:** the independent kernels also check the
+proof dependencies used by the two selected research theorems.
+The CI additionally runs `leanchecker` over each completed project
+module, replaying **all** of its local proof declarations with
+Lean's kernel. That module-wide replay is not a distinct kernel
+implementation, and other theorems in `FourthMomentResearch.lean`
+are **not automatically added as named Comparator claims**. There are multiple independent
 supporting lemmas and not every Lean declaration is currently a
 separate Challenge theorem. Adding all of them would require
 additional auditable Challenge/Solution statements or other dedicated
