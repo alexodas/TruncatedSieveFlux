@@ -170,6 +170,37 @@ theorem empiricalErrorMean_eq_weighted_modular_means (B H : ℕ) :
   intro d hd
   ring
 
+/-- Exact Möbius rounding-error mean on any positive common period.
+The mean is independent of which common multiple is chosen. -/
+theorem empiricalErrorMean_common_period
+    (B T : ℕ) (hTpos : 0 < T)
+    (hT : ∀ d ∈ Finset.Icc 1 B, d ∣ T) :
+    empiricalErrorMean B T =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d * (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  rw [empiricalErrorMean_eq_weighted_modular_means]
+  apply Finset.sum_congr rfl
+  intro d hd
+  obtain ⟨q, hq⟩ := hT d hd
+  have hqpos : 0 < q := by
+    by_contra hn
+    have hqzero : q = 0 := by omega
+    have hTzero : T = 0 := by simpa [hqzero] using hq
+    omega
+  rw [hq, Nat.mul_comm d q, modularFractionMean_multiple d q
+    (Finset.mem_Icc.mp hd).1 hqpos]
+
+/-- B! is a concrete common period, so its mean has a fully explicit
+expression in the Möbius coefficients and the divisor indices. -/
+theorem empiricalErrorMean_factorial (B : ℕ) :
+    empiricalErrorMean B B.factorial =
+      ∑ d ∈ Finset.Icc 1 B,
+        moebiusReal d * (((d - 1 : ℕ) : ℝ) / (2 * (d : ℝ))) := by
+  apply empiricalErrorMean_common_period B B.factorial (Nat.factorial_pos B)
+  intro d hd
+  exact Nat.dvd_factorial (Finset.mem_Icc.mp hd).1
+    (Finset.mem_Icc.mp hd).2
+
 /-- Each centered error is a weighted sum of centered modular fractions.
 This is the direct starting point for a fourth-order correlation expansion. -/
 theorem centered_roundingError_eq_modular_sum (M B H : ℕ) :
