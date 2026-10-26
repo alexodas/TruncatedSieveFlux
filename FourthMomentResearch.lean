@@ -1796,6 +1796,38 @@ theorem coprime_centered_modular_sum_zero
   rw [sum_zmod_val_eq_sum_range (a * b) habpos f] at hsumz
   simpa only [f] using hsumz
 
+/-- The exact gcd covariance identity for *every* positive coprime
+pair, on *every* positive common averaging period. It follows from
+CRT factorization and the zero mean of the centered residues. -/
+theorem empiricalModularCovariance_gcd_coprime
+    (a b T : ℕ) (ha : 0 < a) (hb : 0 < b) (hTpos : 0 < T)
+    (hcop : a.Coprime b) (haT : a ∣ T) (hbT : b ∣ T) :
+    empiricalModularCovariance a b T =
+      (((Nat.gcd a b : ℝ) ^ 2 - 1) /
+        (12 * (a : ℝ) * (b : ℝ))) := by
+  have habpos : 0 < a * b := Nat.mul_pos ha hb
+  have ha_ab : a ∣ a * b := ⟨b, rfl⟩
+  have hb_ab : b ∣ a * b := ⟨a, by omega⟩
+  have hcov :
+      empiricalModularCovariance a b T =
+        empiricalModularCovariance a b (a * b) := by
+    calc
+      empiricalModularCovariance a b T =
+          empiricalModularCovariance a b (Nat.lcm a b) :=
+            empiricalModularCovariance_eq_lcm a b T
+              ha hb hTpos haT hbT
+      _ = empiricalModularCovariance a b (a * b) :=
+            (empiricalModularCovariance_eq_lcm a b (a * b)
+              ha hb habpos ha_ab hb_ab).symm
+  have hbase : empiricalModularCovariance a b (a * b) = 0 := by
+    rw [empiricalModularCovariance_common_period_explicit
+      a b (a * b) ha hb habpos ha_ab hb_ab]
+    rw [coprime_centered_modular_sum_zero a b ha hb hcop]
+    simp
+  have hgcd : Nat.gcd a b = 1 := hcop
+  rw [hcov, hbase, hgcd]
+  norm_num
+
 /-! ## Boundary cases for the full gcd covariance identity -/
 
 /-- The centered fractional part for modulus one vanishes identically. -/
