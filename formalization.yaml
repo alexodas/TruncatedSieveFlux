@@ -115,7 +115,10 @@ fidelity:
     (gcd(a,b)^2-1)/(12*a*b) over any positive multiple of b.
     Symmetric corollaries target all positive pairs comparable
     under divisibility (a divides b or b divides a).
-    This does not resolve pairs of moduli with no divisibility.
+    A new, not-yet-CI-verified proof script treats (2,b) for all
+    odd positive b using cancellation on the common period 2*b.
+    This addresses a genuine non-comparable family, not the full
+    general case.
     The existing Comparator challenge concerns only the finite
     logarithmic-cutoff error theorem, not the open research target.
 
