@@ -305,6 +305,62 @@ theorem empiricalSecondMoment_eq_pairwise_sum (B H : ℕ) :
       (fun d => moebiusReal d * centeredModularFraction m d H)
       (fun d => moebiusReal d * centeredModularFraction m d H))
 
+
+/-- Exact expression for the finite centered variance as a quadratic form
+in the pairwise modular covariances. -/
+theorem empiricalSecondMoment_eq_covariance_sum (B H : ℕ) :
+    empiricalSecondMoment B H =
+      ∑ a ∈ Finset.Icc 1 B,
+      ∑ b ∈ Finset.Icc 1 B,
+        (moebiusReal a * moebiusReal b) *
+          empiricalModularCovariance a b H := by
+  classical
+  rw [empiricalSecondMoment_eq_pairwise_sum]
+  calc
+    (∑ m ∈ Finset.range H,
+        ∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+          (moebiusReal a * centeredModularFraction m a H) *
+            (moebiusReal b * centeredModularFraction m b H)) / (H : ℝ) =
+      (∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+        ∑ m ∈ Finset.range H,
+          (moebiusReal a * centeredModularFraction m a H) *
+            (moebiusReal b * centeredModularFraction m b H)) / (H : ℝ) := by
+        apply congrArg (fun z : ℝ => z / (H : ℝ))
+        rw [Finset.sum_comm]
+        apply Finset.sum_congr rfl
+        intro a ha
+        rw [Finset.sum_comm]
+    _ = ∑ a ∈ Finset.Icc 1 B,
+        ∑ b ∈ Finset.Icc 1 B,
+        (moebiusReal a * moebiusReal b) *
+          empiricalModularCovariance a b H := by
+        rw [← Finset.sum_div]
+        apply Finset.sum_congr rfl
+        intro a ha
+        rw [← Finset.sum_div]
+        apply Finset.sum_congr rfl
+        intro b hb
+        unfold empiricalModularCovariance
+        calc
+          (∑ m ∈ Finset.range H,
+              (moebiusReal a * centeredModularFraction m a H) *
+                (moebiusReal b * centeredModularFraction m b H)) / (H : ℝ) =
+            ((moebiusReal a * moebiusReal b) *
+              ∑ m ∈ Finset.range H,
+                centeredModularFraction m a H *
+                  centeredModularFraction m b H) / (H : ℝ) := by
+                congr 1
+                rw [Finset.mul_sum]
+                apply Finset.sum_congr rfl
+                intro m hm
+                ring
+          _ = (moebiusReal a * moebiusReal b) *
+                ((∑ m ∈ Finset.range H,
+                  centeredModularFraction m a H *
+                    centeredModularFraction m b H) / (H : ℝ)) := by ring
+
 /-- A centered second moment is nonnegative on every finite interval,
 with no arithmetic hypotheses. -/
 theorem empiricalSecondMoment_nonneg (B H : ℕ) :
