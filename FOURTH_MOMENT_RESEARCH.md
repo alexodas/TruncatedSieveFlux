@@ -157,10 +157,29 @@ the exact gcd-weighted second-moment formula are proved in Lean.
 The arithmetic upper bound `V_B ≤ 3B/4` and the resulting
 unconditional cubic fourth-moment estimate are **not yet
 proved in Lean**.
-The covariance identity is classical; see for example
-https://math.stackexchange.com/questions/140499/a-sum-of-fractional-parts .
-The paper-level estimate should be independently reviewed.
-No claim of originality is made.
+**Source of the covariance formula:** Robert Israel's answer to
+Eric Naslund, ["A sum of fractional parts" (2012)](https://math.stackexchange.com/questions/140499/a-sum-of-fractional-parts),
+gives the exact identity, for positive integers `a,b`,
+
+```text
+sum_(1 ≤ m ≤ a*b) {m/a}*{m/b}
+   = (a-1)*(b-1)/4 + (gcd(a,b)^2-1)/12.
+```
+
+Each modular fractional part has period mean `(d-1)/(2*d)`.
+Dividing Israel's formula by `a*b` and subtracting the product
+of the two means yields exactly
+`(gcd(a,b)^2-1)/(12*a*b)`. Periodicity then extends the
+average from `a*b` to any positive common period. The Lean proof
+instead constructs the result using the Chinese remainder theorem
+and gcd-fiber decomposition. The source is a mathematical web
+discussion, not a peer-reviewed research publication; the result
+is **not** claimed as new. The additional Möbius-weighted
+second-moment identity is obtained by expanding the square.
+
+The paper-level variance estimate should be independently reviewed.
+No claim of originality or established research-paper-level
+interest is made.
 
 ### Complete gcd-fiber argument (Lean verified)
 
