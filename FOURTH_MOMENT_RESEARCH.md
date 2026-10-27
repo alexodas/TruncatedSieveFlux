@@ -232,20 +232,78 @@ its proposed oscillation consequences follow automatically.
 
 ## What must be proved next
 
-The pairwise covariance formula is now complete. The next
-arithmetical verification goal is the paper-derived bound
+The central pairwise covariance identity is complete, but the
+automated Palomar review found that the present verified results
+have **not been shown to warrant a research paper or serious
+note**. The roadmap below distinguishes mechanical completion
+from mathematical significance.
+
+### Milestone 1 — an unconditional linear variance bound in Lean
+
+Formalize the finite arithmetic inequality
 
 ```text
 sum_{1 ≤ a,b ≤ B} gcd(a,b)^2/(a*b) ≤ 9B,
-V_(B,T) ≤ 3B/4,
-fourth_(B,T) ≤ 3B³/16,
 ```
 
-for positive common periods, followed by a genuinely
-stronger analysis of the four-divisor correlations if one
-wants an `O(B²)` centered fourth moment. The last bound
-remains the principal open research question and cannot
-be inferred from a complete second-moment calculation.
+using `a=g*r`, `b=g*s`, the bound
+`g ≤ B/max(r,s)`, and the convergent double series
+`sum_{r,s≥1} 1/(r*s*max(r,s)) ≤ 9`. Combine it with
+`empiricalSecondMoment_eq_gcd_sum` and
+`|mu(d)|≤1` to derive
+
+```text
+V_(B,T) ≤ 3B/4,
+fourth_(B,T) ≤ 3B³/16
+```
+
+for every positive common period `T`. The second inequality
+should follow from the already proved fourth-to-second-moment
+bound. **Neither unconditional inequality is currently a
+Lean theorem**, and proving these elementary bounds would not
+alone settle Palomar's research-interest objection.
+
+### Milestone 2 — find and prove fourth-order cancellation
+
+Use `empiricalFourthMoment_eq_fourfold_sum` to separate
+diagonal contributions from genuinely correlated quadruples
+of moduli, respecting the Möbius signs and common-period
+averaging. Seek an explicit estimate on the four-divisor
+correlation tensor that is *strictly stronger* than the
+bounds derived from the second moment alone. The ultimate
+target remains
+
+```text
+fourth_(B,T) ≤ C4*B²    (constant C4 independent of B),
+```
+
+but it must not be inferred from the existing gcd covariance
+formula. Numerical experiments may inform conjectures; they
+do not substitute for a proof.
+
+### Milestone 3 — sources, originality and independent review
+
+Document exactly which mathematical identities are classical
+(in particular the fractional-part product identity behind
+the gcd covariance), which are finite consequences of the
+Möbius divisor sum, and which would represent a genuinely
+new estimate. Compare any candidate theorem to the relevant
+analytic number theory literature and seek substantive human
+review. A machine-checked result is not automatically of
+publishable interest.
+
+### Milestone 4 — verifiable release and Palomar decision
+
+Every new theorem should pass the Lean build and complete
+kernel replay. For significant results, add independently
+specified Challenge/Solution statements and pass NanoDa and
+con-ron through the Comparator. Update the README, Palomar
+`sources`/`alignment` metadata and
+[coverage inventory](COMPARATOR_COVERAGE.md) with the exact
+new scope. Consider a fresh Palomar submission **only if**
+the corrected provenance is accompanied by a defensible
+mathematical contribution; documentation fixes and a green CI
+are necessary but insufficient for acceptance.
 
 ## Literature and originality
 
