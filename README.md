@@ -88,6 +88,15 @@ The precise theorems are `gcd_fiber_mod`,
 `empiricalModularCovariance_gcd_general`. The full gcd proof
 passed the GitHub Actions Lean `verify` job on commit `0bfbf58`.
 
+**Mathematical provenance:** Robert Israel's answer to Eric Naslund,
+["A sum of fractional parts" (2012)](https://math.stackexchange.com/questions/140499/a-sum-of-fractional-parts),
+gives the classical uncentered two-modulus product formula. The
+covariance formula above is its centered and period-normalized
+version, with a separate Lean proof using CRT and gcd fibers.
+This source and its relationship are recorded in `formalization.yaml`;
+the formalization does **not** claim to discover the identity or
+establish research-paper-level novelty.
+
 The additional theorem `empiricalSecondMoment_eq_gcd_sum`
 now makes the entire Möbius-weighted second moment an **explicit
 finite gcd quadratic form**:
