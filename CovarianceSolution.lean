@@ -10,9 +10,10 @@ public section
 # Independently auditable modular covariance statements
 
 This Solution repeats the Challenge definitions verbatim and proves
-both statements by referencing the existing verified research module.
-The independent Comparator checks the Challenge definitions and
-the proofs against its Mathlib-only environment.
+all five selected statements by referencing the verified research
+module. Comparator checks their agreement with independently
+specified statements in the Mathlib-only CovarianceChallenge and
+replays the proof dependencies through independent kernels.
 -/
 
 namespace TruncatedSieveFluxComparator
