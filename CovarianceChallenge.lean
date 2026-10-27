@@ -9,9 +9,14 @@ public section
 
 This file imports only Mathlib. It intentionally does not import
 FourthMomentResearch or any other repository-specific module.
-The identical definitions in CovarianceSolution are bridged to the
-existing Lean proofs. The two theorem statements below are the
-mathematical claims selected by comparator-covariance.json.
+The corresponding CovarianceSolution uses these same definitions
+and proves the five separately stated results below using the
+existing Lean research development. All five are selected by
+comparator-covariance.json: the gcd covariance identity, the exact
+second moment, the elementary quartic fourth-moment bound, the
+fourth-to-second-moment inequality, and a conditional cubic bound.
+The last bound assumes a linear variance estimate; this module
+does not claim a new unconditional asymptotic theorem.
 -/
 
 namespace TruncatedSieveFluxComparator

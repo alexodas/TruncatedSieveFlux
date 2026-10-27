@@ -34,14 +34,42 @@ classification:
   msc2020: ["11A25", "03B35"]
 
 sources:
+  - title: "A sum of fractional parts"
+    authors: ["Robert Israel"]
+    contributors:
+      - name: "Eric Naslund"
+        role: "question proposer"
+    id: "https://math.stackexchange.com/questions/140499/a-sum-of-fractional-parts"
+    type: "web discussion"
+    relationship: "adapts"
+    note: >-
+      Robert Israel's answer (May 2012) gives the exact sum of products
+      of two modular fractional parts over the period a*b:
+      S(a,b)=(a-1)(b-1)/4+(gcd(a,b)^2-1)/12.
+      The compared gcd covariance statement subtracts the product
+      of the means, normalizes by a*b, and uses invariance under
+      positive common averaging periods. The Lean proof uses CRT
+      and gcd-fiber decomposition instead of the answer's Euclidean
+      argument. This is a web discussion, not a peer-reviewed paper,
+      and the covariance formula is not claimed as original.
   - title: "An Introduction to the Theory of Numbers"
     authors: ["G. H. Hardy", "E. M. Wright"]
     type: "book"
-    relationship: "adapts"
+    relationship: "background"
     note: >-
-      Uses the standard classical Möbius divisor-sum identity. The truncation
-      and residual bookkeeping are elementary derived results, not claimed
-      as new analytic number theory.
+      Background for the classical Möbius divisor-sum identity
+      used in the finite sieve and exact second-moment expressions.
+      Not the source of the gcd covariance formula.
+  - title: "Sieve weights and their smoothings"
+    authors: ["Andrew Granville", "Dimitris Koukoulopoulos", "James Maynard"]
+    id: "https://arxiv.org/abs/1606.06781"
+    type: "paper"
+    relationship: "background"
+    note: >-
+      Research context for higher moments of smoothed Möbius divisor
+      sums. Different sums and estimates are studied; the paper is
+      not a source for the exact discrete gcd covariance identity
+      or for a proved quadratic bound in this repository.
 
 related_formalizations: []
 
@@ -140,10 +168,15 @@ fidelity:
     remain an independent mathematical obstacle.
     The original Palomar Comparator configuration concerns only
     the supporting logarithmic-cutoff error theorem.
-    The second configuration additionally compares the general
-    gcd covariance, exact second-moment identity and three
-    fourth-moment bounds already proved in Lean. All five statements passed independent-kernel checks.
-    It does not claim any unproved bound as a theorem.
+    The second configuration compares a centered, period-normalized
+    adaptation of Robert Israel's discrete fractional-part product
+    identity, an exact Möbius-weighted second-moment corollary,
+    and three elementary fourth-moment inequalities.
+    The source is a public mathematical discussion rather than
+    a research paper. All five statements passed independent-kernel
+    checks. This development does not establish a new asymptotic
+    bound or independently demonstrate research-paper-level
+    novelty or interest.
     Other research lemmas are not individually selected
     as named Comparator theorems.
 

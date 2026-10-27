@@ -88,6 +88,15 @@ The precise theorems are `gcd_fiber_mod`,
 `empiricalModularCovariance_gcd_general`. The full gcd proof
 passed the GitHub Actions Lean `verify` job on commit `0bfbf58`.
 
+**Mathematical provenance:** Robert Israel's answer to Eric Naslund,
+["A sum of fractional parts" (2012)](https://math.stackexchange.com/questions/140499/a-sum-of-fractional-parts),
+gives the classical uncentered two-modulus product formula. The
+covariance formula above is its centered and period-normalized
+version, with a separate Lean proof using CRT and gcd fibers.
+This source and its relationship are recorded in `formalization.yaml`;
+the formalization does **not** claim to discover the identity or
+establish research-paper-level novelty.
+
 The additional theorem `empiricalSecondMoment_eq_gcd_sum`
 now makes the entire Möbius-weighted second moment an **explicit
 finite gcd quadratic form**:
@@ -298,6 +307,53 @@ Running Comparator locally also requires the independent-kernel
 tooling. These are two separate Comparator configurations; the
 five research claims **already have** their own Challenge/Solution
 interface and a successful independent-kernel comparison.
+
+## Next steps: formal verification and research milestones
+
+The five research Comparator statements are independently checked, but
+**machine verification is not by itself evidence of research novelty**.
+The automated Palomar review accepted the mechanical checks while finding
+that the present results had not been shown to merit a research paper or
+serious note. The next stages therefore separate new Lean proofs from a
+substantive mathematical contribution:
+
+1. **Formalize the linear variance bound.** Starting from the exact
+   gcd-weighted quadratic formula, verify the finite inequality
+   `∑_{1≤a,b≤B} gcd(a,b)^2/(a*b) ≤ 9*B` for positive `B`,
+   yielding `V_(B,T) ≤ 3*B/4` on every positive common period.
+   Combine this with the existing conditional moment inequality to
+   prove `fourth_(B,T) ≤ 3*B³/16` in Lean. These are **planned
+   proofs**, not currently established Lean results, and the
+   argument appears elementary rather than novel.
+2. **Investigate genuine fourth-order cancellation.** Use the existing
+   fourfold expansion and period invariance to study correlations
+   of four modular fractional parts weighted by Möbius coefficients.
+   Identify a rigorously testable estimate that improves on the
+   quartic/cubic bounds and, ultimately, could support the open
+   `O(B²)` fourth-moment target. A second-moment identity alone
+   does not prove such cancellation.
+3. **Audit provenance and mathematical significance.** Compare
+   the precise proposed estimate against published work on sieve
+   weights, fractional parts and gcd correlations; state exactly
+   which result is classical, a formalization, an elementary
+   consequence or potentially new. Seek independent human
+   mathematical review before claiming research-paper-level interest.
+4. **Extend formal and independent verification where useful.**
+   Check each new Lean theorem with CI, complete-module `leanchecker`,
+   and a suitable independent Comparator Challenge/Solution pair.
+   Keep an explicit [coverage inventory](COMPARATOR_COVERAGE.md);
+   do not label supporting lemmas as individually compared unless
+   they were actually selected.
+5. **Reassess Palomar submission only after substantive progress.**
+   Correct source attribution and Challenge documentation are
+   necessary, but **do not resolve the review's interest objection**.
+   Resubmit a pinned commit only when a meaningful, well-sourced
+   contribution can be justified honestly. Another mechanically
+   successful check is not sufficient on its own.
+
+The mathematical reductions and unresolved obstacles are detailed
+in [FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md)
+under **What must be proved next**.
 
 ## Authorship and transparent AI assistance
 
