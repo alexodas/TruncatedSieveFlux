@@ -8,13 +8,18 @@ authors:
   - family-names: Odasso
     given-names: Alessandro
 abstract: >-
-  Lean 4 and Mathlib formalization of finite truncated Möbius sieve
-  identities, an explicit logarithmic-cutoff residual bound, exact
-  periodic modular covariance and Möbius-weighted second-moment identities,
-  and elementary fourth-moment inequalities. Selected statements have
-  been checked through independent Comparator configurations. The
-  proposed uniform quadratic fourth-moment bound remains unproved,
-  and no mathematical originality claim is made.
+  Experimental AI-assisted mathematical formalization in Lean 4 and Mathlib,
+  initiated and maintained by Alessandro Odasso, a non-mathematician exploring
+  the use of large language models in scientific research. OpenAI GPT-6 series
+  carried out substantial mathematical exploration, proof construction,
+  debugging and verification work under human direction. The repository
+  contains finite Möbius sieve identities, a logarithmic-cutoff residual
+  bound, exact modular covariance and second-moment identities, and
+  fourth-moment inequalities. Completed Lean proofs compile, and selected
+  claims have documented Comparator checks. The human experimenter cannot
+  independently guarantee mathematical correctness, originality or significance;
+  independent mathematical review is invited. Stronger fourth-moment
+  estimates remain unproved.
 repository-code: "https://github.com/alexodas/TruncatedSieveFlux"
 url: "https://github.com/alexodas/TruncatedSieveFlux"
 license: Apache-2.0
