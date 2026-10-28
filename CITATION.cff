@@ -20,6 +20,13 @@ abstract: >-
   independently guarantee mathematical correctness, originality or significance;
   independent mathematical review is invited. Stronger fourth-moment
   estimates remain unproved.
+# The concept DOI identifies the software across releases. For reproducible
+# citation of an individual release, use its version-specific Zenodo DOI.
+doi: "10.5281/zenodo.23736533"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.23736533"
+    description: "Zenodo concept DOI for TruncatedSieveFlux across all versions."
 repository-code: "https://github.com/alexodas/TruncatedSieveFlux"
 url: "https://github.com/alexodas/TruncatedSieveFlux"
 license: Apache-2.0
