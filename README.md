@@ -1,5 +1,7 @@
 # Periodic Möbius rounding error — Lean 4 / Mathlib
 
+[![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23736533.svg)](https://doi.org/10.5281/zenodo.23736533)
+
 This repository formalizes **exact periodic moments** of a truncated Möbius
 rounding error and develops a route toward a genuinely stronger oscillation
 theorem. The main research target is **open**; the verified finite identities
@@ -354,6 +356,18 @@ substantive mathematical contribution:
 The mathematical reductions and unresolved obstacles are detailed
 in [FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md)
 under **What must be proved next**.
+
+## Archived releases and citation
+
+This evolving research-software project is archived on Zenodo.
+
+- **All-versions (concept) DOI:** [10.5281/zenodo.23736533](https://doi.org/10.5281/zenodo.23736533).
+- **First archived release:** [v0.1.0](https://github.com/alexodas/TruncatedSieveFlux/releases/tag/v0.1.0).
+
+The concept DOI identifies the project across versions. When citing a particular
+version, use the **version-specific DOI** shown on that version's Zenodo record
+so readers can identify the exact archived snapshot. See
+[CITATION.cff](CITATION.cff) for software citation metadata.
 
 ## Authorship, experimental context, and limitations
 
