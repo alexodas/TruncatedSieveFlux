@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: >-
+  If you use this formalization in research, please cite the specific
+  archived release of TruncatedSieveFlux.
+type: software
+title: "TruncatedSieveFlux: Lean 4 Formalization of Finite Möbius Sieve Identities and Periodic Rounding-Error Moments"
+authors:
+  - family-names: Odasso
+    given-names: Alessandro
+abstract: >-
+  Lean 4 and Mathlib formalization of finite truncated Möbius sieve
+  identities, an explicit logarithmic-cutoff residual bound, exact
+  periodic modular covariance and Möbius-weighted second-moment identities,
+  and elementary fourth-moment inequalities. Selected statements have
+  been checked through independent Comparator configurations. The
+  proposed uniform quadratic fourth-moment bound remains unproved,
+  and no mathematical originality claim is made.
+repository-code: "https://github.com/alexodas/TruncatedSieveFlux"
+url: "https://github.com/alexodas/TruncatedSieveFlux"
+license: Apache-2.0
+keywords:
+  - Lean 4
+  - Mathlib
+  - formal verification
+  - Möbius function
+  - sieve theory
+  - number theory
+  - periodic rounding errors
+  - research software
