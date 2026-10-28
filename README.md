@@ -355,15 +355,38 @@ The mathematical reductions and unresolved obstacles are detailed
 in [FOURTH_MOMENT_RESEARCH.md](FOURTH_MOMENT_RESEARCH.md)
 under **What must be proved next**.
 
-## Authorship and transparent AI assistance
+## Authorship, experimental context, and limitations
 
-**Author and responsible maintainer:** Alessandro Odasso.
+**Human experimenter and repository maintainer:** Alessandro Odasso.
 
-ChatGPT **GPT-6** assisted with mathematical exploration,
-proof drafting, debugging, and repository verification. The project was human-directed
-and AI-assisted. Formal verification establishes correctness of the
-Lean statements actually proved; it does not establish mathematical
-originality or replace independent mathematical review.
+**AI system used for mathematical exploration and formalization:** OpenAI GPT-6 series.
+
+This repository documents an experiment in the use of large language models
+(LLMs) for scientific and mathematical research. Alessandro Odasso is **not a
+professional mathematician**; his interest here is in exploring what LLMs
+can achieve in mathematical research when combined with formal proof tools.
+He initiated and directed the experiment and maintains the public repository.
+The GPT-6 series performed substantial mathematical exploration, Lean proof
+construction, code development, debugging, and iterative verification under
+that human direction.
+
+The human experimenter **cannot independently guarantee the mathematical
+correctness, originality, or significance** of the results. The evidence for
+technical correctness consists of successful Lean compilation and kernel
+checks of the completed proof modules, together with the documented
+Comparator checks for selected statements. These checks support the
+formal validity of the Lean theorems within their stated assumptions and
+trusted foundations; they do **not** establish that the formal statements
+capture every intended informal claim, that a result is new, or that it is
+mathematically important. The precise scope of independent statement
+comparison is described in [COMPARATOR_COVERAGE.md](COMPARATOR_COVERAGE.md).
+
+This work is shared openly for transparency and reproducibility. Interested
+mathematicians and formal-methods researchers are invited to examine,
+critique, reproduce, correct, or extend the results. **Independent expert
+mathematical review has not yet been performed.** The proposed stronger
+fourth-moment bound remains an open research target, not a theorem proved
+by this repository.
 
 Project metadata: [formalization.yaml](formalization.yaml).
 License: Apache-2.0.
